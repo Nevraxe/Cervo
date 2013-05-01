@@ -53,11 +53,6 @@ class TooManyRoutesException extends RouteNotFoundException
 
 }
 
-class TooManyWeakRoutesException extends RouteNotFoundException
-{
-
-}
-
 class TemplateNotFoundException extends NotFoundException
 {
 
