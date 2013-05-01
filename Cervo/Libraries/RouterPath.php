@@ -35,15 +35,16 @@ namespace Cervo\Libraries;
 
 class RouterPath
 {
-    const NO_MATCH = -1;
-    const FULL_MATCH = -2;
+    const NO_MATCH = false;
+    const FULL_MATCH = true;
 
     protected $stringpath;
     protected $arraypath;
     protected $module;
     protected $controller;
     protected $method;
-    protected $args;
+    protected $args = [];
+    protected $regex = '';
 
     public function __construct($stringpath, $module, $controller, $method)
     {
@@ -57,57 +58,52 @@ class RouterPath
             $this->stringpath = str_replace('//', '/', $this->stringpath);
 
         $this->arraypath = ($this->stringpath == '' ? [] : explode('/', $this->stringpath));
+
+        $c_arraypath = count($this->arraypath);
+        $this->regex .= '/^';
+        for ($i = 0; $i < $c_arraypath; $i++)
+        {
+            if ($this->arraypath[$i] == '*')
+            {
+                $this->regex .= '[\/]{0,1}(.*)';
+            }
+            else
+            {
+                if ($i > 0)
+                {
+                    $this->regex .= '\/';
+                }
+
+                if ($this->arraypath[$i] == '?')
+                {
+                    $this->regex .= '(.[^\/]*)';
+                }
+                else
+                {
+                    $this->regex .= preg_quote(strtolower($this->arraypath[$i]), '/');
+                }
+            }
+        }
+        $this->regex .= '$/i';
     }
 
     public function compare($arraypath)
     {
-        $c_arraypath = count($arraypath);
-        $c_this_arraypath = count($this->arraypath);
-        $match = true;
-        $wildcard_pos = null;
-        $precision = 0;
+        $stringpath = implode('/', $arraypath);
 
-        if ($c_arraypath < $c_this_arraypath - 1)
-        {
-            $match = false;
-        }
-        else
-        {
-            for ($i = 0; $i < $c_this_arraypath || $i < $c_arraypath; $i++)
-            {
-                if ($this->arraypath[$i] == '*')
-                {
-                    $wildcard_pos = $i;
-                    break;
-                }
-                else if (strtolower($this->arraypath[$i]) != strtolower($arraypath[$i]))
-                {
-                    $match = false;
-                    break;
-                }
-
-                $precision++;
-            }
-        }
-
-        if ($wildcard_pos !== null && $match)
-        {
-            $this->args = array_slice($arraypath, $wildcard_pos);
-            return $precision;
-        }
-        else
-        {
-            $this->args = [];
-        }
-
-        if ($match)
-        {
-            return self::FULL_MATCH;
-        }
-        else
+        $matches = null;
+        if (preg_match($this->regex, $stringpath, $matches) !== 1)
         {
             return self::NO_MATCH;
         }
+
+        $c_matches = count($matches);
+        for ($i = 1; $i < $c_matches; $i++)
+        {
+            $this->args = array_merge($this->args, explode('/', $matches[$i]));
+        }
+
+        return self::FULL_MATCH;
     }
 
     public function getModule()
