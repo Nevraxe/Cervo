@@ -6,11 +6,12 @@ namespace Application\DefaultModule\Models;
 
 
 
-use Cervo as _;
+use Cervo\Cervo as _;
+use Cervo;
 
 
 
-class Test extends _\Libraries\Model
+class Test extends Cervo\Libraries\Model
 {
     private $test = '';
 
