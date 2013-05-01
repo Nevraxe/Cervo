@@ -58,71 +58,29 @@ class Router
 
     public function getRoute()
     {
-        $current = [];
-        $weak_current = [];
+        $returns = [];
 
         foreach ($this->routes as $r)
         {
-            $result = $r->compare($this->arraypath);
-
-            if ($result >= 0)
+            if ($r->compare($this->arraypath) === RouterPath::FULL_MATCH)
             {
-                $weak_current[] = ['result' => $r, 'precision' => $result];
-            }
-            else if ($result === RouterPath::FULL_MATCH)
-            {
-                $current[] = $r;
+                $returns[] = $r;
             }
         }
 
-        $c_current = count($current);
-        $c_weak_current = count($weak_current);
+        $c_returns = count($returns);
 
-        if ($c_current == 1)
+        if ($c_returns == 1)
         {
-            return current($current);
+            return (current($returns));
         }
-        else if ($c_current > 1)
+        else if ($c_returns > 1)
         {
             throw new \Cervo\Libraries\Exceptions\TooManyRoutesException();
         }
         else
         {
-            if ($c_weak_current == 1)
-            {
-                return current($weak_current)['result'];
-            }
-            else if ($c_weak_current > 1)
-            {
-                $highest = 0;
-                $highest_weaks = [];
-
-                foreach ($weak_current as $w)
-                {
-                    if ($w['precision'] > $highest)
-                    {
-                        $highest = $w['precision'];
-                        $highest_weaks = [$w];
-                    }
-                    else if ($w['prevision'] == $highest)
-                    {
-                        $highest_weaks[] = $w;
-                    }
-                }
-
-                if (count($highest_weaks) == 1)
-                {
-                    return current($highest_weaks)['result'];
-                }
-                else
-                {
-                    throw new \Cervo\Libraries\Exceptions\TooManyWeakRoutesException();
-                }
-            }
-            else
-            {
-                throw new \Cervo\Libraries\Exceptions\RouteNotFoundException();
-            }
+            throw new \Cervo\Libraries\Exceptions\RouteNotFoundException();
         }
     }
 
