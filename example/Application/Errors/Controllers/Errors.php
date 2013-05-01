@@ -6,16 +6,15 @@ namespace Application\ErrorsModule\Controllers;
 
 
 
-use Cervo as _;
+use Cervo\Cervo as _;
+use Cervo;
 
 
 
-class Errors extends _\Libraries\Controller
+class Errors extends Cervo\Libraries\Controller
 {
     static public function exceptions_handler($e)
     {
-        var_dump($e);
-
         $controller = &_::getController('Errors');
 
         if ($e instanceof _\Libraries\Exceptions\RouteNotFoundException)
@@ -32,10 +31,6 @@ class Errors extends _\Libraries\Controller
 
     static public function errors_handler($errno, $errstr, $errfile, $errline, $errcontext)
     {
-        var_dump(func_get_args());
-
-        var_dump(debug_backtrace());
-
         _::getController('Errors')->Error500Method();
 
         exit();

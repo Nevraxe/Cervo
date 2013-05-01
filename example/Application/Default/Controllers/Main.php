@@ -6,11 +6,12 @@ namespace Application\DefaultModule\Controllers;
 
 
 
-use Cervo as _;
+use Cervo\Cervo as _;
+use Cervo;
 
 
 
-class Main extends _\Libraries\Controller
+class Main extends Cervo\Libraries\Controller
 {
     public function IndexMethod($args = [])
     {

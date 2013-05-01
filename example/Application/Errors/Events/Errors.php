@@ -2,10 +2,6 @@
 
 
 
-use Cervo as _;
-
-
-
 /** @var $this \Cervo\Libraries\Events */
 
 

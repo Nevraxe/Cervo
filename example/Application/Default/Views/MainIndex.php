@@ -6,11 +6,12 @@ namespace Application\DefaultModule\Views;
 
 
 
-use Cervo as _;
+use Cervo\Cervo as _;
+use Cervo;
 
 
 
-class MainIndex extends _\Libraries\View
+class MainIndex extends Cervo\Libraries\View
 {
     private $test = null;
 

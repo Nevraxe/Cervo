@@ -40,9 +40,11 @@ class Template
 
     public function __construct($name)
     {
+        $config = \Cervo\Config::getInstance();
+
         $this->name = explode('/', $name);
 
-		if (!file_exists(APATH . $this->name[0] . DS . SUBTEMPLATESPATH . implode('/', array_slice($this->name, 1)) . EXT))
+		if (!file_exists($config->getApplicationDirectory() . $this->name[0] . \DS . $config->getTemplatesSubPath() . implode('/', array_slice($this->name, 1)) . $config->getExtention()))
 		{
 			throw new \Cervo\Libraries\Exceptions\TemplateNotFoundException();
 		}
@@ -68,6 +70,8 @@ class Template
 
 	public function render()
 	{
-		require APATH . $this->name[0] . DS . SUBTEMPLATESPATH . implode('/', array_slice($this->name, 1)) . EXT;
+        $config = \Cervo\Config::getInstance();
+
+		require $config->getApplicationDirectory() . $this->name[0] . \DS . $config->getTemplatesSubPath() . implode('/', array_slice($this->name, 1)) . $config->getExtention();
 	}
 }

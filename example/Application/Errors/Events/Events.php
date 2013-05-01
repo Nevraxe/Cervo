@@ -2,7 +2,7 @@
 
 
 
-use Cervo as _;
+use Cervo\Cervo as _;
 
 
 

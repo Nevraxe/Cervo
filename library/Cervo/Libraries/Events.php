@@ -48,7 +48,9 @@ class Events
 
     public function __construct()
     {
-        foreach (glob(APATH . '*' . DS . SUBEVENTSPATH . '*' . EXT, \GLOB_NOSORT | \GLOB_NOESCAPE) as $file)
+        $config = \Cervo\Config::getInstance();
+
+        foreach (glob($config->getApplicationDirectory() . '*' . \DS . $config->getEventsSubPath() . '*' . $config->getExtention(), \GLOB_NOSORT | \GLOB_NOESCAPE) as $file)
         {
             require $file;
         }
