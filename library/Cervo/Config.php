@@ -49,11 +49,7 @@ class Config
 
     private function __construct()
     {
-        if (!defined('DS'))
-            define('DS', \DIRECTORY_SEPARATOR);
-
-        $this->setExtention('.php')
-            ->setCervoDirectory(realpath(dirname(__FILE__)) . \DS)
+        $this->setCervoDirectory(realpath(dirname(__FILE__)) . \DS)
             ->setCervoLibrariesDirectory(realpath($this->getCervoDirectory() . 'Libraries') . \DS)
             ->setModuleNamespaceSuffix('Module')
             ->setMethodSuffix('Method')
@@ -66,7 +62,6 @@ class Config
             ;
     }
 
-    protected $extention;
     protected $cervo_directory;
     protected $cervo_libraries_directory;
     protected $documents_directory;
@@ -110,11 +105,6 @@ class Config
     public function getEventsSubPath()
     {
         return $this->events_sub_path;
-    }
-
-    public function getExtention()
-    {
-        return $this->extention;
     }
 
     public function getLibrariesSubPath()
@@ -180,12 +170,6 @@ class Config
     public function &setEventsSubPath($events_sub_path)
     {
         $this->events_sub_path = $events_sub_path;
-        return $this;
-    }
-
-    public function &setExtention($extention)
-    {
-        $this->extention = $extention;
         return $this;
     }
 
