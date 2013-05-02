@@ -33,7 +33,8 @@ namespace Cervo\Libraries;
 
 
 
-use \Cervo\Libraries\RouterPath;
+use Cervo as _,
+    _\Libraries\RouterPath;
 
 
 
@@ -80,11 +81,11 @@ class Router
         }
         else if ($c_returns > 1)
         {
-            throw new \Cervo\Libraries\Exceptions\TooManyRoutesException();
+            throw new _\Libraries\Exceptions\TooManyRoutesException();
         }
         else
         {
-            throw new \Cervo\Libraries\Exceptions\RouteNotFoundException();
+            throw new _\Libraries\Exceptions\RouteNotFoundException();
         }
     }
 
@@ -175,9 +176,9 @@ class Router
 
     protected function route()
     {
-        $config = \Cervo\Config::getInstance();
+        $config = _\Config::getInstance();
 
-        foreach (glob($config->getApplicationDirectory() . '*' . \DS . 'Router' . $config->getExtention(), \GLOB_NOSORT | \GLOB_NOESCAPE) as $file)
+        foreach (glob($config->getApplicationDirectory() . '*' . \DS . 'Router.php', \GLOB_NOSORT | \GLOB_NOESCAPE) as $file)
         {
             require $file;
         }
