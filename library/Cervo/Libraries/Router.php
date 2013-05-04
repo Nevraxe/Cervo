@@ -33,6 +33,11 @@ namespace Cervo\Libraries;
 
 
 
+use Cervo as _,
+    _\Libraries\RouterPath;
+
+
+
 class Router
 {
     protected $stringpath = '';
@@ -53,7 +58,7 @@ class Router
 
     public function addRoute($stringpath, $module, $controller, $method)
     {
-        $this->routes[] = new \Cervo\Libraries\RouterPath($stringpath, $module, $controller, $method);
+        $this->routes[] = new RouterPath($stringpath, $module, $controller, $method);
     }
 
     public function getRoute()
@@ -76,11 +81,11 @@ class Router
         }
         else if ($c_returns > 1)
         {
-            throw new \Cervo\Libraries\Exceptions\TooManyRoutesException();
+            throw new _\Libraries\Exceptions\TooManyRoutesException();
         }
         else
         {
-            throw new \Cervo\Libraries\Exceptions\RouteNotFoundException();
+            throw new _\Libraries\Exceptions\RouteNotFoundException();
         }
     }
 
@@ -171,7 +176,9 @@ class Router
 
     protected function route()
     {
-        foreach (glob(APATH . '*' . DS . 'Router.php', \GLOB_NOSORT | \GLOB_NOESCAPE) as $file)
+        $config = _\Config::getInstance();
+
+        foreach (glob($config->getApplicationDirectory() . '*' . \DS . 'Router.php', \GLOB_NOSORT | \GLOB_NOESCAPE) as $file)
         {
             require $file;
         }

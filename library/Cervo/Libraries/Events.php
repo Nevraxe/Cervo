@@ -33,6 +33,10 @@ namespace Cervo\Libraries;
 
 
 
+use Cervo as _;
+
+
+
 class Events
 {
     protected $events = [];
@@ -48,7 +52,9 @@ class Events
 
     public function __construct()
     {
-        foreach (glob(APATH . '*' . DS . SUBEVENTSPATH . '*' . EXT, \GLOB_NOSORT | \GLOB_NOESCAPE) as $file)
+        $config = _\Config::getInstance();
+
+        foreach (glob($config->getApplicationDirectory() . '*' . \DS . $config->getEventsSubPath() . '*.php', \GLOB_NOSORT | \GLOB_NOESCAPE) as $file)
         {
             require $file;
         }

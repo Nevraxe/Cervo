@@ -31,7 +31,7 @@
 
 class Cervo
 {
-    const VERSION = '1.1.0';
+    const VERSION = '2.0.0';
 
     protected static $libraries = [];
     protected static $controllers = [];
@@ -51,9 +51,21 @@ class Cervo
 
 
 
+        // We set the autolaoder
+
+        spl_autoload_register('\Cervo::autoload');
+
+
+
+        // We fetch the config
+
+        $config = Config::getInstance();
+
+
+
         // Events startup
 
-        $events = \Cervo::getLibrary('Cervo/Events');
+        $events = self::getLibrary('Cervo/Events');
 
         $events->register('core_pre_system');
         $events->register('core_pre_controller');
@@ -70,7 +82,7 @@ class Cervo
 
         // We initialize the Router
 
-        $router = \Cervo::getLibrary('Cervo/Router');
+        $router = self::getLibrary('Cervo/Router');
 
 
 
@@ -80,9 +92,9 @@ class Cervo
 
         $events->fire('core_pre_controller');
 
-        $method = $route->getMethod() . METHODSUFFIX;
+        $method = $route->getMethod() . $config->getMethodSuffix();
 
-        \Cervo::getController($route->getModule() . '/' . $route->getController())->$method($route->getArgs());
+        self::getController($route->getModule() . '/' . $route->getController())->$method($route->getArgs());
 
         $events->fire('core_post_controller');
 
@@ -98,11 +110,13 @@ class Cervo
         if (is_object(self::$libraries[$name]))
             return self::$libraries[$name];
 
+        $config = Config::getInstance();
+
         $path = explode('/', $name);
 
         if (count($path) <= 1)
         {
-            $i_name = '\Application\\' . $path[0] . MODULENAMESPACESUFFIX . '\Libraries\\' . $path[0];
+            $i_name = '\Application\\' . $path[0] . $config->getModuleNamespaceSuffix() . '\Libraries\\' . $path[0];
         }
         else
         {
@@ -112,7 +126,7 @@ class Cervo
             }
             else
             {
-                $i_name = '\Application\\' . $path[0] . MODULENAMESPACESUFFIX . '\Libraries\\' . implode('\\', array_slice($path, 1));
+                $i_name = '\Application\\' . $path[0] . $config->getModuleNamespaceSuffix() . '\Libraries\\' . implode('\\', array_slice($path, 1));
             }
         }
 
@@ -125,15 +139,17 @@ class Cervo
         if (is_object(self::$controllers[$name]))
             return self::$controllers[$name];
 
+        $config = Config::getInstance();
+
         $path = explode('/', $name);
 
         if (count($path) <= 1)
         {
-            $i_name = '\Application\\' . $path[0] . MODULENAMESPACESUFFIX . '\Controllers\\' . $path[0];
+            $i_name = '\Application\\' . $path[0] . $config->getModuleNamespaceSuffix() . '\Controllers\\' . $path[0];
         }
         else
         {
-            $i_name = '\Application\\' . $path[0] . MODULENAMESPACESUFFIX . '\Controllers\\' . implode('\\', array_slice($path, 1));
+            $i_name = '\Application\\' . $path[0] . $config->getModuleNamespaceSuffix() . '\Controllers\\' . implode('\\', array_slice($path, 1));
         }
 
         self::$controllers[$name] = new $i_name;
@@ -142,15 +158,17 @@ class Cervo
 
     public static function &getModel($name)
     {
+        $config = Config::getInstance();
+
         $path = explode('/', $name);
 
         if (count($path) <= 1)
         {
-            $i_name = '\Application\\' . $path[0] . MODULENAMESPACESUFFIX . '\Models\\' . $path[0];
+            $i_name = '\Application\\' . $path[0] . $config->getModuleNamespaceSuffix() . '\Models\\' . $path[0];
         }
         else
         {
-            $i_name = '\Application\\' . $path[0] . MODULENAMESPACESUFFIX . '\Models\\' . implode('\\', array_slice($path, 1));
+            $i_name = '\Application\\' . $path[0] . $config->getModuleNamespaceSuffix() . '\Models\\' . implode('\\', array_slice($path, 1));
         }
 
         return new $i_name;
@@ -158,15 +176,17 @@ class Cervo
 
     public static function &getView($name)
     {
+        $config = Config::getInstance();
+
         $path = explode('/', $name);
 
         if (count($path) <= 1)
         {
-            $i_name = '\Application\\' . $path[0] . MODULENAMESPACESUFFIX . '\Views\\' . $path[0];
+            $i_name = '\Application\\' . $path[0] . $config->getModuleNamespaceSuffix() . '\Views\\' . $path[0];
         }
         else
         {
-            $i_name = '\Application\\' . $path[0] . MODULENAMESPACESUFFIX . '\Views\\' . implode('\\', array_slice($path, 1));
+            $i_name = '\Application\\' . $path[0] . $config->getModuleNamespaceSuffix() . '\Views\\' . implode('\\', array_slice($path, 1));
         }
 
         return new $i_name;
@@ -179,9 +199,11 @@ class Cervo
 
     public static function &getConfig($name)
     {
-        if (file_exists(APATH . $name . DS . 'Config.php'))
+        $config = Config::getInstance();
+
+        if (file_exists($config->getApplicationDirectory() . $name . \DS . 'Config.php'))
         {
-            return require APATH . $name . DS . 'Config.php';
+            return require $config->getApplicationDirectory() . $name . \DS . 'Config.php';
         }
         else
         {
@@ -193,18 +215,20 @@ class Cervo
     {
         if (strncmp($name, 'Application\\', 12) === 0 || strncmp($name, 'Cervo\Libraries\\', 16) === 0)
         {
+            $config = Config::getInstance();
+
             if (self::$modulenamespacesuffix_len === null)
-                self::$modulenamespacesuffix_len = strlen(MODULENAMESPACESUFFIX);
+                self::$modulenamespacesuffix_len = strlen($config->getModuleNamespaceSuffix());
 
             $ex = explode('\\', $name);
 
             if ($ex[0] === 'Cervo' && $ex[1] === 'Libraries')
             {
-                require CLIBRARIESPATH . $ex[2] . EXT;
+                require $config->getCervoLibrariesDirectory() . $ex[2] . $config->getExtention();
             }
-            else if ($ex[0] === 'Application' && substr($ex[1], -1 * self::$modulenamespacesuffix_len) === MODULENAMESPACESUFFIX)
+            else if ($ex[0] === 'Application' && substr($ex[1], -1 * self::$modulenamespacesuffix_len) === $config->getModuleNamespaceSuffix())
             {
-                require APATH . substr($ex[1], 0, strlen($ex[1]) - self::$modulenamespacesuffix_len) . DS . implode(DS, array_slice($ex, 2)) . EXT;
+                require $config->getApplicationDirectory() . substr($ex[1], 0, strlen($ex[1]) - self::$modulenamespacesuffix_len) . \DS . implode(\DS, array_slice($ex, 2)) . $config->getExtention();
             }
         }
 
@@ -221,5 +245,3 @@ class Cervo
         self::$autoloads[] = $function;
     }
 }
-
-spl_autoload_register('\Cervo::autoload');

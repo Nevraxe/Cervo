@@ -33,6 +33,10 @@ namespace Cervo\Libraries;
 
 
 
+use Cervo as _;
+
+
+
 class Template
 {
     protected $name;
@@ -40,11 +44,13 @@ class Template
 
     public function __construct($name)
     {
+        $config = _\Config::getInstance();
+
         $this->name = explode('/', $name);
 
-		if (!file_exists(APATH . $this->name[0] . DS . SUBTEMPLATESPATH . implode('/', array_slice($this->name, 1)) . EXT))
+		if (!file_exists($config->getApplicationDirectory() . $this->name[0] . \DS . $config->getTemplatesSubPath() . implode('/', array_slice($this->name, 1)) . '.php'))
 		{
-			throw new \Cervo\Libraries\Exceptions\TemplateNotFoundException();
+			throw new _\Libraries\Exceptions\TemplateNotFoundException();
 		}
     }
 
@@ -68,6 +74,8 @@ class Template
 
 	public function render()
 	{
-		require APATH . $this->name[0] . DS . SUBTEMPLATESPATH . implode('/', array_slice($this->name, 1)) . EXT;
+        $config = _\Config::getInstance();
+
+		require $config->getApplicationDirectory() . $this->name[0] . \DS . $config->getTemplatesSubPath() . implode('/', array_slice($this->name, 1)) . '.php';
 	}
 }
