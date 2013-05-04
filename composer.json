@@ -1,0 +1,26 @@
+{
+    "name": "manhim/cervo",
+    "description": "A lightweight and highly modular structure framework for PHP. ",
+    "type": "library",
+    "keywords": ["PHP", "Framework", "Cervo"],
+    "homepage": "https://github.com/Manhim/Cervo",
+    "license": "BSD-2-Clause",
+    "authors": [
+        {
+            "name": "Marc André Audet",
+            "email": "root@manhim.net",
+            "homepage": "http://manhim.net"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/Manhim/Cervo/issues"
+    },
+    "require": {
+        "php": ">=5.4.0"
+    },
+    "autoload": {
+        "files": [
+            "library/Cervo/bootstrap.php"
+        ]
+    }
+}
