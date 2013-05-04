@@ -34,7 +34,7 @@ namespace Cervo\Libraries;
 
 
 use Cervo as _,
-    _\Libraries\RouterPath;
+    Cervo\Libraries\RouterPath;
 
 
 

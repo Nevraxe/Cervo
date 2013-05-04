@@ -224,11 +224,11 @@ class Cervo
 
             if ($ex[0] === 'Cervo' && $ex[1] === 'Libraries')
             {
-                require $config->getCervoLibrariesDirectory() . $ex[2] . $config->getExtention();
+                require $config->getCervoLibrariesDirectory() . $ex[2] . '.php';
             }
             else if ($ex[0] === 'Application' && substr($ex[1], -1 * self::$modulenamespacesuffix_len) === $config->getModuleNamespaceSuffix())
             {
-                require $config->getApplicationDirectory() . substr($ex[1], 0, strlen($ex[1]) - self::$modulenamespacesuffix_len) . \DS . implode(\DS, array_slice($ex, 2)) . $config->getExtention();
+                require $config->getApplicationDirectory() . substr($ex[1], 0, strlen($ex[1]) - self::$modulenamespacesuffix_len) . \DS . implode(\DS, array_slice($ex, 2)) . '.php';
             }
         }
 
