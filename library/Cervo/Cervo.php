@@ -53,7 +53,7 @@ class Cervo
 
         // We set the autolaoder
 
-        spl_autoload_register('\Cervo\Cervo::autoload');
+        spl_autoload_register('\Cervo::autoload');
 
 
 
