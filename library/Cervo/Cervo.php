@@ -29,10 +29,6 @@
 
 
 
-use Cervo\Config;
-
-
-
 class Cervo
 {
     const VERSION = '2.1.0';
