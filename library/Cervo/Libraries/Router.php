@@ -170,7 +170,7 @@ class Router
     {
         $config = &_::getLibrary('Cervo/Config');
 
-        foreach (glob($config->get('application_directory') . '*' . \DS . 'Router.php', \GLOB_NOSORT | \GLOB_NOESCAPE) as $file)
+        foreach (glob($config->get('Cervo/Application/Directory') . '*' . \DS . 'Router.php', \GLOB_NOSORT | \GLOB_NOESCAPE) as $file)
         {
             require $file;
         }

@@ -43,7 +43,7 @@ class Cervo
 
     private static $is_init = false;
 
-    public static function init()
+    public static function init($json_config_file = null)
     {
         // We check if the system is already initiated
 
@@ -67,23 +67,28 @@ class Cervo
         $cervo_directory = realpath(__FILE__) . \DS;
 
         $config
-            ->setDefault('cervo_directory', $cervo_directory)
-            ->setDefault('cervo_libraries_directory', realpath($cervo_directory . 'Libraries') . \DS)
-            ->setDefault('method_suffix', 'Method')
-            ->setDefault('events_sub_path', 'Events' . \DS)
-            ->setDefault('controllers_sub_path', 'Controllers' . \DS)
-            ->setDefault('models_sub_path', 'Models' . \DS)
-            ->setDefault('views_sub_path', 'Views' . \DS)
-            ->setDefault('libraries_sub_path', 'Libraries' . \DS)
-            ->setDefault('templates_sub_path', 'Templates' . \DS)
-            ->setDefault('production_mode', false)
+            ->setDefault('Cervo/Directory', $cervo_directory)
+            ->setDefault('Cervo/Libraries/Directory', realpath($cervo_directory . 'Libraries') . \DS)
+            ->setDefault('Cervo/Application/MethodSuffix', 'Method')
+            ->setDefault('Cervo/Application/EventsSubPath', 'Events' . \DS)
+            ->setDefault('Cervo/Application/ControllersPath', 'Controllers' . \DS)
+            ->setDefault('Cervo/Application/ModelsPath', 'Models' . \DS)
+            ->setDefault('Cervo/Application/ViewsPath', 'Views' . \DS)
+            ->setDefault('Cervo/Application/LibariesPath', 'Libraries' . \DS)
+            ->setDefault('Cervo/Application/TemplatesPath', 'Templates' . \DS)
+            ->setDefault('Production', false)
             ;
+
+        if ($json_config_file !== null)
+        {
+            $config->importJSON($json_config_file);
+        }
 
 
 
         // Events startup
 
-        $events = self::getLibrary('Cervo/Events');
+        $events = &self::getLibrary('Cervo/Events');
 
         $events->register('core_pre_system');
         $events->register('core_pre_controller');
@@ -100,7 +105,7 @@ class Cervo
 
         // We initialize the Router
 
-        $router = self::getLibrary('Cervo/Router');
+        $router = &self::getLibrary('Cervo/Router');
 
 
 
@@ -211,9 +216,9 @@ class Cervo
     {
         $config = &self::getLibrary('Cervo/Config');
 
-        if (file_exists($config->get('application_directory') . $name . \DS . 'Config.php'))
+        if (file_exists($config->get('Cervo/Application/Directory') . $name . \DS . 'Config.php'))
         {
-            return require $config->get('application_directory') . $name . \DS . 'Config.php';
+            return require $config->get('Cervo/Application/Directory') . $name . \DS . 'Config.php';
         }
         else
         {
@@ -231,11 +236,11 @@ class Cervo
 
             if ($ex[0] === 'Cervo' && $ex[1] === 'Libraries')
             {
-                require $config->get('cervo_libraries_directory') . $ex[2] . '.php';
+                require $config->get('Cervo/Libraries/Directory') . $ex[2] . '.php';
             }
             else if ($ex[0] === 'Application' && substr($ex[1], -1 * 6) === 'Module')
             {
-                require $config->get('application_directory') . substr($ex[1], 0, strlen($ex[1]) - 6) . \DS . implode(\DS, array_slice($ex, 2)) . '.php';
+                require $config->get('Cervo/Application/Directory') . substr($ex[1], 0, strlen($ex[1]) - 6) . \DS . implode(\DS, array_slice($ex, 2)) . '.php';
             }
         }
 

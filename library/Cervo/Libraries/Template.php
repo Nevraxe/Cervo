@@ -48,7 +48,7 @@ class Template
 
         $this->name = explode('/', $name);
 
-		if (!file_exists($config->get('application_directory') . $this->name[0] . \DS . $config->get('templates_sub_path') . implode('/', array_slice($this->name, 1)) . '.php'))
+		if (!file_exists($config->get('Cervo/Application/Directory') . $this->name[0] . \DS . $config->get('Cervo/Application/TemplatesPath') . implode('/', array_slice($this->name, 1)) . '.php'))
 		{
 			throw new _\Libraries\Exceptions\TemplateNotFoundException();
 		}
@@ -76,6 +76,6 @@ class Template
 	{
         $config = &_::getLibrary('Cervo/Config');
 
-		require $config->get('application_directory') . $this->name[0] . \DS . $config->get('templates_sub_path') . implode('/', array_slice($this->name, 1)) . '.php';
+		require $config->get('Cervo/Application/Directory') . $this->name[0] . \DS . $config->get('Cervo/Application/TemplatesPath') . implode('/', array_slice($this->name, 1)) . '.php';
 	}
 }

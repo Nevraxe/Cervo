@@ -72,4 +72,29 @@ class Config
     {
         return $this->default_values[$name];
     }
+
+    public function importJSON($file)
+    {
+        if (!file_exists($file))
+            return false;
+
+        $this->setFromArrayRecursive(json_decode(file_get_contents($file), true));
+
+        return true;
+    }
+
+    protected function setFromArrayRecursive($array, $current_path = [])
+    {
+        foreach ($array as $key => $el)
+        {
+            if (is_array($el))
+            {
+                $this->setFromArrayRecursive($el, array_merge($current_path, [$key]));
+            }
+            else
+            {
+                $this->set(implode('/', array_merge($current_path, [$key])), $el);
+            }
+        }
+    }
 }
