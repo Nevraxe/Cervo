@@ -52,9 +52,9 @@ class Events
 
     public function __construct()
     {
-        $config = _\Config::getInstance();
+        $config = &_::getLibrary('Cervo/Config');
 
-        foreach (glob($config->getApplicationDirectory() . '*' . \DS . $config->getEventsSubPath() . '*.php', \GLOB_NOSORT | \GLOB_NOESCAPE) as $file)
+        foreach (glob($config->get('application_directory') . '*' . \DS . $config->get('events_sub_path') . '*.php', \GLOB_NOSORT | \GLOB_NOESCAPE) as $file)
         {
             require $file;
         }

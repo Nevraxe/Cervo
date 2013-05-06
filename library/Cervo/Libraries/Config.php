@@ -33,49 +33,43 @@ namespace Cervo\Libraries;
 
 
 
-use Cervo as _;
-
-
-
-class Template
+class Config
 {
-    protected $name;
-    protected $data = array();
+    protected $default_values = [];
+    protected $values = [];
 
-    public function __construct($name)
+    public function __set($name, $value)
     {
-        $config = &_::getLibrary('Cervo/Config');
-
-        $this->name = explode('/', $name);
-
-		if (!file_exists($config->get('application_directory') . $this->name[0] . \DS . $config->get('templates_sub_path') . implode('/', array_slice($this->name, 1)) . '.php'))
-		{
-			throw new _\Libraries\Exceptions\TemplateNotFoundException();
-		}
+        $this->set($name, $value);
     }
 
-	public function __get($name)
-	{
-		if (isset($this->data[$name]))
-		{
-			return $this->data[$name];
-		}
-		else
-		{
-			return null;
-		}
-	}
+    public function &set($name, $value)
+    {
+        $this->values[$name] = $value;
+        return $this;
+    }
 
-	public function &assign($data = array())
-	{
-		$this->data = $data;
-		return $this;
-	}
+    public function &setDefault($name, $value)
+    {
+        $this->default_values[$name] = $value;
+        return $this;
+    }
 
-	public function render()
-	{
-        $config = &_::getLibrary('Cervo/Config');
+    public function __get($name)
+    {
+        return $this->get($name);
+    }
 
-		require $config->get('application_directory') . $this->name[0] . \DS . $config->get('templates_sub_path') . implode('/', array_slice($this->name, 1)) . '.php';
-	}
+    public function get($name)
+    {
+        if ($this->values[$name])
+            return $this->values[$name];
+        else
+            return $this->default_values[$name];
+    }
+
+    public function getDefault($name)
+    {
+        return $this->default_values[$name];
+    }
 }

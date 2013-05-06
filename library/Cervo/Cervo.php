@@ -35,17 +35,36 @@ use Cervo\Config;
 
 class Cervo
 {
-    const VERSION = '2.0.0';
+    const VERSION = '2.1.0';
 
     protected static $libraries = [];
     protected static $controllers = [];
     protected static $autoloads = [];
 
-    private static $modulenamespacesuffix_len = null;
     private static $is_init = false;
 
     public static function init()
     {
+        // We set the default configuration values
+
+        $config = &self::getLibrary('Cervo/Config');
+
+        $cervo_directory = realpath(__FILE__) . \DS;
+
+        $config
+            ->setDefault('cervo_directory', $cervo_directory)
+            ->setDefault('cervo_libraries_directory', realpath($cervo_directory . 'Libraries') . \DS)
+            ->setDefault('method_suffix', 'Method')
+            ->setDefault('events_sub_path', 'Events' . \DS)
+            ->setDefault('controllers_sub_path', 'Controllers' . \DS)
+            ->setDefault('models_sub_path', 'Models' . \DS)
+            ->setDefault('views_sub_path', 'Views' . \DS)
+            ->setDefault('libraries_sub_path', 'Libraries' . \DS)
+            ->setDefault('templates_sub_path', 'Templates' . \DS)
+            ;
+
+
+
         // We check if the system is already initiated
 
         if (self::$is_init)
@@ -58,12 +77,6 @@ class Cervo
         // We set the autolaoder
 
         spl_autoload_register('\Cervo::autoload');
-
-
-
-        // We fetch the config
-
-        $config = Config::getInstance();
 
 
 
@@ -114,13 +127,11 @@ class Cervo
         if (is_object(self::$libraries[$name]))
             return self::$libraries[$name];
 
-        $config = Config::getInstance();
-
         $path = explode('/', $name);
 
         if (count($path) <= 1)
         {
-            $i_name = '\Application\\' . $path[0] . $config->getModuleNamespaceSuffix() . '\Libraries\\' . $path[0];
+            $i_name = '\Application\\' . $path[0] . 'Module\Libraries\\' . $path[0];
         }
         else
         {
@@ -130,7 +141,7 @@ class Cervo
             }
             else
             {
-                $i_name = '\Application\\' . $path[0] . $config->getModuleNamespaceSuffix() . '\Libraries\\' . implode('\\', array_slice($path, 1));
+                $i_name = '\Application\\' . $path[0] . 'Module\Libraries\\' . implode('\\', array_slice($path, 1));
             }
         }
 
@@ -143,17 +154,15 @@ class Cervo
         if (is_object(self::$controllers[$name]))
             return self::$controllers[$name];
 
-        $config = Config::getInstance();
-
         $path = explode('/', $name);
 
         if (count($path) <= 1)
         {
-            $i_name = '\Application\\' . $path[0] . $config->getModuleNamespaceSuffix() . '\Controllers\\' . $path[0];
+            $i_name = '\Application\\' . $path[0] . 'Module\Controllers\\' . $path[0];
         }
         else
         {
-            $i_name = '\Application\\' . $path[0] . $config->getModuleNamespaceSuffix() . '\Controllers\\' . implode('\\', array_slice($path, 1));
+            $i_name = '\Application\\' . $path[0] . 'Module\Controllers\\' . implode('\\', array_slice($path, 1));
         }
 
         self::$controllers[$name] = new $i_name;
@@ -162,17 +171,15 @@ class Cervo
 
     public static function &getModel($name)
     {
-        $config = Config::getInstance();
-
         $path = explode('/', $name);
 
         if (count($path) <= 1)
         {
-            $i_name = '\Application\\' . $path[0] . $config->getModuleNamespaceSuffix() . '\Models\\' . $path[0];
+            $i_name = '\Application\\' . $path[0] . 'Module\Models\\' . $path[0];
         }
         else
         {
-            $i_name = '\Application\\' . $path[0] . $config->getModuleNamespaceSuffix() . '\Models\\' . implode('\\', array_slice($path, 1));
+            $i_name = '\Application\\' . $path[0] . 'Module\Models\\' . implode('\\', array_slice($path, 1));
         }
 
         return new $i_name;
@@ -180,17 +187,15 @@ class Cervo
 
     public static function &getView($name)
     {
-        $config = Config::getInstance();
-
         $path = explode('/', $name);
 
         if (count($path) <= 1)
         {
-            $i_name = '\Application\\' . $path[0] . $config->getModuleNamespaceSuffix() . '\Views\\' . $path[0];
+            $i_name = '\Application\\' . $path[0] . 'Module\Views\\' . $path[0];
         }
         else
         {
-            $i_name = '\Application\\' . $path[0] . $config->getModuleNamespaceSuffix() . '\Views\\' . implode('\\', array_slice($path, 1));
+            $i_name = '\Application\\' . $path[0] . 'Module\Views\\' . implode('\\', array_slice($path, 1));
         }
 
         return new $i_name;
@@ -203,11 +208,11 @@ class Cervo
 
     public static function &getConfig($name)
     {
-        $config = Config::getInstance();
+        $config = &self::getLibrary('Cervo/Config');
 
-        if (file_exists($config->getApplicationDirectory() . $name . \DS . 'Config.php'))
+        if (file_exists($config->get('application_directory') . $name . \DS . 'Config.php'))
         {
-            return require $config->getApplicationDirectory() . $name . \DS . 'Config.php';
+            return require $config->get('application_directory') . $name . \DS . 'Config.php';
         }
         else
         {
@@ -219,20 +224,17 @@ class Cervo
     {
         if (strpos($name, 'Application\\') === 0 || strpos($name, 'Cervo\Libraries\\') === 0)
         {
-            $config = Config::getInstance();
-
-            if (self::$modulenamespacesuffix_len === null)
-                self::$modulenamespacesuffix_len = strlen($config->getModuleNamespaceSuffix());
+            $config = &self::getLibrary('Cervo/Config');
 
             $ex = explode('\\', $name);
 
             if ($ex[0] === 'Cervo' && $ex[1] === 'Libraries')
             {
-                require $config->getCervoLibrariesDirectory() . $ex[2] . '.php';
+                require $config->get('cervo_libraries_directory') . $ex[2] . '.php';
             }
-            else if ($ex[0] === 'Application' && substr($ex[1], -1 * self::$modulenamespacesuffix_len) === $config->getModuleNamespaceSuffix())
+            else if ($ex[0] === 'Application' && substr($ex[1], -1 * 6) === 'Module')
             {
-                require $config->getApplicationDirectory() . substr($ex[1], 0, strlen($ex[1]) - self::$modulenamespacesuffix_len) . \DS . implode(\DS, array_slice($ex, 2)) . '.php';
+                require $config->get('application_directory') . substr($ex[1], 0, strlen($ex[1]) - 6) . \DS . implode(\DS, array_slice($ex, 2)) . '.php';
             }
         }
 
