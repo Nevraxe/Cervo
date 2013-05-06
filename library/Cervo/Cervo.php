@@ -54,6 +54,12 @@ class Cervo
 
 
 
+        // We set the autolaoder
+
+        spl_autoload_register('\Cervo::autoload');
+
+
+
         // We set the default configuration values
 
         $config = &self::getLibrary('Cervo/Config');
@@ -71,12 +77,6 @@ class Cervo
             ->setDefault('libraries_sub_path', 'Libraries' . \DS)
             ->setDefault('templates_sub_path', 'Templates' . \DS)
         ;
-
-
-
-        // We set the autolaoder
-
-        spl_autoload_register('\Cervo::autoload');
 
 
 
