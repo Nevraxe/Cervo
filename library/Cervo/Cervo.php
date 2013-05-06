@@ -217,7 +217,7 @@ class Cervo
 
     public static function autoload($name)
     {
-        if (strncmp($name, 'Application\\', 12) === 0 || strncmp($name, 'Cervo\Libraries\\', 16) === 0)
+        if (strpos($name, 'Application\\') === 0 || strpos($name, 'Cervo\Libraries\\') === 0)
         {
             $config = Config::getInstance();
 

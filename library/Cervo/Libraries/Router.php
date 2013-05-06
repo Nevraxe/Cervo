@@ -134,7 +134,7 @@ class Router
             $uri = substr($uri, strlen(dirname($_SERVER['SCRIPT_NAME'])));
         }
 
-        if (strncmp($uri, '?/', 2) === 0)
+        if (strpos($uri, '?/') === 0)
         {
             $uri = substr($uri, 2);
         }
