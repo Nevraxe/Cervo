@@ -76,7 +76,8 @@ class Cervo
             ->setDefault('views_sub_path', 'Views' . \DS)
             ->setDefault('libraries_sub_path', 'Libraries' . \DS)
             ->setDefault('templates_sub_path', 'Templates' . \DS)
-        ;
+            ->setDefault('production_mode', false)
+            ;
 
 
 
