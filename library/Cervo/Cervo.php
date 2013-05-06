@@ -45,6 +45,13 @@ class Cervo
 
     public static function init($json_config_file = null)
     {
+        // A small shortcut
+
+        if (!defined('DS'))
+            define('DS', \DIRECTORY_SEPARATOR);
+
+
+
         // We check if the system is already initiated
 
         if (self::$is_init)
@@ -67,6 +74,7 @@ class Cervo
         $cervo_directory = realpath(__FILE__) . \DS;
 
         $config
+            ->setDefault('Cervo/Application/Directory', '')
             ->setDefault('Cervo/Directory', $cervo_directory)
             ->setDefault('Cervo/Libraries/Directory', realpath($cervo_directory . 'Libraries') . \DS)
             ->setDefault('Cervo/Application/MethodSuffix', 'Method')
