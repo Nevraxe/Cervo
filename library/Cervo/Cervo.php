@@ -45,6 +45,15 @@ class Cervo
 
     public static function init()
     {
+        // We check if the system is already initiated
+
+        if (self::$is_init)
+            return;
+
+        self::$is_init = true;
+
+
+
         // We set the default configuration values
 
         $config = &self::getLibrary('Cervo/Config');
@@ -61,16 +70,7 @@ class Cervo
             ->setDefault('views_sub_path', 'Views' . \DS)
             ->setDefault('libraries_sub_path', 'Libraries' . \DS)
             ->setDefault('templates_sub_path', 'Templates' . \DS)
-            ;
-
-
-
-        // We check if the system is already initiated
-
-        if (self::$is_init)
-            return;
-
-        self::$is_init = true;
+        ;
 
 
 
