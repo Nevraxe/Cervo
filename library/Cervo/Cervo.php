@@ -94,16 +94,16 @@ class Cervo
 
         $events = &self::getLibrary('Cervo/Events');
 
-        $events->register('core_pre_system');
-        $events->register('core_pre_controller');
-        $events->register('core_post_controller');
-        $events->register('core_post_system');
+        $events->register('Cervo/System/Before');
+        $events->register('Cervo/Controller/Before');
+        $events->register('Cervo/Controller/After');
+        $events->register('Cervo/System/After');
 
 
 
-        // We fire the pre_system event
+        // We fire the pre-system event
 
-        $events->fire('core_pre_system');
+        $events->fire('Cervo/System/Before');
 
 
 
@@ -117,19 +117,18 @@ class Cervo
 
         $route = $router->getRoute();
 
-        $events->fire('core_pre_controller');
+        $events->fire('Cervo/Controller/Before');
 
         $method = $route->getMethod() . $config->getMethodSuffix();
-
         self::getController($route->getModule() . '/' . $route->getController())->$method($route->getArgs());
 
-        $events->fire('core_post_controller');
+        $events->fire('Cervo/Controller/After');
 
 
 
-        // We fire the post_system event
+        // We fire the post-system event
 
-        $events->fire('core_post_system');
+        $events->fire('Cervo/System/After');
     }
 
     public static function &getLibrary($name)
