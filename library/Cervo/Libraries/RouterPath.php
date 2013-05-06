@@ -38,32 +38,32 @@ class RouterPath
     const NO_MATCH = false;
     const FULL_MATCH = true;
 
-    protected $stringpath;
-    protected $arraypath;
+    protected $path;
     protected $module;
     protected $controller;
     protected $method;
     protected $args = [];
     protected $regex = '';
 
-    public function __construct($stringpath, $module, $controller, $method)
+    public function __construct($path, $module, $controller, $method)
     {
         $this->module = $module;
         $this->controller = $controller;
         $this->method = $method;
 
-        $this->stringpath = trim($stringpath, '/');
+        $this->path = trim($path, '/');
 
-        while (strpos($this->stringpath, '//') !== false)
-            $this->stringpath = str_replace('//', '/', $this->stringpath);
+        while (strpos($this->path, '//') !== false)
+            $this->path = str_replace('//', '/', $this->path);
 
-        $this->arraypath = ($this->stringpath == '' ? [] : explode('/', $this->stringpath));
+        $arraypath = ($this->path == '' ? [] : explode('/', $this->path));
 
-        $c_arraypath = count($this->arraypath);
+        $c_arraypath = count($arraypath);
         $this->regex .= '/^';
+
         for ($i = 0; $i < $c_arraypath; $i++)
         {
-            if ($this->arraypath[$i] == '*')
+            if ($arraypath[$i] == '*')
             {
                 $this->regex .= '[\/]{0,1}(.*)';
             }
@@ -74,13 +74,13 @@ class RouterPath
                     $this->regex .= '\/';
                 }
 
-                if ($this->arraypath[$i] == '?')
+                if ($arraypath[$i] == '?')
                 {
                     $this->regex .= '(.[^\/]*)';
                 }
                 else
                 {
-                    $this->regex .= preg_quote(strtolower($this->arraypath[$i]), '/');
+                    $this->regex .= preg_quote(strtolower($arraypath[$i]), '/');
                 }
             }
         }
@@ -89,10 +89,10 @@ class RouterPath
 
     public function compare($arraypath)
     {
-        $stringpath = implode('/', $arraypath);
+        $path = implode('/', $arraypath);
 
         $matches = null;
-        if (preg_match($this->regex, $stringpath, $matches) !== 1)
+        if (preg_match($this->regex, $path, $matches) !== 1)
         {
             return self::NO_MATCH;
         }

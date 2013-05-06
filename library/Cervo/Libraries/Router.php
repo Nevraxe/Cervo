@@ -40,25 +40,22 @@ use Cervo as _,
 
 class Router
 {
-    protected $stringpath = '';
-    protected $arraypath = [];
+    protected $path = '';
     protected $routes = [];
 
     public function __construct()
     {
-        $this->stringpath = trim($this->parseRoute(), '/');
+        $this->path = trim($this->parseRoute(), '/');
 
-        while (strpos($this->stringpath, '//') !== false)
-            $this->stringpath = str_replace('//', '/', $this->stringpath);
-
-        $this->arraypath = ($this->stringpath == '' ? [] : explode('/', $this->stringpath));
+        while (strpos($this->path, '//') !== false)
+            $this->path = str_replace('//', '/', $this->path);
 
         $this->route();
     }
 
-    public function addRoute($stringpath, $module, $controller, $method)
+    public function addRoute($path, $module, $controller, $method)
     {
-        $this->routes[] = new RouterPath($stringpath, $module, $controller, $method);
+        $this->routes[] = new RouterPath($path, $module, $controller, $method);
     }
 
     public function getRoute()
@@ -67,7 +64,7 @@ class Router
 
         foreach ($this->routes as $r)
         {
-            if ($r->compare($this->arraypath) === RouterPath::FULL_MATCH)
+            if ($r->compare($this->path) === RouterPath::FULL_MATCH)
             {
                 $returns[] = $r;
             }
@@ -77,7 +74,7 @@ class Router
 
         if ($c_returns == 1)
         {
-            return (current($returns));
+            return current($returns);
         }
         else if ($c_returns > 1)
         {
@@ -87,11 +84,6 @@ class Router
         {
             throw new _\Libraries\Exceptions\RouteNotFoundException();
         }
-    }
-
-    public function getArrayPath()
-    {
-        return $this->arraypath;
     }
 
     protected function parseRoute()
