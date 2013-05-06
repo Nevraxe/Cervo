@@ -212,6 +212,7 @@ class Cervo
         return new \Cervo\Libraries\Template($name);
     }
 
+    // Deprecated
     public static function &getConfig($name)
     {
         $config = &self::getLibrary('Cervo/Config');
