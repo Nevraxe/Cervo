@@ -87,10 +87,8 @@ class RouterPath
         $this->regex .= '$/i';
     }
 
-    public function compare($arraypath)
+    public function compare($path)
     {
-        $path = implode('/', $arraypath);
-
         $matches = null;
         if (preg_match($this->regex, $path, $matches) !== 1)
         {

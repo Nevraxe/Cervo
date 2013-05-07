@@ -61,21 +61,21 @@ class Cervo
 
         $config = &self::getLibrary('Cervo/Config');
 
-        $cervo_directory = realpath(__FILE__) . \DS;
+        $cervo_directory = realpath(dirname(__FILE__)) . \DS;
 
         $config
             ->setDefault('Cervo/Application/Directory', '')
             ->setDefault('Cervo/Directory', $cervo_directory)
             ->setDefault('Cervo/Libraries/Directory', realpath($cervo_directory . 'Libraries') . \DS)
             ->setDefault('Cervo/Application/MethodSuffix', 'Method')
-            ->setDefault('Cervo/Application/EventsSubPath', 'Events' . \DS)
+            ->setDefault('Cervo/Application/EventsPath', 'Events' . \DS)
             ->setDefault('Cervo/Application/ControllersPath', 'Controllers' . \DS)
             ->setDefault('Cervo/Application/ModelsPath', 'Models' . \DS)
             ->setDefault('Cervo/Application/ViewsPath', 'Views' . \DS)
             ->setDefault('Cervo/Application/LibariesPath', 'Libraries' . \DS)
             ->setDefault('Cervo/Application/TemplatesPath', 'Templates' . \DS)
             ->setDefault('Production', false)
-            ;
+        ;
 
         if ($json_config_file !== null)
         {
@@ -113,7 +113,7 @@ class Cervo
 
         $events->fire('Cervo/Controller/Before');
 
-        $method = $route->getMethod() . $config->getMethodSuffix();
+        $method = $route->getMethod() . $config->get('Cervo/Application/MethodSuffix');
         self::getController($route->getModule() . '/' . $route->getController())->$method($route->getArgs());
 
         $events->fire('Cervo/Controller/After');
