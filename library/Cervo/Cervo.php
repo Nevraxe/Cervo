@@ -57,12 +57,6 @@ class Cervo
 
 
 
-        // We set the autolaoder
-
-        spl_autoload_register('\Cervo::autoload');
-
-
-
         // We set the default configuration values
 
         $config = &self::getLibrary('Cervo/Config');
