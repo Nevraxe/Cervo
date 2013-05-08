@@ -33,18 +33,68 @@ namespace Cervo\Libraries;
 
 
 
+/**
+ * Used in Router. Each of the module's routes are RouterPath objects.
+ *
+ * @author Marc André Audet <root@manhim.net>
+ */
 class RouterPath
 {
+    /**
+     * When it does not match.
+     */
     const NO_MATCH = false;
+
+    /**
+     * When it matches.
+     */
     const FULL_MATCH = true;
 
+    /**
+     * The current path.
+     * @var string
+     */
     protected $path;
+
+    /**
+     * The route's module.
+     * @var string
+     */
     protected $module;
+
+    /**
+     * The route's controller.
+     * @var string
+     */
     protected $controller;
+
+    /**
+     * The route's method.
+     * @var string
+     */
     protected $method;
+
+    /**
+     * The current arguments.
+     * @var array
+     */
     protected $args = [];
+
+    /**
+     * The regex to match against.
+     * @var string
+     */
     protected $regex = '';
 
+    /**
+     * Set the path, the module, the controller and the method.
+     * Sanitize the path and compute the regex.
+     *
+     * @param string $path
+     * @param string $module
+     * @param string $controller
+     * @param string $method
+     */
     public function __construct($path, $module, $controller, $method)
     {
         $this->module = $module;
@@ -87,11 +137,13 @@ class RouterPath
         $this->regex .= '$/i';
     }
 
-    public function getPath()
-    {
-        return $this->path;
-    }
-
+    /**
+     * Compare the input path to the regex.
+     *
+     * @param string $path
+     *
+     * @return bool
+     */
     public function compare($path)
     {
         $matches = null;
@@ -107,6 +159,11 @@ class RouterPath
         }
 
         return self::FULL_MATCH;
+    }
+
+    public function getPath()
+    {
+        return $this->path;
     }
 
     public function getModule()

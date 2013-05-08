@@ -37,11 +37,33 @@ use Cervo as _;
 
 
 
+/**
+ * Events manager for Cervo.
+ *
+ * @author Marc André Audet <root@manhim.net>
+ */
 class Events
 {
+    /**
+     * Holds all the events and their callbacks.
+     * @var array
+     */
     protected $events = [];
+
+    /**
+     * True while an event is fired.
+     * @var bool
+     */
     protected $in_progress = false;
 
+    /**
+     * Custom sort for priority.
+     *
+     * @param array $a
+     * @param array $b
+     *
+     * @return int
+     */
     static public function priority_sort($a, $b)
     {
         if ($a['priority'] == $b['priority'])
@@ -50,6 +72,9 @@ class Events
         return $a['priority'] < $b['priority'] ? -1 : 1;
     }
 
+    /**
+     * Include all the events files that may register and/or hook to events.
+     */
     public function __construct()
     {
         $config = &_::getLibrary('Cervo/Config');
@@ -60,6 +85,14 @@ class Events
         }
     }
 
+    /**
+     * Register a new event.
+     * Always return true.
+     *
+     * @param string $name
+     *
+     * @return bool
+     */
     public function register($name)
     {
         if ($this->isRegistered($name))
@@ -70,6 +103,13 @@ class Events
         return true;
     }
 
+    /**
+     * Check if the event exists by it's name.
+     *
+     * @param string $name
+     *
+     * @return bool
+     */
     public function isRegistered($name)
     {
         if (isset($this->events[$name]))
@@ -78,11 +118,25 @@ class Events
             return false;
     }
 
+    /**
+     * Remove an event and un-hook everything related to it.
+     *
+     * @param string $name
+     */
     public function unregister($name)
     {
         unset($this->events[$name]);
     }
 
+    /**
+     * Hook a callable to an event.
+     *
+     * @param string   $name
+     * @param callable $call
+     * @param int      $priority
+     *
+     * @return bool
+     */
     public function hook($name, $call, $priority = 0)
     {
         if (!$this->isRegistered($name))
@@ -96,6 +150,14 @@ class Events
         return true;
     }
 
+    /**
+     * Fire an event and call all the hooked callables.
+     *
+     * @param string $name
+     * @param array  $params
+     *
+     * @return bool
+     */
     public function fire($name, $params = array())
     {
         if (!is_array($params) || !$this->isRegistered($name))
@@ -115,6 +177,11 @@ class Events
         return true;
     }
 
+    /**
+     * Return true if an event is being fired.
+     *
+     * @return bool
+     */
     public function isInProgress()
     {
         return $this->in_progress;

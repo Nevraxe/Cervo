@@ -37,11 +37,33 @@ use Cervo as _;
 
 
 
+/**
+ * Template class for Cervo.
+ *
+ * @author Marc André Audet <root@manhim.net>
+ */
 class Template
 {
+    /**
+     * The template path.
+     * @var array
+     */
     protected $name;
+
+    /**
+     * The template's data.
+     * Usually set from the View.
+     * @var array
+     */
     protected $data = array();
 
+    /**
+     * Initialize the template.
+     *
+     * @param string $name The template (file)name.
+     *
+     * @throws Exceptions\TemplateNotFoundException
+     */
     public function __construct($name)
     {
         $config = &_::getLibrary('Cervo/Config');
@@ -54,7 +76,14 @@ class Template
 		}
     }
 
-	public function __get($name)
+    /**
+     * Magic method to return the data.
+     *
+     * @param string $name
+     *
+     * @return mixed
+     */
+    public function __get($name)
 	{
 		if (isset($this->data[$name]))
 		{
@@ -66,13 +95,24 @@ class Template
 		}
 	}
 
-	public function &assign($data = array())
+    /**
+     * Assign an array as the template's data.
+     * Usually set from the View.
+     *
+     * @param array $data
+     *
+     * @return $this
+     */
+    public function &assign($data = array())
 	{
 		$this->data = $data;
 		return $this;
 	}
 
-	public function render()
+    /**
+     * Render the template.
+     */
+    public function render()
 	{
         $config = &_::getLibrary('Cervo/Config');
 

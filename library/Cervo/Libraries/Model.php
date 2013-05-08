@@ -33,7 +33,12 @@ namespace Cervo\Libraries;
 
 
 
-class Model
+/**
+ * Model master object.
+ *
+ * @author Marc André Audet <root@manhim.net>
+ */
+abstract class Model
 {
     public function __construct()
     {

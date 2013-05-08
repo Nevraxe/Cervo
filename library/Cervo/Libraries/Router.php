@@ -38,13 +38,35 @@ use Cervo as _,
 
 
 
+/**
+ * Route manager for Cervo.
+ *
+ * @author Marc André Audet <root@manhim.net>
+ */
 class Router
 {
+    /**
+     * The current path.
+     * @var string
+     */
     protected $path = '';
+
+    /*
+     * All the registered routes.
+     * @var \Cervo\Libraries\RouterPath[]
+     */
     protected $routes = [];
 
+    /**
+     * The currently matching route.
+     * Set when calling getRoute().
+     * @var \Cervo\Libraries\RouterPath|null
+     */
     private $route = null;
 
+    /**
+     * Parse the route and sanitize the $path string.
+     */
     public function __construct()
     {
         $this->path = trim($this->parseRoute(), '/');
@@ -55,16 +77,28 @@ class Router
         $this->route();
     }
 
+    /**
+     * Add a new route.
+     * Usually set in each module's Router.php.
+     *
+     * @param string $path
+     * @param string $module
+     * @param string $controller
+     * @param string $method
+     */
     public function addRoute($path, $module, $controller, $method)
     {
         $this->routes[] = new RouterPath($path, $module, $controller, $method);
     }
 
-    public function getPath()
-    {
-        return $this->path;
-    }
-
+    /**
+     * Return the current RouterPath.
+     *
+     * @return RouterPath
+     *
+     * @throws Exceptions\TooManyRoutesException
+     * @throws Exceptions\RouteNotFoundException
+     */
     public function getRoute()
     {
         if ($this->route !== null)
@@ -97,6 +131,12 @@ class Router
         }
     }
 
+    /**
+     * Detect the current input method and parse the route accordingly.
+     * Return the requested route.
+     *
+     * @return string
+     */
     protected function parseRoute()
     {
         if (defined('STDIN'))
@@ -127,6 +167,11 @@ class Router
         return '';
     }
 
+    /**
+     * Return the current Uri.
+     *
+     * @return string
+     */
     protected function detectUri()
     {
         if (!isset($_SERVER['REQUEST_URI']) || !isset($_SERVER['SCRIPT_NAME']))
@@ -177,6 +222,11 @@ class Router
         ], '/', trim($uri, '/'));
     }
 
+    /**
+     * Go through all the module's Router.php and include each of them using Glob().
+     * Warning: The files are not included in a particular order and it should be considered
+     * that the order always changes.
+     */
     protected function route()
     {
         $config = &_::getLibrary('Cervo/Config');
@@ -185,5 +235,10 @@ class Router
         {
             require $file;
         }
+    }
+
+    public function getPath()
+    {
+        return $this->path;
     }
 }

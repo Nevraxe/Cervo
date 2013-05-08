@@ -33,6 +33,11 @@ namespace Cervo\Libraries;
 
 
 
+/**
+ * View master object.
+ *
+ * @author Marc André Audet <root@manhim.net>
+ */
 abstract class View
 {
     public function __construct()
@@ -40,5 +45,9 @@ abstract class View
 
     }
 
-	abstract public function render();
+    /**
+     * Render the View.
+     * Usually contain a Template->render().
+     */
+    abstract public function render();
 }

@@ -33,7 +33,12 @@ namespace Cervo\Libraries;
 
 
 
-class Controller
+/**
+ * Controller master object.
+ *
+ * @author Marc André Audet <root@manhim.net>
+ */
+abstract class Controller
 {
     public function __construct()
     {

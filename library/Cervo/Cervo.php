@@ -29,16 +29,46 @@
 
 
 
+/**
+ * Master class for Cervo.
+ *
+ * @author Marc André Audet <root@manhim.net>
+ */
 class Cervo
 {
+    /**
+     * The current version of Cervo.
+     */
     const VERSION = '2.2.0';
 
+    /**
+     * All the libraries instances that have been initialized through getLibrary().
+     * @var array
+     */
     protected static $libraries = [];
+
+    /**
+     * All the controller instances that have been initialized through getController().
+     * @var array
+     */
     protected static $controllers = [];
+
+    /**
+     * Additinal autoloading functions.
+     * @var callable[]
+     */
     protected static $autoloads = [];
 
+    /**
+     * If Cervo have been initialized.
+     * @var bool
+     */
     private static $is_init = false;
 
+    /**
+     * Initialize Cervo.
+     * @param string|null $json_config_file The path to the JSON configuration file to use.
+     */
     public static function init($json_config_file = null)
     {
         // A small shortcut
@@ -125,6 +155,20 @@ class Cervo
         $events->fire('Cervo/System/After');
     }
 
+    /**
+     * Return a library. It will be stored in an internal cache and reused if called again.
+     * $name format: [Module]/[Name]
+     * Name MAY contain slashes (/) to go deeper in the tree.
+     * The module name Cervo may be used to access the Cervo standard libraries.
+     *
+     * If you do not want your library to be re-used, please access the library directly without
+     * using any functions or methods. Ex:
+     * new \Application\[Module]Module\Libraries\[Name]();
+     *
+     * @param string $name The path name
+     *
+     * @return object
+     */
     public static function &getLibrary($name)
     {
         if (is_object(self::$libraries[$name]))
@@ -152,6 +196,15 @@ class Cervo
         return self::$libraries[$name];
     }
 
+    /**
+     * Return a controller. It will be stored in an internal cache and reused if called again.
+     * $name format: [Module]/[Name]
+     * Name MAY contain slashes (/) to go deeper in the tree.
+     *
+     * @param string $name The path name
+     *
+     * @return object
+     */
     public static function &getController($name)
     {
         if (is_object(self::$controllers[$name]))
@@ -172,6 +225,15 @@ class Cervo
         return self::$controllers[$name];
     }
 
+    /**
+     * Return a model.
+     * $name format: [Module]/[Name]
+     * Name MAY contain slashes (/) to go deeper in the tree.
+     *
+     * @param string $name The path name
+     *
+     * @return object
+     */
     public static function &getModel($name)
     {
         $path = explode('/', $name);
@@ -188,6 +250,15 @@ class Cervo
         return new $i_name;
     }
 
+    /**
+     * Return a view.
+     * $name format: [Module]/[Name]
+     * Name MAY contain slashes (/) to go deeper in the tree.
+     *
+     * @param string $name The path name
+     *
+     * @return object
+     */
     public static function &getView($name)
     {
         $path = explode('/', $name);
@@ -204,12 +275,33 @@ class Cervo
         return new $i_name;
     }
 
+    /**
+     * Return a template.
+     * $name format: [Module]/[Name]
+     * Name MAY contain slashes (/) to go deeper in the tree.
+     *
+     * @param string $name The path name
+     *
+     * @return \Cervo\Libraries\Template
+     */
     public static function &getTemplate($name)
     {
         return new \Cervo\Libraries\Template($name);
     }
 
-    // Deprecated
+    /**
+     * Return the configuration file's result (expect an array).
+     * Will fetch [$name]/Config.php
+     * Return an empty array if the file does not exists.
+     *
+     * DEPRECATED! Replaced by the Cervo/Config library.
+     *
+     * @param string $name The module name
+     *
+     * @return array
+     *
+     * @deprecated Replaced by the Cervo/Config library.
+     */
     public static function &getConfig($name)
     {
         $config = &self::getLibrary('Cervo/Config');
@@ -224,6 +316,12 @@ class Cervo
         }
     }
 
+    /**
+     * The default class autoloader.
+     * Also run any additional autoloaders added with register_autoload().
+     *
+     * @param string $name The class full name (Include the namespace(s))
+     */
     public static function autoload($name)
     {
         if (strpos($name, 'Application\\') === 0 || strpos($name, 'Cervo\Libraries\\') === 0)
@@ -250,6 +348,11 @@ class Cervo
         }
     }
 
+    /**
+     * Add a new autoload function to the autoloader.
+     *
+     * @param callable $function
+     */
     public static function register_autoload($function)
     {
         self::$autoloads[] = $function;
