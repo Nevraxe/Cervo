@@ -255,18 +255,13 @@ METADATA;
 
             if (count($ex) <= 1)
             {
-                $module = $ex[0];
-                $call_name = $ex[0];
-                $class = $ex[0];
+                $towrite .= '            \'' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\Libraries\\' . $ex[0] . ",\n";
+                $towrite .= '            \'' . $ex[0] . '/' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\Libraries\\' . $ex[0] . ",\n";
             }
             else
             {
-                $module = $ex[0];
-                $call_name = $f;
-                $class = implode('\\', array_slice($ex, 1));
+                $towrite .= '            \'' . $f . '\' instanceof \Application\\' . $ex[0] . 'Module\Libraries\\' . implode('\\', array_slice($ex, 1)) . ",\n";
             }
-
-            $towrite .= '            \'' . $call_name . '\' instanceof \Application\\' . $module . 'Module\Libraries\\' . $class . ",\n";
         }
 
         $towrite .= <<<METADATA
@@ -281,18 +276,13 @@ METADATA;
 
             if (count($ex) <= 1)
             {
-                $module = $ex[0];
-                $call_name = $ex[0];
-                $class = $ex[0];
+                $towrite .= '            \'' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\Controllers\\' . $ex[0] . ",\n";
+                $towrite .= '            \'' . $ex[0] . '/' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\Controllers\\' . $ex[0] . ",\n";
             }
             else
             {
-                $module = $ex[0];
-                $call_name = $f;
-                $class = implode('\\', array_slice($ex, 1));
+                $towrite .= '            \'' . $f . '\' instanceof \Application\\' . $ex[0] . 'Module\Controllers\\' . implode('\\', array_slice($ex, 1)) . ",\n";
             }
-
-            $towrite .= '            \'' . $call_name . '\' instanceof \Application\\' . $module . 'Module\Controllers\\' . $class . ",\n";
         }
 
         $towrite .= <<<METADATA
@@ -307,18 +297,13 @@ METADATA;
 
             if (count($ex) <= 1)
             {
-                $module = $ex[0];
-                $call_name = $ex[0];
-                $class = $ex[0];
+                $towrite .= '            \'' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\Models\\' . $ex[0] . ",\n";
+                $towrite .= '            \'' . $ex[0] . '/' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\Models\\' . $ex[0] . ",\n";
             }
             else
             {
-                $module = $ex[0];
-                $call_name = $f;
-                $class = implode('\\', array_slice($ex, 1));
+                $towrite .= '            \'' . $f . '\' instanceof \Application\\' . $ex[0] . 'Module\Models\\' . implode('\\', array_slice($ex, 1)) . ",\n";
             }
-
-            $towrite .= '            \'' . $call_name . '\' instanceof \Application\\' . $module . 'Module\Models\\' . $class . ",\n";
         }
 
         $towrite .= <<<METADATA
@@ -333,18 +318,13 @@ METADATA;
 
             if (count($ex) <= 1)
             {
-                $module = $ex[0];
-                $call_name = $ex[0];
-                $class = $ex[0];
+                $towrite .= '            \'' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\Views\\' . $ex[0] . ",\n";
+                $towrite .= '            \'' . $ex[0] . '/' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\Views\\' . $ex[0] . ",\n";
             }
             else
             {
-                $module = $ex[0];
-                $call_name = $f;
-                $class = implode('\\', array_slice($ex, 1));
+                $towrite .= '            \'' . $f . '\' instanceof \Application\\' . $ex[0] . 'Module\Views\\' . implode('\\', array_slice($ex, 1)) . ",\n";
             }
-
-            $towrite .= '            \'' . $call_name . '\' instanceof \Application\\' . $module . 'Module\Views\\' . $class . ",\n";
         }
 
         $towrite .= <<<METADATA
