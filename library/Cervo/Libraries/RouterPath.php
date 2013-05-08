@@ -87,6 +87,11 @@ class RouterPath
         $this->regex .= '$/i';
     }
 
+    public function getPath()
+    {
+        return $this->path;
+    }
+
     public function compare($path)
     {
         $matches = null;

@@ -43,6 +43,8 @@ class Router
     protected $path = '';
     protected $routes = [];
 
+    private $route = null;
+
     public function __construct()
     {
         $this->path = trim($this->parseRoute(), '/');
@@ -58,8 +60,16 @@ class Router
         $this->routes[] = new RouterPath($path, $module, $controller, $method);
     }
 
+    public function getPath()
+    {
+        return $this->path;
+    }
+
     public function getRoute()
     {
+        if ($this->route !== null)
+            return $this->route;
+
         $returns = [];
 
         foreach ($this->routes as $r)
@@ -74,7 +84,8 @@ class Router
 
         if ($c_returns == 1)
         {
-            return current($returns);
+            $this->route = current($returns);
+            return $this->route;
         }
         else if ($c_returns > 1)
         {
