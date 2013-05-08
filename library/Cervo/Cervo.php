@@ -67,6 +67,7 @@ class Cervo
 
     /**
      * Initialize Cervo.
+     *
      * @param string|null $json_config_file The path to the JSON configuration file to use.
      */
     public static function init($json_config_file = null)

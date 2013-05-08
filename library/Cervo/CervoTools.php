@@ -40,7 +40,20 @@ use Cervo as _;
  */
 class CervoTools
 {
-    public static function phpstorm_metadata($json_config_file = null)
+    /**
+     * Generates the content to put in a metadata file for PHPStorm.
+     * It does not scan the content of the files, so it makes no difference
+     * between an abstract class or a regular class. It have been written
+     * in a way that it gives more results then should be used, but it
+     * should cover every classes for every calls.
+     *
+     * To use this, in your index.php file (Or your file that calls
+     * \Cervo::init()) you simply need to replace the init() call with
+     * \CervoTools::phpstormMetadata()
+     *
+     * @param string|null $json_config_file The path to the JSON configuration file to use.
+     */
+    public static function phpstormMetadata($json_config_file = null)
     {
         // A small shortcut
 
@@ -355,7 +368,17 @@ METADATA;
         echo '</pre>';
     }
 
-    private static function globRecursive($folders)
+    /**
+     * Recursively return every files under the $folders array.
+     * Does not accept a string.
+     *
+     * Returns a list of all the files under the folders.
+     *
+     * @param array $folders List of folders to scan from
+     *
+     * @return array
+     */
+    private static function globRecursive(array $folders)
     {
         $files = [];
 
