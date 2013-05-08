@@ -29,6 +29,10 @@
 
 
 
+use Cervo as _;
+
+
+
 /**
  * Tools for Cervo.
  *
@@ -47,7 +51,7 @@ class CervoTools
 
         // We set the default configuration values
 
-        $config = &self::getLibrary('Cervo/Config');
+        $config = &_::getLibrary('Cervo/Config');
 
         $cervo_directory = realpath(dirname(__FILE__)) . \DS;
 
