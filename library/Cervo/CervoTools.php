@@ -95,7 +95,7 @@ class CervoTools
         $path = $cervo_directory . 'Cervo' . \DS .'Libraries' . \DS;
         $len = strlen($path);
 
-        $files = glob_recursive([$path]);
+        $files = self::globRecursive([$path]);
 
         foreach ($files as $file)
         {
@@ -112,7 +112,7 @@ class CervoTools
         $path = $application_directory;
         $len = strlen($path);
 
-        $files = glob_recursive(glob($path . '*' . \DS . 'Libraries', GLOB_ONLYDIR));
+        $files = self::globRecursive(glob($path . '*' . \DS . 'Libraries', GLOB_ONLYDIR));
 
         foreach ($files as $file)
         {
@@ -138,7 +138,7 @@ class CervoTools
         $path = $application_directory;
         $len = strlen($path);
 
-        $files = glob_recursive(glob($path . '*' . \DS . 'Controllers', GLOB_ONLYDIR));
+        $files = self::globRecursive(glob($path . '*' . \DS . 'Controllers', GLOB_ONLYDIR));
 
         foreach ($files as $file)
         {
@@ -164,7 +164,7 @@ class CervoTools
         $path = $application_directory;
         $len = strlen($path);
 
-        $files = glob_recursive(glob($path . '*' . \DS . 'Models', GLOB_ONLYDIR));
+        $files = self::globRecursive(glob($path . '*' . \DS . 'Models', GLOB_ONLYDIR));
 
         foreach ($files as $file)
         {
@@ -190,7 +190,7 @@ class CervoTools
         $path = $application_directory;
         $len = strlen($path);
 
-        $files = glob_recursive(glob($path . '*' . \DS . 'Views', GLOB_ONLYDIR));
+        $files = self::globRecursive(glob($path . '*' . \DS . 'Views', GLOB_ONLYDIR));
 
         foreach ($files as $file)
         {
@@ -355,7 +355,7 @@ METADATA;
         echo '</pre>';
     }
 
-    private static function glob_recursive($folders)
+    private static function globRecursive($folders)
     {
         $files = [];
 
