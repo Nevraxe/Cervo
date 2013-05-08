@@ -92,7 +92,7 @@ class CervoTools
 
         // Reading Cervo Libraries
 
-        $path = $cervo_directory . 'Cervo' . \DS .'Libraries' . \DS;
+        $path = $cervo_directory . 'Libraries' . \DS;
         $len = strlen($path);
 
         $files = self::globRecursive([$path]);
