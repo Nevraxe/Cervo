@@ -43,15 +43,51 @@ class Config
         $this->set($name, $value);
     }
 
+    public function &add($name, $value)
+    {
+        if (!is_array($name))
+            $name = explode('/', trim($name, "/\t\n\r\0\x0B"));
+
+        $current = &$this->values;
+
+        foreach ($name as $key)
+            $current = &$current[$key];
+
+        if (!is_array($current))
+            $current = [];
+
+        $current[] = $value;
+
+        return $this;
+    }
+
     public function &set($name, $value)
     {
-        $this->values[$name] = $value;
+        if (!is_array($name))
+            $name = explode('/', trim($name, "/\t\n\r\0\x0B"));
+
+        $current = &$this->values;
+
+        foreach ($name as $key)
+            $current = &$current[$key];
+
+        $current = $value;
+
         return $this;
     }
 
     public function &setDefault($name, $value)
     {
-        $this->default_values[$name] = $value;
+        if (!is_array($name))
+            $name = explode('/', trim($name, "/\t\n\r\0\x0B"));
+
+        $current = &$this->default_values;
+
+        foreach ($name as $key)
+            $current = &$current[$key];
+
+        $current = $value;
+
         return $this;
     }
 
@@ -62,15 +98,56 @@ class Config
 
     public function get($name)
     {
-        if ($this->values[$name])
-            return $this->values[$name];
-        else
-            return $this->default_values[$name];
+        if (!is_array($name))
+            $name = explode('/', trim($name, "/\t\n\r\0\x0B"));
+
+        $current = &$this->values;
+        $is_set = true;
+
+        foreach ($name as $key)
+        {
+            if ($current[$key])
+            {
+                $current = &$current[$key];
+            }
+            else
+            {
+                $is_set = false;
+                break;
+            }
+        }
+
+        if ($is_set === true && $current)
+        {
+            return $current;
+        }
+
+        return $this->getDefault($name);
     }
 
     public function getDefault($name)
     {
-        return $this->default_values[$name];
+        if (!is_array($name))
+            $name = explode('/', trim($name, "/\t\n\r\0\x0B"));
+
+        $current = &$this->default_values;
+
+        foreach ($name as $key)
+        {
+            if ($current[$key])
+            {
+                $current = &$current[$key];
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        if ($current)
+            return $current;
+
+        return null;
     }
 
     public function importJSON($file)
@@ -93,7 +170,7 @@ class Config
             }
             else
             {
-                $this->set(implode('/', array_merge($current_path, [$key])), $el);
+                $this->set(array_merge($current_path, [$key]), $el);
             }
         }
     }

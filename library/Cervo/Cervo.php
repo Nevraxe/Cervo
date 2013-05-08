@@ -31,7 +31,7 @@
 
 class Cervo
 {
-    const VERSION = '2.1.1';
+    const VERSION = '2.2.0';
 
     protected static $libraries = [];
     protected static $controllers = [];
