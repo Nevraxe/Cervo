@@ -19,7 +19,7 @@ Version model: (major).(minor).(hotfix)
 
  - **Major** version changes usually are major rewrites or a major change on how to use the system.
  - **Minor** version changes may affect the way the system is currently used, but will usually only take minor changes in the application to stay up-to-date.
- - **Hotfix** version changes are bug fixes and small feature additions. Nothing in your code should be changed.
+ - **Hotfix** version changes are bug fixes and small feature additions. Nothing in your code will have to change.
 
 
 Installing
@@ -29,7 +29,7 @@ Installing
 
 ```
 "require": {
-    "manhim/cervo": "2.1.*"
+    "manhim/cervo": "2.2.*"
 }
 ```
 
