@@ -126,7 +126,7 @@ class RouterPath
 
                 if ($arraypath[$i] == '?')
                 {
-                    $this->regex .= '(.[^\/]+)';
+                    $this->regex .= '([^\/]+)';
                 }
                 else
                 {
