@@ -34,7 +34,8 @@ namespace Cervo\Libraries;
 
 
 use Cervo as _,
-    Cervo\Libraries\RouterPath;
+    Cervo\Libraries\RouterPath\Route,
+    Cervo\Libraries\RouterPath\Event;
 
 
 
@@ -51,11 +52,23 @@ class Router
      */
     protected $path = '';
 
-    /*
+    /**
      * All the registered routes.
-     * @var \Cervo\Libraries\RouterPath[]
+     * @var \Cervo\Libraries\RouterPath\Route[]
      */
     protected $routes = [];
+
+    /**
+     * All the registered events that will be run before the route is calculated.
+     * @var \Cervo\Libraries\RouterPath\Event[]
+     */
+    protected $events = [];
+
+    /**
+     * If set to true, the route will not be calculated and will return false (silently).
+     * @var bool
+     */
+    protected $prevent_default = false;
 
     /**
      * The currently matching route.
@@ -85,16 +98,62 @@ class Router
      * @param string $module
      * @param string $controller
      * @param string $method
+     *
+     * @return $this
      */
-    public function addRoute($path, $module, $controller, $method)
+    public function &addRoute($path, $module, $controller, $method)
     {
-        $this->routes[] = new RouterPath($path, $module, $controller, $method);
+        $this->routes[] = new Route($path, $module, $controller, $method);
+        return $this;
     }
 
     /**
-     * Return the current RouterPath.
+     * Add a new Route object to the routes.
      *
-     * @return RouterPath
+     * @param Route $route
+     *
+     * @return $this
+     */
+    public function &addRouteObject(Route $route)
+    {
+        $this->routes[] = $route;
+        return $this;
+    }
+
+    /**
+     * Add a new event that will be run before the routes.
+     *
+     * @param string $path
+     * @param string $callback
+     * @param array  $params
+     *
+     * @return $this
+     */
+    public function &addEvent($path, $callback, $params = [])
+    {
+        $this->events[] = new Event($path, $callback, $params);
+        return $this;
+    }
+
+    /**
+     * Add a new Event object that will be run before the routes.
+     *
+     * @param Event $event
+     *
+     * @return $this
+     */
+    public function &addEventObject(Event $event)
+    {
+        $this->events[] = $event;
+        return $this;
+    }
+
+    /**
+     * Return the current Route.
+     *
+     * If prevent_default is set to true, this function will always return false.
+     *
+     * @return Route|false
      *
      * @throws Exceptions\TooManyRoutesException
      * @throws Exceptions\RouteNotFoundException
@@ -104,30 +163,45 @@ class Router
         if ($this->route !== null)
             return $this->route;
 
-        $returns = [];
-
-        foreach ($this->routes as $r)
+        foreach ($this->events as $e)
         {
-            if ($r->compare($this->path) === RouterPath::FULL_MATCH)
+            if ($e->compare($this->path) === RouterPath::FULL_MATCH)
             {
-                $returns[] = $r;
+                $e->run();
             }
         }
 
-        $c_returns = count($returns);
+        if (!$this->prevent_default)
+        {
+            $returns = [];
 
-        if ($c_returns == 1)
-        {
-            $this->route = current($returns);
-            return $this->route;
-        }
-        else if ($c_returns > 1)
-        {
-            throw new _\Libraries\Exceptions\TooManyRoutesException();
+            foreach ($this->routes as $r)
+            {
+                if ($r->compare($this->path) === RouterPath::FULL_MATCH)
+                {
+                    $returns[] = $r;
+                }
+            }
+
+            $c_returns = count($returns);
+
+            if ($c_returns == 1)
+            {
+                $this->route = current($returns);
+                return $this->route;
+            }
+            else if ($c_returns > 1)
+            {
+                throw new _\Libraries\Exceptions\TooManyRoutesException();
+            }
+            else
+            {
+                throw new _\Libraries\Exceptions\RouteNotFoundException();
+            }
         }
         else
         {
-            throw new _\Libraries\Exceptions\RouteNotFoundException();
+            return false;
         }
     }
 
@@ -240,5 +314,16 @@ class Router
     public function getPath()
     {
         return $this->path;
+    }
+
+    public function &preventDefault()
+    {
+        $this->prevent_default = true;
+        return $this;
+    }
+
+    public function getPreventDefault()
+    {
+        return $this->prevent_default;
     }
 }

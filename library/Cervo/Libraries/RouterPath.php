@@ -38,7 +38,7 @@ namespace Cervo\Libraries;
  *
  * @author Marc André Audet <root@manhim.net>
  */
-class RouterPath
+abstract class RouterPath
 {
     /**
      * When it does not match.
@@ -57,24 +57,6 @@ class RouterPath
     protected $path;
 
     /**
-     * The route's module.
-     * @var string
-     */
-    protected $module;
-
-    /**
-     * The route's controller.
-     * @var string
-     */
-    protected $controller;
-
-    /**
-     * The route's method.
-     * @var string
-     */
-    protected $method;
-
-    /**
      * The current arguments.
      * @var array
      */
@@ -91,16 +73,9 @@ class RouterPath
      * Sanitize the path and compute the regex.
      *
      * @param string $path
-     * @param string $module
-     * @param string $controller
-     * @param string $method
      */
-    public function __construct($path, $module, $controller, $method)
+    public function __construct($path)
     {
-        $this->module = $module;
-        $this->controller = $controller;
-        $this->method = $method;
-
         $this->path = trim($path, '/');
 
         while (strpos($this->path, '//') !== false)
@@ -164,21 +139,6 @@ class RouterPath
     public function getPath()
     {
         return $this->path;
-    }
-
-    public function getModule()
-    {
-        return $this->module;
-    }
-
-    public function getController()
-    {
-        return $this->controller;
-    }
-
-    public function getMethod()
-    {
-        return $this->method;
     }
 
     public function getArgs()

@@ -39,7 +39,7 @@ class Cervo
     /**
      * The current version of Cervo.
      */
-    const VERSION = '2.2.3';
+    const VERSION = '2.3.0';
 
     /**
      * All the libraries instances that have been initialized through getLibrary().
@@ -142,12 +142,15 @@ class Cervo
 
         $route = $router->getRoute();
 
-        $events->fire('Cervo/Controller/Before');
+        if ($route instanceof \Cervo\Libraries\RouterPath\Route)
+        {
+            $events->fire('Cervo/Controller/Before');
 
-        $method = $route->getMethod() . $config->get('Cervo/Application/MethodSuffix');
-        self::getController($route->getModule() . '/' . $route->getController())->$method($route->getArgs());
+            $method = $route->getMethod() . $config->get('Cervo/Application/MethodSuffix');
+            self::getController($route->getModule() . '/' . $route->getController())->$method($route->getArgs());
 
-        $events->fire('Cervo/Controller/After');
+            $events->fire('Cervo/Controller/After');
+        }
 
 
 
@@ -333,7 +336,7 @@ class Cervo
 
             if ($ex[0] === 'Cervo' && $ex[1] === 'Libraries')
             {
-                require $config->get('Cervo/Libraries/Directory') . $ex[2] . '.php';
+                require $config->get('Cervo/Libraries/Directory') . implode(\DS, array_slice($ex, 2)) . '.php';
             }
             else if ($ex[0] === 'Application' && substr($ex[1], -1 * 6) === 'Module')
             {
