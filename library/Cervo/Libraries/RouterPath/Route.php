@@ -33,6 +33,10 @@ namespace Cervo\Libraries\RouterPath;
 
 
 
+use Cervo\Libraries\Exceptions\InvalidControllerException;
+
+
+
 /**
  * Used in Router. Each of the module's routes are RouterPath objects.
  *
@@ -40,6 +44,15 @@ namespace Cervo\Libraries\RouterPath;
  */
 class Route extends \Cervo\Libraries\RouterPath
 {
+    const M_ANY = 0b1111111;
+    const M_HTTP_GET = 0b1;
+    const M_HTTP_POST = 0b10;
+    const M_HTTP_PUT = 0b100;
+    const M_HTTP_DELETE = 0b1000;
+    const M_HTTP_UPDATE = 0b10000;
+    const M_HTTP_PATCH = 0b100000;
+    const M_CLI = 0b1000000;
+
     /**
      * The route's module.
      * @var string
@@ -59,21 +72,98 @@ class Route extends \Cervo\Libraries\RouterPath
     protected $method;
 
     /**
+     * The http method to match against.
+     * @var int
+     */
+    protected $http_method;
+
+    /**
+     * The paramters to pass.
+     * @var array
+     */
+    protected $params = [];
+
+    /**
      * Set the path, the module, the controller and the method.
      * Sanitize the path and compute the regex.
      *
      * @param string $path
-     * @param string $module
      * @param string $controller
-     * @param string $method
+     * @param int    $http_method
+     * @param array  $params
+     *
+     * @throws InvalidControllerException
      */
-    public function __construct($path, $module, $controller, $method)
+    public function __construct($path, $controller, $http_method = self::M_ALL, $params = [])
     {
+        $controller_e = explode('/', $controller);
+        $c_controller_e = count($controller_e);
+
+        if ($c_controller_e < 3)
+        {
+            throw new InvalidControllerException;
+        }
+        else
+        {
+            $module = $controller_e[0];
+            $controller_p = implode('/', array_slice($controller_e, 1, $c_controller_e - 2));
+            $method = $controller_e[$c_controller_e - 1];
+        }
+
         $this->module = $module;
-        $this->controller = $controller;
+        $this->controller = $controller_p;
         $this->method = $method;
+        $this->http_method = $http_method;
+        $this->params = $params;
 
         parent::__construct($path);
+    }
+
+    public function compare($path)
+    {
+        if ($this->http_method !== self::M_ANY)
+        {
+            if (defined('STDIN'))
+            {
+                if ($this->http_method & self::M_CLI !== self::M_CLI)
+                    return \Cervo\Libraries\RouterPath::NO_MATCH;
+            }
+            else
+            {
+                // TODO: Should probably encapsulate the $_SERVER variables in an object (Request)
+                switch ($_SERVER['REQUEST_METHOD'])
+                {
+                    case 'GET':
+                        if ($this->http_method & self::M_HTTP_GET !== self::M_HTTP_GET)
+                            return \Cervo\Libraries\RouterPath::NO_MATCH;
+                        break;
+                    case 'POST':
+                        if ($this->http_method & self::M_HTTP_POST !== self::M_HTTP_POST)
+                            return \Cervo\Libraries\RouterPath::NO_MATCH;
+                        break;
+                    case 'PUT':
+                        if ($this->http_method & self::M_HTTP_PUT !== self::M_HTTP_PUT)
+                            return \Cervo\Libraries\RouterPath::NO_MATCH;
+                        break;
+                    case 'DELETE':
+                        if ($this->http_method & self::M_HTTP_DELETE !== self::M_HTTP_DELETE)
+                            return \Cervo\Libraries\RouterPath::NO_MATCH;
+                        break;
+                    case 'UPDATE':
+                        if ($this->http_method & self::M_HTTP_UPDATE !== self::M_HTTP_UPDATE)
+                            return \Cervo\Libraries\RouterPath::NO_MATCH;
+                        break;
+                    case 'PATCH':
+                        if ($this->http_method & self::M_HTTP_PATCH !== self::M_HTTP_PATCH)
+                            return \Cervo\Libraries\RouterPath::NO_MATCH;
+                        break;
+                    default:
+                        return \Cervo\Libraries\RouterPath::NO_MATCH;
+                }
+            }
+        }
+
+        return parent::compare($path);
     }
 
     public function getModule()
@@ -89,5 +179,15 @@ class Route extends \Cervo\Libraries\RouterPath
     public function getMethod()
     {
         return $this->method;
+    }
+
+    public function getHttpMethod()
+    {
+        return $this->http_method;
+    }
+
+    public function getParams()
+    {
+        return $this->params;
     }
 }

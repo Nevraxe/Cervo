@@ -57,3 +57,8 @@ class TemplateNotFoundException extends NotFoundException
 {
 
 }
+
+class InvalidControllerException extends Exception
+{
+
+}

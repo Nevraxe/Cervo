@@ -95,15 +95,15 @@ class Router
      * Usually set in each module's Router.php.
      *
      * @param string $path
-     * @param string $module
      * @param string $controller
-     * @param string $method
+     * @param int    $http_method
+     * @param array  $params
      *
      * @return $this
      */
-    public function &addRoute($path, $module, $controller, $method)
+    public function &addRoute($path, $controller, $http_method = Route::M_ALL, $params = [])
     {
-        $this->routes[] = new Route($path, $module, $controller, $method);
+        $this->routes[] = new Route($path, $controller, $http_method, $params);
         return $this;
     }
 

@@ -39,7 +39,7 @@ class Cervo
     /**
      * The current version of Cervo.
      */
-    const VERSION = '2.3.0';
+    const VERSION = '2.4.0';
 
     /**
      * All the libraries instances that have been initialized through getLibrary().
@@ -147,7 +147,7 @@ class Cervo
             $events->fire('Cervo/Controller/Before');
 
             $method = $route->getMethod() . $config->get('Cervo/Application/MethodSuffix');
-            self::getController($route->getModule() . '/' . $route->getController())->$method($route->getArgs());
+            self::getController($route->getModule() . '/' . $route->getController())->$method($route->getArgs(), $route->getParams());
 
             $events->fire('Cervo/Controller/After');
         }
