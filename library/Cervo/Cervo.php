@@ -79,6 +79,12 @@ class Cervo
 
 
 
+        // We include the Exceptions manually
+
+        require_once 'Libraries/Exceptions.php';
+
+
+
         // We check if the system is already initiated
 
         if (self::$is_init)

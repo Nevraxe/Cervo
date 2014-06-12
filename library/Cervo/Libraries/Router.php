@@ -101,7 +101,7 @@ class Router
      *
      * @return $this
      */
-    public function &addRoute($path, $controller, $http_method = Route::M_ALL, $params = [])
+    public function &addRoute($path, $controller, $http_method = Route::M_ANY, $params = [])
     {
         $this->routes[] = new Route($path, $controller, $http_method, $params);
         return $this;
