@@ -134,27 +134,27 @@ class Route extends \Cervo\Libraries\RouterPath
                 switch ($_SERVER['REQUEST_METHOD'])
                 {
                     case 'GET':
-                        if ($this->http_method & self::M_HTTP_GET !== self::M_HTTP_GET)
+                        if (($this->http_method & self::M_HTTP_GET) !== self::M_HTTP_GET)
                             return \Cervo\Libraries\RouterPath::NO_MATCH;
                         break;
                     case 'POST':
-                        if ($this->http_method & self::M_HTTP_POST !== self::M_HTTP_POST)
+                        if (($this->http_method & self::M_HTTP_POST) !== self::M_HTTP_POST)
                             return \Cervo\Libraries\RouterPath::NO_MATCH;
                         break;
                     case 'PUT':
-                        if ($this->http_method & self::M_HTTP_PUT !== self::M_HTTP_PUT)
+                        if (($this->http_method & self::M_HTTP_PUT) !== self::M_HTTP_PUT)
                             return \Cervo\Libraries\RouterPath::NO_MATCH;
                         break;
                     case 'DELETE':
-                        if ($this->http_method & self::M_HTTP_DELETE !== self::M_HTTP_DELETE)
+                        if (($this->http_method & self::M_HTTP_DELETE) !== self::M_HTTP_DELETE)
                             return \Cervo\Libraries\RouterPath::NO_MATCH;
                         break;
                     case 'UPDATE':
-                        if ($this->http_method & self::M_HTTP_UPDATE !== self::M_HTTP_UPDATE)
+                        if (($this->http_method & self::M_HTTP_UPDATE) !== self::M_HTTP_UPDATE)
                             return \Cervo\Libraries\RouterPath::NO_MATCH;
                         break;
                     case 'PATCH':
-                        if ($this->http_method & self::M_HTTP_PATCH !== self::M_HTTP_PATCH)
+                        if (($this->http_method & self::M_HTTP_PATCH) !== self::M_HTTP_PATCH)
                             return \Cervo\Libraries\RouterPath::NO_MATCH;
                         break;
                     default:
