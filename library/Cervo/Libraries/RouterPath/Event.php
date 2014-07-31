@@ -58,14 +58,15 @@ class Event extends \Cervo\Libraries\RouterPath
      *
      * @param string $path
      * @param string $callback
+     * @param int    $http_method
      * @param array  $params
      */
-    public function __construct($path, $callback, $params = [])
+    public function __construct($path, $callback, $http_method = self::M_ANY, $params = [])
     {
         $this->callback = $callback;
         $this->params = $params;
 
-        parent::__construct($path);
+        parent::__construct($path, $http_method);
     }
 
     public function getCallback()

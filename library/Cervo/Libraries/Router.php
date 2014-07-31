@@ -101,7 +101,7 @@ class Router
      *
      * @return $this
      */
-    public function &addRoute($path, $controller, $http_method = Route::M_ANY, $params = [])
+    public function &addRoute($path, $controller, $http_method = RouterPath::M_ANY, $params = [])
     {
         $this->routes[] = new Route($path, $controller, $http_method, $params);
         return $this;
@@ -125,13 +125,14 @@ class Router
      *
      * @param string $path
      * @param string $callback
+     * @param int    $http_method
      * @param array  $params
      *
      * @return $this
      */
-    public function &addEvent($path, $callback, $params = [])
+    public function &addEvent($path, $callback, $http_method = RouterPath::M_ANY, $params = [])
     {
-        $this->events[] = new Event($path, $callback, $params);
+        $this->events[] = new Event($path, $callback, $http_method, $params);
         return $this;
     }
 

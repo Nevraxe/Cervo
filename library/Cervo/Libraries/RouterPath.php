@@ -40,6 +40,15 @@ namespace Cervo\Libraries;
  */
 abstract class RouterPath
 {
+    const M_ANY = 0b1111111;
+    const M_HTTP_GET = 0b1;
+    const M_HTTP_POST = 0b10;
+    const M_HTTP_PUT = 0b100;
+    const M_HTTP_DELETE = 0b1000;
+    const M_HTTP_UPDATE = 0b10000;
+    const M_HTTP_PATCH = 0b100000;
+    const M_CLI = 0b1000000;
+
     /**
      * When it does not match.
      */
@@ -57,6 +66,12 @@ abstract class RouterPath
     protected $path;
 
     /**
+     * The http method to match against.
+     * @var int
+     */
+    protected $http_method;
+
+    /**
      * The current arguments.
      * @var array
      */
@@ -72,10 +87,13 @@ abstract class RouterPath
      * Set the path, the module, the controller and the method.
      * Sanitize the path and compute the regex.
      *
+     * @param int    $http_method
      * @param string $path
      */
-    public function __construct($path)
+    public function __construct($path, $http_method = self::M_ANY)
     {
+        $this->http_method = $http_method;
+
         $this->path = trim($path, '/');
 
         while (strpos($this->path, '//') !== false)
@@ -121,6 +139,48 @@ abstract class RouterPath
      */
     public function compare($path)
     {
+        if ($this->http_method !== self::M_ANY)
+        {
+            if (defined('STDIN'))
+            {
+                if ($this->http_method & self::M_CLI !== self::M_CLI)
+                    return \Cervo\Libraries\RouterPath::NO_MATCH;
+            }
+            else
+            {
+                // TODO: Should probably encapsulate the $_SERVER variables in an object (Request)
+                switch ($_SERVER['REQUEST_METHOD'])
+                {
+                    case 'GET':
+                        if (($this->http_method & self::M_HTTP_GET) !== self::M_HTTP_GET)
+                            return \Cervo\Libraries\RouterPath::NO_MATCH;
+                        break;
+                    case 'POST':
+                        if (($this->http_method & self::M_HTTP_POST) !== self::M_HTTP_POST)
+                            return \Cervo\Libraries\RouterPath::NO_MATCH;
+                        break;
+                    case 'PUT':
+                        if (($this->http_method & self::M_HTTP_PUT) !== self::M_HTTP_PUT)
+                            return \Cervo\Libraries\RouterPath::NO_MATCH;
+                        break;
+                    case 'DELETE':
+                        if (($this->http_method & self::M_HTTP_DELETE) !== self::M_HTTP_DELETE)
+                            return \Cervo\Libraries\RouterPath::NO_MATCH;
+                        break;
+                    case 'UPDATE':
+                        if (($this->http_method & self::M_HTTP_UPDATE) !== self::M_HTTP_UPDATE)
+                            return \Cervo\Libraries\RouterPath::NO_MATCH;
+                        break;
+                    case 'PATCH':
+                        if (($this->http_method & self::M_HTTP_PATCH) !== self::M_HTTP_PATCH)
+                            return \Cervo\Libraries\RouterPath::NO_MATCH;
+                        break;
+                    default:
+                        return \Cervo\Libraries\RouterPath::NO_MATCH;
+                }
+            }
+        }
+
         $matches = null;
         if (preg_match($this->regex, $path, $matches) !== 1)
         {
@@ -139,6 +199,11 @@ abstract class RouterPath
     public function getPath()
     {
         return $this->path;
+    }
+
+    public function getHTTPMethod()
+    {
+        return $this->http_method;
     }
 
     public function getArgs()
