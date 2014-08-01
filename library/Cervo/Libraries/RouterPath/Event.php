@@ -47,10 +47,32 @@ class Event extends \Cervo\Libraries\RouterPath
     protected $callback;
 
     /**
+     * Priotity of the event over others.
+     * @var int
+     */
+    protected $priority;
+
+    /**
      * Arguments to send while calling the function.
      * @var array
      */
     protected $params = [];
+
+    /**
+     * Custom sort for priority.
+     *
+     * @param self $a
+     * @param self $b
+     *
+     * @return int
+     */
+    static public function priority_sort(self $a, self $b)
+    {
+        if ($a->getPriority() == $b->getPriority())
+            return 0;
+
+        return $a->getPriority() < $b->getPriority() ? -1 : 1;
+    }
 
     /**
      * Set the path and the callback.
@@ -60,11 +82,13 @@ class Event extends \Cervo\Libraries\RouterPath
      * @param string $callback
      * @param int    $http_method
      * @param array  $params
+     * @param int    $priority
      */
-    public function __construct($path, $callback, $http_method = self::M_ANY, $params = [])
+    public function __construct($path, $callback, $http_method = self::M_ANY, $params = [], $priority = 0)
     {
         $this->callback = $callback;
         $this->params = $params;
+        $this->priority = $priority;
 
         parent::__construct($path, $http_method);
     }
@@ -72,6 +96,11 @@ class Event extends \Cervo\Libraries\RouterPath
     public function getCallback()
     {
         return $this->callback;
+    }
+
+    public function getPriority()
+    {
+        return $this->priority;
     }
 
     public function run()

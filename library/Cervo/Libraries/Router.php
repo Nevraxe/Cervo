@@ -127,12 +127,13 @@ class Router
      * @param string $callback
      * @param int    $http_method
      * @param array  $params
+     * @param int    $priority
      *
      * @return $this
      */
-    public function &addEvent($path, $callback, $http_method = RouterPath::M_ANY, $params = [])
+    public function &addEvent($path, $callback, $http_method = RouterPath::M_ANY, $params = [], $priority = 0)
     {
-        $this->events[] = new Event($path, $callback, $http_method, $params);
+        $this->events[] = new Event($path, $callback, $http_method, $params, $priority);
         return $this;
     }
 
@@ -163,6 +164,8 @@ class Router
     {
         if ($this->route !== null)
             return $this->route;
+
+        usort($this->events, '\Cervo\Libraries\RouterPath\Event::priority_sort');
 
         foreach ($this->events as $e)
         {
