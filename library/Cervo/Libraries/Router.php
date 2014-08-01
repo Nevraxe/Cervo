@@ -69,6 +69,18 @@ class Router
      * If set to true, the route will not be calculated and will return false (silently).
      * @var bool
      */
+    protected $prevent_route = false;
+
+    /**
+     * If set to true, the events will not be run (silently).
+     * @var bool
+     */
+    protected $prevent_events = false;
+
+    /**
+     * If set to true, at any steps in the routing (events or route) will make `getRoute()` return false.
+     * @var bool
+     */
     protected $prevent_default = false;
 
     /**
@@ -173,10 +185,13 @@ class Router
             if ($e->compare($this->path) === RouterPath::FULL_MATCH)
             {
                 $e->run();
+
+                if ($this->prevent_default || $this->prevent_events)
+                    break;
             }
         }
 
-        if (!$this->prevent_default)
+        if (!$this->prevent_default && !$this->prevent_route)
         {
             $returns = [];
 
@@ -319,6 +334,28 @@ class Router
     public function getPath()
     {
         return $this->path;
+    }
+
+    public function &preventEvents()
+    {
+        $this->prevent_events = true;
+        return $this;
+    }
+
+    public function getPreventEvents()
+    {
+        return $this->prevent_events;
+    }
+
+    public function &preventRoute()
+    {
+        $this->prevent_route = true;
+        return $this;
+    }
+
+    public function getPreventRoute()
+    {
+        return $this->prevent_route;
     }
 
     public function &preventDefault()
