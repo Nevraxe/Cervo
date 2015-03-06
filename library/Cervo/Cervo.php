@@ -2,7 +2,7 @@
 
 /**
  *
- * Copyright (c) 2013 Marc André "Manhim" Audet <root@manhim.net>. All rights reserved.
+ * Copyright (c) 2015 Marc André "Manhim" Audet <root@manhim.net>. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
@@ -72,19 +72,6 @@ class Cervo
      */
     public static function init($json_config_file = null)
     {
-        // A small shortcut
-
-        if (!defined('DS'))
-            define('DS', \DIRECTORY_SEPARATOR);
-
-
-
-        // We include the Exceptions manually
-
-        require_once 'Libraries/Exceptions.php';
-
-
-
         // We check if the system is already initiated
 
         if (self::$is_init)
@@ -94,30 +81,9 @@ class Cervo
 
 
 
-        // We set the default configuration values
+        // We start the configuration process
 
-        $config = &self::getLibrary('Cervo/Config');
-
-        $cervo_directory = realpath(dirname(__FILE__)) . \DS;
-
-        $config
-            ->setDefault('Cervo/Application/Directory', '')
-            ->setDefault('Cervo/Directory', $cervo_directory)
-            ->setDefault('Cervo/Libraries/Directory', realpath($cervo_directory . 'Libraries') . \DS)
-            ->setDefault('Cervo/Application/MethodSuffix', 'Method')
-            ->setDefault('Cervo/Application/EventsPath', 'Events' . \DS)
-            ->setDefault('Cervo/Application/ControllersPath', 'Controllers' . \DS)
-            ->setDefault('Cervo/Application/ModelsPath', 'Models' . \DS)
-            ->setDefault('Cervo/Application/ViewsPath', 'Views' . \DS)
-            ->setDefault('Cervo/Application/LibariesPath', 'Libraries' . \DS)
-            ->setDefault('Cervo/Application/TemplatesPath', 'Templates' . \DS)
-            ->setDefault('Production', false)
-        ;
-
-        if ($json_config_file !== null)
-        {
-            $config->importJSON($json_config_file);
-        }
+        self::initConfig($json_config_file);
 
 
 
@@ -163,6 +129,52 @@ class Cervo
         // We fire the post-system event
 
         $events->fire('Cervo/System/After');
+    }
+
+    /**
+     * Initialize the configuration for Cervo with default configs.
+     *
+     * @param string|null $json_config_file
+     */
+    public static function initConfig($json_config_file = null)
+    {
+        // A small shortcut
+
+        if (!defined('DS'))
+            define('DS', \DIRECTORY_SEPARATOR);
+
+
+
+        // We include the Exceptions manually
+
+        require_once 'Libraries/Exceptions.php';
+
+
+
+        // We set the default configuration values
+
+        $config = &self::getLibrary('Cervo/Config');
+
+        $cervo_directory = realpath(dirname(__FILE__)) . \DS;
+
+        $config
+            ->setDefault('Cervo/Application/Directory', '')
+            ->setDefault('Cervo/Directory', $cervo_directory)
+            ->setDefault('Cervo/Libraries/Directory', realpath($cervo_directory . 'Libraries') . \DS)
+            ->setDefault('Cervo/Application/MethodSuffix', 'Method')
+            ->setDefault('Cervo/Application/EventsPath', 'Events' . \DS)
+            ->setDefault('Cervo/Application/ControllersPath', 'Controllers' . \DS)
+            ->setDefault('Cervo/Application/ModelsPath', 'Models' . \DS)
+            ->setDefault('Cervo/Application/ViewsPath', 'Views' . \DS)
+            ->setDefault('Cervo/Application/LibariesPath', 'Libraries' . \DS)
+            ->setDefault('Cervo/Application/TemplatesPath', 'Templates' . \DS)
+            ->setDefault('Production', false)
+        ;
+
+        if ($json_config_file !== null)
+        {
+            $config->importJSON($json_config_file);
+        }
     }
 
     /**

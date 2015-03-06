@@ -2,7 +2,7 @@
 
 /**
  *
- * Copyright (c) 2013 Marc André "Manhim" Audet <root@manhim.net>. All rights reserved.
+ * Copyright (c) 2015 Marc André "Manhim" Audet <root@manhim.net>. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
@@ -55,172 +55,21 @@ class CervoTools
      */
     public static function phpstormMetadata($json_config_file = null)
     {
-        // A small shortcut
+        // We start the configuration process
 
-        if (!defined('DS'))
-            define('DS', \DIRECTORY_SEPARATOR);
-
-
-
-        // We set the default configuration values
-
-        $config = &_::getLibrary('Cervo/Config');
-
-        $cervo_directory = realpath(dirname(__FILE__)) . \DS;
-
-        $config
-            ->setDefault('Cervo/Application/Directory', '')
-            ->setDefault('Cervo/Directory', $cervo_directory)
-            ->setDefault('Cervo/Libraries/Directory', realpath($cervo_directory . 'Libraries') . \DS)
-            ->setDefault('Cervo/Application/MethodSuffix', 'Method')
-            ->setDefault('Cervo/Application/EventsPath', 'Events' . \DS)
-            ->setDefault('Cervo/Application/ControllersPath', 'Controllers' . \DS)
-            ->setDefault('Cervo/Application/ModelsPath', 'Models' . \DS)
-            ->setDefault('Cervo/Application/ViewsPath', 'Views' . \DS)
-            ->setDefault('Cervo/Application/LibariesPath', 'Libraries' . \DS)
-            ->setDefault('Cervo/Application/TemplatesPath', 'Templates' . \DS)
-            ->setDefault('Production', false)
-        ;
-
-        if ($json_config_file !== null)
-        {
-            $config->importJSON($json_config_file);
-        }
+        _::initConfig($json_config_file);
 
 
 
         // We start to generate the PHPStorm metadata content
 
-        $application_directory = $config->get('Cervo/Application/Directory');
-
         $file_classes = [
-            'CervoLibraries' => [],
-            'Libraries' => [],
-            'Controllers' => [],
-            'Models' => [],
-            'Views' => []
+            'CervoLibraries' => self::getCervoLibraries($config->get('Cervo/Libraries/Directory')),
+            'Libraries' => self::getApplicationClasses($config->get('Cervo/Application/Directory'), $config->get('Cervo/Application/LibariesPath')),
+            'Controllers' => self::getApplicationClasses($config->get('Cervo/Application/Directory'), $config->get('Cervo/Application/ControllersPath')),
+            'Models' => self::getApplicationClasses($config->get('Cervo/Application/Directory'), $config->get('Cervo/Application/ModelsPath')),
+            'Views' => self::getApplicationClasses($config->get('Cervo/Application/Directory'), $config->get('Cervo/Application/ViewsPath'))
         ];
-
-
-
-        // Reading Cervo Libraries
-
-        $path = $cervo_directory . 'Libraries' . \DS;
-        $len = strlen($path);
-
-        $files = self::globRecursive([$path]);
-
-        foreach ($files as $file)
-        {
-            if (strncmp($path, $file, $len) === 0 && substr($file, -4) === '.php')
-            {
-                $file_classes['CervoLibraries'][] = str_replace('\\', '/', substr($file, $len, -4));
-            }
-        }
-
-
-
-        // Reading the Application Libraries
-
-        $path = $application_directory;
-        $len = strlen($path);
-
-        $files = self::globRecursive(glob($path . '*' . \DS . 'Libraries', GLOB_ONLYDIR));
-
-        foreach ($files as $file)
-        {
-            if (strncmp($path, $file, $len) === 0 && substr($file, -4) === '.php')
-            {
-                $cur = str_replace('\\', '/', str_replace(\DS . 'Libraries' . \DS, '/', substr($file, $len, -4)));
-
-                $ex = explode('/', $cur);
-
-                if (count($ex) === 2 && $ex[0] === $ex[1])
-                {
-                    $cur = $ex[0];
-                }
-
-                $file_classes['Libraries'][] = $cur;
-            }
-        }
-
-
-
-        // Reading the Application Controllers
-
-        $path = $application_directory;
-        $len = strlen($path);
-
-        $files = self::globRecursive(glob($path . '*' . \DS . 'Controllers', GLOB_ONLYDIR));
-
-        foreach ($files as $file)
-        {
-            if (strncmp($path, $file, $len) === 0 && substr($file, -4) === '.php')
-            {
-                $cur = str_replace('\\', '/', str_replace(\DS . 'Controllers' . \DS, '/', substr($file, $len, -4)));
-
-                $ex = explode('/', $cur);
-
-                if (count($ex) === 2 && $ex[0] === $ex[1])
-                {
-                    $cur = $ex[0];
-                }
-
-                $file_classes['Controllers'][] = $cur;
-            }
-        }
-
-
-
-        // Reading the Application Models
-
-        $path = $application_directory;
-        $len = strlen($path);
-
-        $files = self::globRecursive(glob($path . '*' . \DS . 'Models', GLOB_ONLYDIR));
-
-        foreach ($files as $file)
-        {
-            if (strncmp($path, $file, $len) === 0 && substr($file, -4) === '.php')
-            {
-                $cur = str_replace('\\', '/', str_replace(\DS . 'Models' . \DS, '/', substr($file, $len, -4)));
-
-                $ex = explode('/', $cur);
-
-                if (count($ex) === 2 && $ex[0] === $ex[1])
-                {
-                    $cur = $ex[0];
-                }
-
-                $file_classes['Models'][] = $cur;
-            }
-        }
-
-
-
-        // Reading the Application Views
-
-        $path = $application_directory;
-        $len = strlen($path);
-
-        $files = self::globRecursive(glob($path . '*' . \DS . 'Views', GLOB_ONLYDIR));
-
-        foreach ($files as $file)
-        {
-            if (strncmp($path, $file, $len) === 0 && substr($file, -4) === '.php')
-            {
-                $cur = str_replace('\\', '/', str_replace(\DS . 'Views' . \DS, '/', substr($file, $len, -4)));
-
-                $ex = explode('/', $cur);
-
-                if (count($ex) === 2 && $ex[0] === $ex[1])
-                {
-                    $cur = $ex[0];
-                }
-
-                $file_classes['Views'][] = $cur;
-            }
-        }
 
 
 
@@ -340,12 +189,72 @@ METADATA;
 
 
 
+        // We print out the results
 
         echo '<pre>';
 
         echo htmlentities($towrite);
 
         echo '</pre>';
+    }
+
+    /**
+     * Fetch a list of all the Cervo Libraries class.
+     *
+     * @param $path The path to the Cervo Libraries folder
+     *
+     * @return array
+     */
+    private static function getCervoLibraries($path)
+    {
+        $len = strlen($path);
+
+        $files = self::globRecursive([$path]);
+        $classes = [];
+
+        foreach ($files as $file)
+        {
+            if (strncmp($path, $file, $len) === 0 && substr($file, -4) === '.php')
+            {
+                $classes[] = str_replace('\\', '/', substr($file, $len, -4));
+            }
+        }
+
+        return $classes;
+    }
+
+    /**
+     * Fetch a list of all the Application classes depending on the sub path.
+     *
+     * @param $path The path to the Application root
+     * @param $sub_path The sub-path to look for
+     *
+     * @return array
+     */
+    private static function getApplicationClasses($path, $sub_path)
+    {
+        $files = self::globRecursive(glob($path . '*' . \DS . $sub_path, GLOB_ONLYDIR));
+        $path_len = strlen($path);
+        $classes = [];
+
+        foreach ($files as $file)
+        {
+            if (strncmp($path, $file, $path_len) === 0 && substr($file, -4) === '.php')
+            {
+                $cur = str_replace('\\', '/', str_replace(\DS . $sub_path, '/', substr($file, $path_len, -4)));
+
+                $ex = explode('/', $cur);
+
+                if (count($ex) === 2 && $ex[0] === $ex[1])
+                {
+                    $cur = $ex[0];
+                }
+
+                $classes[] = $cur;
+            }
+        }
+
+        return $classes;
     }
 
     /**

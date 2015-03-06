@@ -2,7 +2,7 @@
 
 /**
  *
- * Copyright (c) 2013 Marc André "Manhim" Audet <root@manhim.net>. All rights reserved.
+ * Copyright (c) 2015 Marc André "Manhim" Audet <root@manhim.net>. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
@@ -178,6 +178,23 @@ class Router
         if ($this->route !== null)
             return $this->route;
 
+        $this->runEvents();
+
+        if (!$this->prevent_default && !$this->prevent_route)
+        {
+            return $this->runRoutes();
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    /**
+     * Run all the events with repect for prevent_default and prevent_events.
+     */
+    protected function runEvents()
+    {
         usort($this->events, '\Cervo\Libraries\RouterPath\Event::priority_sort');
 
         foreach ($this->events as $e)
@@ -190,38 +207,42 @@ class Router
                     break;
             }
         }
+    }
 
-        if (!$this->prevent_default && !$this->prevent_route)
+    /**
+     * Run the routes according to the Router.php files and try to match the right one.
+     *
+     * @return RouterPath
+     *
+     * @throws Exceptions\RouteNotFoundException
+     * @throws Exceptions\TooManyRoutesException
+     */
+    protected function runRoutes()
+    {
+        $returns = [];
+
+        foreach ($this->routes as $r)
         {
-            $returns = [];
+            if ($r->compare($this->path) === RouterPath::FULL_MATCH)
+            {
+                $returns[] = $r;
+            }
+        }
 
-            foreach ($this->routes as $r)
-            {
-                if ($r->compare($this->path) === RouterPath::FULL_MATCH)
-                {
-                    $returns[] = $r;
-                }
-            }
+        $c_returns = count($returns);
 
-            $c_returns = count($returns);
-
-            if ($c_returns == 1)
-            {
-                $this->route = current($returns);
-                return $this->route;
-            }
-            else if ($c_returns > 1)
-            {
-                throw new _\Libraries\Exceptions\TooManyRoutesException();
-            }
-            else
-            {
-                throw new _\Libraries\Exceptions\RouteNotFoundException();
-            }
+        if ($c_returns == 1)
+        {
+            $this->route = current($returns);
+            return $this->route;
+        }
+        else if ($c_returns > 1)
+        {
+            throw new _\Libraries\Exceptions\TooManyRoutesException();
         }
         else
         {
-            return false;
+            throw new _\Libraries\Exceptions\RouteNotFoundException();
         }
     }
 
@@ -244,14 +265,14 @@ class Router
             return $uri;
         }
 
-        $path = (isset($_SERVER['PATH_INFO'])) ? $_SERVER['PATH_INFO'] : getenv('PATH_INFO');
+        $path = $this->getPathInfo();
 
         if (trim($path, '/') != '' && $path != '/' . SELF)
         {
             return $path;
         }
 
-        $path = (isset($_SERVER['QUERY_STRING'])) ? $_SERVER['QUERY_STRING'] : getenv('QUERY_STRING');
+        $path = $this->getQueryString();
 
         if (trim($path, '/') != '')
         {
@@ -259,6 +280,26 @@ class Router
         }
 
         return '';
+    }
+
+    /**
+     * Return the PATH_INFO value.
+     *
+     * @return string
+     */
+    protected function getPathInfo()
+    {
+        return (isset($_SERVER['PATH_INFO'])) ? $_SERVER['PATH_INFO'] : getenv('PATH_INFO');
+    }
+
+    /**
+     * Return the QUERY_STRING value.
+     *
+     * @return string
+     */
+    protected function getQueryString()
+    {
+        return (isset($_SERVER['QUERY_STRING'])) ? $_SERVER['QUERY_STRING'] : getenv('QUERY_STRING');
     }
 
     /**
@@ -310,10 +351,7 @@ class Router
 
         $uri = parse_url($uri, PHP_URL_PATH);
 
-        return str_replace([
-            '//',
-            '../'
-        ], '/', trim($uri, '/'));
+        return str_replace(['//', '../'], '/', trim($uri, '/'));
     }
 
     /**
