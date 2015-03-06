@@ -104,9 +104,10 @@ class Cervo
 
 
 
-        // We initialize the Router
+        // We get the required libraries
 
         $router = &self::getLibrary('Cervo/Router');
+        $config = &self::getLibrary('Cervo/Config');
 
 
 
