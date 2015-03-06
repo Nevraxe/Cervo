@@ -84,7 +84,7 @@ class Template
      * @return mixed
      */
     public function __get($name)
-	{
+    {
 		if (isset($this->data[$name]))
 		{
 			return $this->data[$name];
@@ -113,7 +113,7 @@ class Template
      * Render the template.
      */
     public function render()
-	{
+    {
         $config = &_::getLibrary('Cervo/Config');
 
 		require $config->get('Cervo/Application/Directory') . $this->name[0] . \DS . $config->get('Cervo/Application/TemplatesPath') . implode('/', array_slice($this->name, 1)) . '.php';
