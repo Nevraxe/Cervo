@@ -64,7 +64,7 @@ class Events
      *
      * @return int
      */
-    static public function priority_sort($a, $b)
+    public static function priority_sort($a, $b)
     {
         if ($a['priority'] == $b['priority'])
             return 0;

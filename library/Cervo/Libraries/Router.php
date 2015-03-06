@@ -246,7 +246,7 @@ class Router
 
         $path = (isset($_SERVER['PATH_INFO'])) ? $_SERVER['PATH_INFO'] : getenv('PATH_INFO');
 
-        if (trim($path, '/') != '' && $path != "/" . SELF)
+        if (trim($path, '/') != '' && $path != '/' . SELF)
         {
             return $path;
         }

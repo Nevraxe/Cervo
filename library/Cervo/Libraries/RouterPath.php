@@ -148,7 +148,6 @@ abstract class RouterPath
             }
             else
             {
-                // TODO: Should probably encapsulate the $_SERVER variables in an object (Request)
                 switch ($_SERVER['REQUEST_METHOD'])
                 {
                     case 'GET':

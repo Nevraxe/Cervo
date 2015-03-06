@@ -66,7 +66,7 @@ class Event extends \Cervo\Libraries\RouterPath
      *
      * @return int
      */
-    static public function priority_sort(self $a, self $b)
+    public static function priority_sort(self $a, self $b)
     {
         if ($a->getPriority() == $b->getPriority())
             return 0;
