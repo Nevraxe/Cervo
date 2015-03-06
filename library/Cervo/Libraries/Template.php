@@ -70,10 +70,10 @@ class Template
 
         $this->name = explode('/', $name);
 
-		if (!file_exists($config->get('Cervo/Application/Directory') . $this->name[0] . \DS . $config->get('Cervo/Application/TemplatesPath') . implode('/', array_slice($this->name, 1)) . '.php'))
-		{
-			throw new _\Libraries\Exceptions\TemplateNotFoundException();
-		}
+        if (!file_exists($config->get('Cervo/Application/Directory') . $this->name[0] . \DS . $config->get('Cervo/Application/TemplatesPath') . implode('/', array_slice($this->name, 1)) . '.php'))
+        {
+            throw new _\Libraries\Exceptions\TemplateNotFoundException();
+        }
     }
 
     /**
@@ -85,15 +85,15 @@ class Template
      */
     public function __get($name)
     {
-		if (isset($this->data[$name]))
-		{
-			return $this->data[$name];
-		}
-		else
-		{
-			return null;
-		}
-	}
+        if (isset($this->data[$name]))
+        {
+            return $this->data[$name];
+        }
+        else
+        {
+            return null;
+        }
+    }
 
     /**
      * Assign an array as the template's data.
@@ -104,10 +104,10 @@ class Template
      * @return $this
      */
     public function &assign($data = array())
-	{
-		$this->data = $data;
-		return $this;
-	}
+    {
+        $this->data = $data;
+        return $this;
+    }
 
     /**
      * Render the template.
@@ -116,6 +116,6 @@ class Template
     {
         $config = &_::getLibrary('Cervo/Config');
 
-		require $config->get('Cervo/Application/Directory') . $this->name[0] . \DS . $config->get('Cervo/Application/TemplatesPath') . implode('/', array_slice($this->name, 1)) . '.php';
-	}
+        require $config->get('Cervo/Application/Directory') . $this->name[0] . \DS . $config->get('Cervo/Application/TemplatesPath') . implode('/', array_slice($this->name, 1)) . '.php';
+    }
 }
