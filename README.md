@@ -1,6 +1,8 @@
 Cervo
 =====
 
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Manhim/Cervo/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Manhim/Cervo/?branch=master)
+
 A lightweight and highly modular structure framework for PHP.
 
 
@@ -17,9 +19,9 @@ Versioning
 
 Version model: (major).(minor).(hotfix)
 
- - **Major** version changes when there are major rewrites, major changes, or removal of deprecated features.
- - **Minor** version changes may affect the way the system is currently used, but will usually only take minor changes in the application to stay up-to-date.
- - **Hotfix** version changes are bug fixes and small feature additions. Nothing in your code will have to change.
+ - **Major** version changes when there are major rewrites, major changes, non-backward compatible changes, and/or removal of deprecated features.
+ - **Minor** version changes are all backward compatible and may contain deprecated features.
+ - **Hotfix** version changes are for bug fixes and small feature additions.
 
 
 Installing
@@ -29,7 +31,7 @@ Installing
 
 ```
 "require": {
-    "manhim/cervo": "2.4.*"
+    "manhim/cervo": "2.5.*"
 }
 ```
 

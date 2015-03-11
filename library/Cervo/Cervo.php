@@ -39,7 +39,7 @@ class Cervo
     /**
      * The current version of Cervo.
      */
-    const VERSION = '2.4.0';
+    const VERSION = '2.5.0';
 
     /**
      * All the libraries instances that have been initialized through getLibrary().
