@@ -20,7 +20,7 @@ Versioning
 Version model: (major).(minor).(hotfix)
 
  - **Major** version changes when there are major rewrites, major changes, non-backward compatible changes, and/or removal of deprecated features.
- - **Minor** version changes are all backward compatible and may contain deprecated features.
+ - **Minor** version changes are all backward compatible and may contain newly deprecated features, and/or new features.
  - **Hotfix** version changes are for bug fixes and small feature additions.
 
 
