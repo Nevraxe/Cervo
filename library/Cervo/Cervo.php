@@ -362,8 +362,18 @@ class Cervo
                 require $config->get('Cervo/Application/Directory') . substr($ex[1], 0, strlen($ex[1]) - 6) . \DS . implode(\DS, array_slice($ex, 2)) . '.php';
             }
         }
+    }
 
+    /**
+     * The dynamic class autoloader.
+     * You can use self::register_autoload to add a new autoloader.
+     *
+     * @param string $name The class full name (Include the namespace(s))
+     */
+    public static function dynamic_autoload($name)
+    {
         $c_autoloads = count(self::$autoloads);
+
         for ($i = 0; $i < $c_autoloads; $i++)
         {
             $func = self::$autoloads[$i];

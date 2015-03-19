@@ -47,3 +47,4 @@ require $current_directory . 'CervoTools.php';
 
 
 spl_autoload_register('\Cervo::autoload');
+spl_autoload_register('\Cervo::dynamic_autoload');
