@@ -57,137 +57,18 @@ class CervoTools
         $config = &_::getLibrary('Cervo/Config');
 
 
-        // Start to generate the PHPStorm metadata content
-
-        $file_classes = [
-            'CervoLibraries' => self::getCervoLibraries($config->get('Cervo/Libraries/Directory')),
-            'Libraries' => self::getApplicationClasses($config->get('Cervo/Application/Directory'), $config->get('Cervo/Application/LibariesPath')),
-            'Controllers' => self::getApplicationClasses($config->get('Cervo/Application/Directory'), $config->get('Cervo/Application/ControllersPath')),
-            'Models' => self::getApplicationClasses($config->get('Cervo/Application/Directory'), $config->get('Cervo/Application/ModelsPath')),
-            'Views' => self::getApplicationClasses($config->get('Cervo/Application/Directory'), $config->get('Cervo/Application/ViewsPath'))
-        ];
-
-
-        // Write the results
-
-        $towrite = <<<METADATA
-<?php
-
-namespace PHPSTORM_META
-{
-    /** @noinspection PhpUnusedLocalVariableInspection */
-    /** @noinspection PhpIllegalArrayKeyTypeInspection */
-    \$STATIC_METHOD_TYPES = [
-        \Cervo::getLibrary('') => [
-
-METADATA;
-
-        foreach ($file_classes['CervoLibraries'] as $f)
-        {
-            $call_name = $f;
-            $class = str_replace('/', '\\', $f);
-
-            if ($call_name === 'Exceptions')
-                continue;
-
-            $towrite .= '            \'Cervo/' . $call_name . '\' instanceof \Cervo\Libraries\\' . $class . ",\n";
-        }
-
-        foreach ($file_classes['Libraries'] as $f)
-        {
-            $ex = explode('/', $f);
-
-            if (count($ex) <= 1)
-            {
-                $towrite .= '            \'' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\Libraries\\' . $ex[0] . ",\n";
-                $towrite .= '            \'' . $ex[0] . '/' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\Libraries\\' . $ex[0] . ",\n";
-            }
-            else
-            {
-                $towrite .= '            \'' . $f . '\' instanceof \Application\\' . $ex[0] . 'Module\Libraries\\' . implode('\\', array_slice($ex, 1)) . ",\n";
-            }
-        }
-
-        $towrite .= <<<METADATA
-        ],
-        \Cervo::getController('') => [
-
-METADATA;
-
-        foreach ($file_classes['Controllers'] as $f)
-        {
-            $ex = explode('/', $f);
-
-            if (count($ex) <= 1)
-            {
-                $towrite .= '            \'' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\Controllers\\' . $ex[0] . ",\n";
-                $towrite .= '            \'' . $ex[0] . '/' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\Controllers\\' . $ex[0] . ",\n";
-            }
-            else
-            {
-                $towrite .= '            \'' . $f . '\' instanceof \Application\\' . $ex[0] . 'Module\Controllers\\' . implode('\\', array_slice($ex, 1)) . ",\n";
-            }
-        }
-
-        $towrite .= <<<METADATA
-        ],
-        \Cervo::getModel('') => [
-
-METADATA;
-
-        foreach ($file_classes['Models'] as $f)
-        {
-            $ex = explode('/', $f);
-
-            if (count($ex) <= 1)
-            {
-                $towrite .= '            \'' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\Models\\' . $ex[0] . ",\n";
-                $towrite .= '            \'' . $ex[0] . '/' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\Models\\' . $ex[0] . ",\n";
-            }
-            else
-            {
-                $towrite .= '            \'' . $f . '\' instanceof \Application\\' . $ex[0] . 'Module\Models\\' . implode('\\', array_slice($ex, 1)) . ",\n";
-            }
-        }
-
-        $towrite .= <<<METADATA
-        ],
-        \Cervo::getView('') => [
-
-METADATA;
-
-        foreach ($file_classes['Views'] as $f)
-        {
-            $ex = explode('/', $f);
-
-            if (count($ex) <= 1)
-            {
-                $towrite .= '            \'' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\Views\\' . $ex[0] . ",\n";
-                $towrite .= '            \'' . $ex[0] . '/' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\Views\\' . $ex[0] . ",\n";
-            }
-            else
-            {
-                $towrite .= '            \'' . $f . '\' instanceof \Application\\' . $ex[0] . 'Module\Views\\' . implode('\\', array_slice($ex, 1)) . ",\n";
-            }
-        }
-
-        $towrite .= <<<METADATA
-        ],
-METADATA;
-
-        $towrite .= <<<METADATA
-
-    ];
-}
-
-METADATA;
-
-
         // Print out the results
 
         echo '<pre>';
 
-        echo htmlentities($towrite);
+        echo htmlentities(
+            self::phpstormMetadataHeader() .
+            self::phpstormMetadataLibraries(self::getCervoLibraries($config->get('Cervo/Libraries/Directory')), self::getApplicationClasses($config->get('Cervo/Application/Directory'), $config->get('Cervo/Application/LibariesPath'))) .
+            self::phpstormMetadataControllers(self::getApplicationClasses($config->get('Cervo/Application/Directory'), $config->get('Cervo/Application/ControllersPath'))) .
+            self::phpstormMetadataModels(self::getApplicationClasses($config->get('Cervo/Application/Directory'), $config->get('Cervo/Application/ModelsPath'))) .
+            self::phpstormMetadataViews(self::getApplicationClasses($config->get('Cervo/Application/Directory'), $config->get('Cervo/Application/ViewsPath'))) .
+            self::phpstormMetadataFooter()
+        );
 
         echo '</pre>';
     }
@@ -195,7 +76,7 @@ METADATA;
     /**
      * Fetch a list of all the Cervo Libraries class.
      *
-     * @param $path The path to the Cervo Libraries folder
+     * @param string $path The path to the Cervo Libraries folder
      *
      * @return array
      */
@@ -220,8 +101,8 @@ METADATA;
     /**
      * Fetch a list of all the Application classes depending on the sub path.
      *
-     * @param $path The path to the Application root
-     * @param $sub_path The sub-path to look for
+     * @param string $path The path to the Application root
+     * @param string $sub_path The sub-path to look for
      *
      * @return array
      */
@@ -249,6 +130,160 @@ METADATA;
         }
 
         return $classes;
+    }
+
+    private static function phpstormMetadataHeader()
+    {
+        return <<<METADATA
+<?php
+
+namespace PHPSTORM_META
+{
+    /** @noinspection PhpUnusedLocalVariableInspection */
+    /** @noinspection PhpIllegalArrayKeyTypeInspection */
+    \$STATIC_METHOD_TYPES = [
+
+METADATA;
+    }
+
+    private static function phpstormMetadataLibraries($cervo_libraries, $libraries)
+    {
+        $towrite = <<<METADATA
+        \Cervo::getLibrary('') => [
+
+METADATA;
+
+        foreach ($cervo_libraries as $f)
+        {
+            $class = str_replace('/', '\\', $f);
+
+            if ($f === 'Exceptions')
+                continue;
+
+            $towrite .= '            \'Cervo/' . $f . '\' instanceof \Cervo\Libraries\\' . $class . ",\n";
+        }
+
+        foreach ($libraries as $f)
+        {
+            $ex = explode('/', $f);
+
+            if (count($ex) <= 1)
+            {
+                $towrite .= '            \'' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\Libraries\\' . $ex[0] . ",\n";
+                $towrite .= '            \'' . $ex[0] . '/' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\Libraries\\' . $ex[0] . ",\n";
+            }
+            else
+            {
+                $towrite .= '            \'' . $f . '\' instanceof \Application\\' . $ex[0] . 'Module\Libraries\\' . implode('\\', array_slice($ex, 1)) . ",\n";
+            }
+        }
+
+        $towrite .= <<<METADATA
+        ],
+
+METADATA;
+
+        return $towrite;
+    }
+
+    private static function phpstormMetadataControllers($controllers)
+    {
+        $towrite = <<<METADATA
+        \Cervo::getController('') => [
+
+METADATA;
+
+        foreach ($controllers as $f)
+        {
+            $ex = explode('/', $f);
+
+            if (count($ex) <= 1)
+            {
+                $towrite .= '            \'' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\Controllers\\' . $ex[0] . ",\n";
+                $towrite .= '            \'' . $ex[0] . '/' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\Controllers\\' . $ex[0] . ",\n";
+            }
+            else
+            {
+                $towrite .= '            \'' . $f . '\' instanceof \Application\\' . $ex[0] . 'Module\Controllers\\' . implode('\\', array_slice($ex, 1)) . ",\n";
+            }
+        }
+
+        $towrite .= <<<METADATA
+        ],
+
+METADATA;
+
+        return $towrite;
+    }
+
+    private static function phpstormMetadataModels($models)
+    {
+        $towrite = <<<METADATA
+        \Cervo::getModel('') => [
+
+METADATA;
+
+        foreach ($models as $f)
+        {
+            $ex = explode('/', $f);
+
+            if (count($ex) <= 1)
+            {
+                $towrite .= '            \'' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\Models\\' . $ex[0] . ",\n";
+                $towrite .= '            \'' . $ex[0] . '/' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\Models\\' . $ex[0] . ",\n";
+            }
+            else
+            {
+                $towrite .= '            \'' . $f . '\' instanceof \Application\\' . $ex[0] . 'Module\Models\\' . implode('\\', array_slice($ex, 1)) . ",\n";
+            }
+        }
+
+        $towrite .= <<<METADATA
+        ],
+
+METADATA;
+
+        return $towrite;
+    }
+
+    private static function phpstormMetadataViews($views)
+    {
+        $towrite = <<<METADATA
+        \Cervo::getView('') => [
+
+METADATA;
+
+        foreach ($views as $f)
+        {
+            $ex = explode('/', $f);
+
+            if (count($ex) <= 1)
+            {
+                $towrite .= '            \'' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\Views\\' . $ex[0] . ",\n";
+                $towrite .= '            \'' . $ex[0] . '/' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\Views\\' . $ex[0] . ",\n";
+            }
+            else
+            {
+                $towrite .= '            \'' . $f . '\' instanceof \Application\\' . $ex[0] . 'Module\Views\\' . implode('\\', array_slice($ex, 1)) . ",\n";
+            }
+        }
+
+        $towrite .= <<<METADATA
+        ],
+
+METADATA;
+
+        return $towrite;
+    }
+
+    private static function phpstormMetadataFooter()
+    {
+        return <<<METADATA
+
+    ];
+}
+
+METADATA;
     }
 
     /**
