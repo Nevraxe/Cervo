@@ -70,7 +70,7 @@ class Cervo
      */
     public static function init($json_config_file = null)
     {
-        // We check if the system is already initiated
+        // Check if the system is already initiated
 
         if (self::$is_init)
             return;
@@ -78,11 +78,9 @@ class Cervo
         self::$is_init = true;
 
 
-
-        // We start the configuration process
+        // Start the configuration process
 
         self::initConfig($json_config_file);
-
 
 
         // Events startup
@@ -95,21 +93,18 @@ class Cervo
         $events->register('Cervo/System/After');
 
 
-
-        // We fire the pre-system event
+        // Fire the pre-system event
 
         $events->fire('Cervo/System/Before');
 
 
-
-        // We get the required libraries
+        // Get the required libraries
 
         $router = &self::getLibrary('Cervo/Router');
         $config = &self::getLibrary('Cervo/Config');
 
 
-
-        // We initialise the system
+        // Initialise the system
 
         $route = $router->getRoute();
 
@@ -124,8 +119,7 @@ class Cervo
         }
 
 
-
-        // We fire the post-system event
+        // Fire the post-system event
 
         $events->fire('Cervo/System/After');
     }
@@ -137,20 +131,18 @@ class Cervo
      */
     public static function initConfig($json_config_file = null)
     {
-        // A small shortcut
+        // Small shortcut
 
         if (!defined('DS'))
             define('DS', \DIRECTORY_SEPARATOR);
 
 
-
-        // We include the Exceptions manually
+        // Include the Exceptions manually
 
         require_once 'Libraries/Exceptions.php';
 
 
-
-        // We set the default configuration values
+        // Set the default configuration values
 
         $config = &self::getLibrary('Cervo/Config');
 

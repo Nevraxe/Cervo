@@ -51,14 +51,13 @@ class CervoTools
      */
     public static function phpstormMetadata($json_config_file = null)
     {
-        // We start the configuration process
+        // Start the configuration process
 
         _::initConfig($json_config_file);
         $config = &_::getLibrary('Cervo/Config');
 
 
-
-        // We start to generate the PHPStorm metadata content
+        // Start to generate the PHPStorm metadata content
 
         $file_classes = [
             'CervoLibraries' => self::getCervoLibraries($config->get('Cervo/Libraries/Directory')),
@@ -69,8 +68,7 @@ class CervoTools
         ];
 
 
-
-        // We write the results
+        // Write the results
 
         $towrite = <<<METADATA
 <?php
@@ -185,8 +183,7 @@ METADATA;
 METADATA;
 
 
-
-        // We print out the results
+        // Print out the results
 
         echo '<pre>';
 
