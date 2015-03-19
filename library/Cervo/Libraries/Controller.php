@@ -27,11 +27,7 @@
  *
  */
 
-
-
 namespace Cervo\Libraries;
-
-
 
 /**
  * Controller master object.

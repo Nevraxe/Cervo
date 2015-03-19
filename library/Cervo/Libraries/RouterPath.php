@@ -27,11 +27,7 @@
  *
  */
 
-
-
 namespace Cervo\Libraries;
-
-
 
 /**
  * Used in Router. Each of the module's routes are RouterPath objects.

@@ -27,11 +27,7 @@
  *
  */
 
-
-
 namespace Cervo\Libraries;
-
-
 
 /**
  * View master object.

@@ -27,18 +27,12 @@
  *
  */
 
-
-
 namespace Cervo\Libraries;
-
-
 
 use Cervo as _,
     Cervo\Libraries\RouterPath\Route,
     Cervo\Libraries\RouterPath\Event,
     Cervo\Libraries\RouterPath;
-
-
 
 /**
  * Route manager for Cervo.

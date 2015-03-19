@@ -27,11 +27,7 @@
  *
  */
 
-
-
 namespace Cervo\Libraries;
-
-
 
 /**
  * Configuration manager for Cervo.

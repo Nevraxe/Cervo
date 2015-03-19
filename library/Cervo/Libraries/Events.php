@@ -27,15 +27,9 @@
  *
  */
 
-
-
 namespace Cervo\Libraries;
 
-
-
 use Cervo as _;
-
-
 
 /**
  * Events manager for Cervo.

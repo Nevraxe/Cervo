@@ -27,11 +27,7 @@
  *
  */
 
-
-
 namespace Cervo\Libraries\Exceptions;
-
-
 
 class Exception extends \Exception
 {

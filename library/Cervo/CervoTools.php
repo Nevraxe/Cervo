@@ -27,11 +27,7 @@
  *
  */
 
-
-
 use Cervo as _;
-
-
 
 /**
  * Tools for Cervo.

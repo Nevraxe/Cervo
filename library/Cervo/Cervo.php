@@ -27,8 +27,6 @@
  *
  */
 
-
-
 /**
  * Master class for Cervo.
  *

@@ -27,11 +27,7 @@
  *
  */
 
-
-
 namespace Cervo\Libraries;
-
-
 
 /**
  * Model master object.
