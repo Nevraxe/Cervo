@@ -189,6 +189,9 @@ class Router
      */
     protected function runEvents()
     {
+        if ($this->prevent_default || $this->prevent_events)
+            return;
+
         usort($this->events, '\Cervo\Libraries\RouterPath\Event::priority_sort');
 
         foreach ($this->events as $e)
