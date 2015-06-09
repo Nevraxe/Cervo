@@ -84,8 +84,6 @@ class Router
      */
     private $route = null;
 
-    protected $events_running = false;
-
     /**
      * Parse the route and sanitize the $path string.
      */
@@ -194,11 +192,6 @@ class Router
         if ($this->prevent_default || $this->prevent_events)
             return;
 
-        if ($this->events_running)
-            return;
-
-        $this->events_running = true;
-
         usort($this->events, '\Cervo\Libraries\RouterPath\Event::priority_sort');
 
         foreach ($this->events as $e)
@@ -211,8 +204,6 @@ class Router
                     break;
             }
         }
-
-        $this->events_running = false;
     }
 
     /**
