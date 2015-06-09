@@ -412,10 +412,4 @@ class Router
     {
         return $this->prevent_default;
     }
-
-    public function overrideRoute(Route $route)
-    {
-        $this->route = $route;
-        $this->runEvents();
-    }
 }
