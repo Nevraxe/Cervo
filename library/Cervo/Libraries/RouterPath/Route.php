@@ -72,16 +72,21 @@ class Route extends \Cervo\Libraries\RouterPath
      * Set the path, the module, the controller and the method.
      * Sanitize the path and compute the regex.
      *
-     * @param string $path
-     * @param string $controller
-     * @param int    $http_method
-     * @param array  $params
+     * @param string          $path
+     * @param string|callable $method_path
+     * @param int             $http_method
+     * @param array           $params
      *
      * @throws InvalidControllerException
      */
-    public function __construct($path, $controller, $http_method = self::M_ALL, $params = [])
+    public function __construct($path, $method_path, $http_method = self::M_ALL, $params = [])
     {
-        $controller_e = explode('/', $controller);
+        if (is_callable($method_path))
+        {
+            $method_path = $method_path();
+        }
+
+        $controller_e = explode('/', $method_path);
         $c_controller_e = count($controller_e);
 
         if ($c_controller_e < 3)
