@@ -1,8 +1,6 @@
 Cervo
 =====
 
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Manhim/Cervo/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Manhim/Cervo/?branch=master)
-
 A lightweight and highly modular structure framework for PHP.
 
 
