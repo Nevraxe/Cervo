@@ -38,5 +38,19 @@ use Cervo as _;
  */
 class Response
 {
+    public function renderView(View $view, $status_code = 200)
+    {
+        $this->responseCode($status_code);
+        $view->render();
+    }
 
+    public function responseCode($status_code = 200)
+    {
+        http_response_code($status_code);
+    }
+
+    public function redirect($location)
+    {
+        header('Location: ' . $location);
+    }
 }
