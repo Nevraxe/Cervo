@@ -12,11 +12,12 @@
   "authors": [
     {
       "name": "Nevraxe inc.",
+      "email": "info@nevraxe.com",
       "homepage": "https://nevraxe.com"
     },
     {
       "name": "Marc André Audet",
-      "email": "root@manhim.net",
+      "email": "maudet@nevraxe.com",
       "homepage": "https://blog.manhim.net"
     }
   ],
