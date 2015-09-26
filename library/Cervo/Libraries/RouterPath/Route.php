@@ -34,7 +34,7 @@ namespace Cervo\Libraries\RouterPath;
 
 
 use Cervo\Libraries\Exceptions\InvalidControllerException;
-
+use Cervo\Libraries\RouterPath;
 
 
 /**
@@ -79,7 +79,7 @@ class Route extends \Cervo\Libraries\RouterPath
      *
      * @throws InvalidControllerException
      */
-    public function __construct($path, $method_path, $http_method = self::M_ALL, $params = [])
+    public function __construct($path, $method_path, $http_method = RouterPath::M_ANY, $params = [])
     {
         if (is_callable($method_path))
         {
