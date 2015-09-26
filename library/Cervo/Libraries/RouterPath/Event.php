@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  *
  * Copyright (c) 2015 Marc André "Manhim" Audet <root@manhim.net>. All rights reserved.
@@ -28,9 +29,10 @@
  */
 
 
-
 namespace Cervo\Libraries\RouterPath;
 
+
+use Cervo\Libraries\RouterPath;
 
 
 /**
@@ -38,7 +40,7 @@ namespace Cervo\Libraries\RouterPath;
  *
  * @author Marc André Audet <root@manhim.net>
  */
-class Event extends \Cervo\Libraries\RouterPath
+class Event extends RouterPath
 {
     /**
      * The route's callback.
@@ -93,16 +95,29 @@ class Event extends \Cervo\Libraries\RouterPath
         parent::__construct($path, $http_method);
     }
 
+    /**
+     * Return the route's callback.
+     *
+     * @return string
+     */
     public function getCallback()
     {
         return $this->callback;
     }
 
+    /**
+     * Return the priority of the route.
+     *
+     * @return int
+     */
     public function getPriority()
     {
         return $this->priority;
     }
 
+    /**
+     * Run the callback.
+     */
     public function run()
     {
         call_user_func($this->getCallback(), $this, $this->params);

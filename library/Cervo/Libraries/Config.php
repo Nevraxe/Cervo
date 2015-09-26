@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  *
  * Copyright (c) 2015 Marc André "Manhim" Audet <root@manhim.net>. All rights reserved.
@@ -27,7 +28,9 @@
  *
  */
 
+
 namespace Cervo\Libraries;
+
 
 /**
  * Configuration manager for Cervo.
@@ -47,17 +50,6 @@ class Config
      * @var array
      */
     protected $values = [];
-
-    /**
-     * Magic method for set().
-     *
-     * @param string|array $name
-     * @param mixed        $value
-     */
-    public function __set($name, $value)
-    {
-        $this->set($name, $value);
-    }
 
     /**
      * Add a new array element to the specified configuration path.
@@ -130,18 +122,6 @@ class Config
         $current = $value;
 
         return $this;
-    }
-
-    /**
-     * Magic method for get().
-     *
-     * @param string $name The configuration path
-     *
-     * @return mixed
-     */
-    public function __get($name)
-    {
-        return $this->get($name);
     }
 
     /**

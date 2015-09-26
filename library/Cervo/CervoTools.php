@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  *
  * Copyright (c) 2015 Marc André "Manhim" Audet <root@manhim.net>. All rights reserved.
@@ -27,7 +28,9 @@
  *
  */
 
+
 use Cervo as _;
+
 
 /**
  * Tools for Cervo.

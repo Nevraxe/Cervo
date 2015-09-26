@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  *
  * Copyright (c) 2015 Marc André "Manhim" Audet <root@manhim.net>. All rights reserved.
@@ -27,7 +28,9 @@
  *
  */
 
+
 namespace Cervo\Libraries;
+
 
 /**
  * Used in Router. Each of the module's routes are RouterPath objects.

@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  *
  * Copyright (c) 2015 Marc André "Manhim" Audet <root@manhim.net>. All rights reserved.
@@ -28,9 +29,7 @@
  */
 
 
-
 namespace Cervo\Libraries\RouterPath;
-
 
 
 use Cervo\Libraries\Exceptions\InvalidControllerException;
@@ -42,7 +41,7 @@ use Cervo\Libraries\RouterPath;
  *
  * @author Marc André Audet <root@manhim.net>
  */
-class Route extends \Cervo\Libraries\RouterPath
+class Route extends RouterPath
 {
     /**
      * The route's module.
@@ -108,6 +107,13 @@ class Route extends \Cervo\Libraries\RouterPath
         parent::__construct($path, $http_method);
     }
 
+    /**
+     * Compare the input path to the regex.
+     *
+     * @param string $path
+     *
+     * @return bool
+     */
     public function compare($path)
     {
         return parent::compare($path);

@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  *
  * Copyright (c) 2015 Marc André "Manhim" Audet <root@manhim.net>. All rights reserved.
@@ -27,16 +28,20 @@
  *
  */
 
+
 // A small shortcut that is used througout Cervo
 
 if (!defined('DS'))
     define('DS', \DIRECTORY_SEPARATOR);
 
+
 $current_directory = realpath(dirname(__FILE__)) . \DS;
+
 
 require $current_directory . 'Libraries/Config.php';
 require $current_directory . 'Cervo.php';
 require $current_directory . 'CervoTools.php';
+
 
 spl_autoload_register('\Cervo::autoload');
 spl_autoload_register('\Cervo::dynamic_autoload');

@@ -29,18 +29,13 @@
  */
 
 
-namespace Cervo\Libraries;
+namespace Cervo\Libraries\Exceptions;
 
 
-/**
- * Model master class.
- *
- * @author Marc André Audet <root@manhim.net>
- */
-abstract class Model
+class InvalidControllerException extends \RuntimeException
 {
-    public function __construct()
+    public function __construct($message = 'Invalid controller.', \Exception $previous = null)
     {
-
+        parent::__construct($message, 500, $previous);
     }
 }

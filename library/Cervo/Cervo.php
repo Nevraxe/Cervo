@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  *
  * Copyright (c) 2015 Marc André "Manhim" Audet <root@manhim.net>. All rights reserved.
@@ -26,6 +27,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
 
 /**
  * Master class for Cervo.
@@ -300,33 +302,6 @@ class Cervo
     public static function getTemplate($name)
     {
         return new \Cervo\Libraries\Template($name);
-    }
-
-    /**
-     * Return the configuration file's result (expect an array).
-     * Will fetch [$name]/Config.php
-     * Return an empty array if the file does not exists.
-     *
-     * DEPRECATED! Replaced by the Cervo/Config library.
-     *
-     * @param string $name The module name
-     *
-     * @return array
-     *
-     * @deprecated Replaced by the Cervo/Config library.
-     */
-    public static function getConfig($name)
-    {
-        $config = &self::getLibrary('Cervo/Config');
-
-        if (file_exists($config->get('Cervo/Application/Directory') . $name . \DS . 'Config.php'))
-        {
-            return require $config->get('Cervo/Application/Directory') . $name . \DS . 'Config.php';
-        }
-        else
-        {
-            return [];
-        }
     }
 
     /**

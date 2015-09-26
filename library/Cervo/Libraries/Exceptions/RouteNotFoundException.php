@@ -29,18 +29,13 @@
  */
 
 
-namespace Cervo\Libraries;
+namespace Cervo\Libraries\Exceptions;
 
 
-/**
- * Model master class.
- *
- * @author Marc André Audet <root@manhim.net>
- */
-abstract class Model
+class RouteNotFoundException extends NotFoundException
 {
-    public function __construct()
+    public function __construct($message = 'Route not found.', \Exception $previous = null)
     {
-
+        parent::__construct($message, $previous);
     }
 }

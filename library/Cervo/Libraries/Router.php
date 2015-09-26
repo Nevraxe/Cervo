@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  *
  * Copyright (c) 2015 Marc André "Manhim" Audet <root@manhim.net>. All rights reserved.
@@ -27,12 +28,15 @@
  *
  */
 
+
 namespace Cervo\Libraries;
 
-use Cervo as _,
-    Cervo\Libraries\RouterPath\Route,
-    Cervo\Libraries\RouterPath\Event,
-    Cervo\Libraries\RouterPath;
+
+use Cervo as _;
+use Cervo\Libraries\RouterPath\Route;
+use Cervo\Libraries\RouterPath\Event;
+use Cervo\Libraries\RouterPath;
+
 
 /**
  * Route manager for Cervo.
@@ -257,7 +261,9 @@ class Router
             return $args ? '/' . implode('/', $args) : '';
         }
 
-        if ($uri = $this->detectUri())
+        $uri = $this->detectUri();
+
+        if ($uri)
         {
             return $uri;
         }

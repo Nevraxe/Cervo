@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  *
  * Copyright (c) 2015 Marc André "Manhim" Audet <root@manhim.net>. All rights reserved.
@@ -27,9 +28,12 @@
  *
  */
 
+
 namespace Cervo\Libraries;
 
+
 use Cervo as _;
+
 
 /**
  * Template class for Cervo.
@@ -49,14 +53,14 @@ class Template
      * Usually set from the View.
      * @var array
      */
-    protected $data = array();
+    protected $data = [];
 
     /**
      * Initialize the template.
      *
      * @param string $name The template (file)name.
      *
-     * @throws Exceptions\TemplateNotFoundException
+     * @throws Exceptions\TemplateFileMissingException
      */
     public function __construct($name)
     {
@@ -66,7 +70,7 @@ class Template
 
         if (!file_exists($config->get('Cervo/Application/Directory') . $this->name[0] . \DS . $config->get('Cervo/Application/TemplatesPath') . implode('/', array_slice($this->name, 1)) . '.php'))
         {
-            throw new _\Libraries\Exceptions\TemplateNotFoundException();
+            throw new _\Libraries\Exceptions\TemplateFileMissingException();
         }
     }
 
@@ -97,7 +101,7 @@ class Template
      *
      * @return $this
      */
-    public function assign($data = array())
+    public function assign($data = [])
     {
         $this->data = $data;
         return $this;

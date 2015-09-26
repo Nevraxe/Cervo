@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  *
  * Copyright (c) 2015 Marc André "Manhim" Audet <root@manhim.net>. All rights reserved.
@@ -27,9 +28,9 @@
  *
  */
 
+
 namespace Cervo\Libraries;
 
-use Cervo as _;
 
 /**
  * Response helper.
@@ -38,17 +39,33 @@ use Cervo as _;
  */
 class Response
 {
+    /**
+     * Render a view with a specific response code.
+     *
+     * @param View $view
+     * @param int  $status_code
+     */
     public function renderView(View $view, $status_code = 200)
     {
         $this->responseCode($status_code);
         $view->render();
     }
 
+    /**
+     * Changes the HTTP Response Code.
+     *
+     * @param int $status_code
+     */
     public function responseCode($status_code = 200)
     {
         http_response_code($status_code);
     }
 
+    /**
+     * Change the Location header.
+     *
+     * @param string $location
+     */
     public function redirect($location)
     {
         header('Location: ' . $location);

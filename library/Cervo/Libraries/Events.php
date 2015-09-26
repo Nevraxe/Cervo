@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  *
  * Copyright (c) 2015 Marc André "Manhim" Audet <root@manhim.net>. All rights reserved.
@@ -27,9 +28,12 @@
  *
  */
 
+
 namespace Cervo\Libraries;
 
+
 use Cervo as _;
+
 
 /**
  * Events manager for Cervo.

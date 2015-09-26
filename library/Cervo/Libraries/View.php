@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  *
  * Copyright (c) 2015 Marc André "Manhim" Audet <root@manhim.net>. All rights reserved.
@@ -27,10 +28,12 @@
  *
  */
 
+
 namespace Cervo\Libraries;
 
+
 /**
- * View master object.
+ * View master class.
  *
  * @author Marc André Audet <root@manhim.net>
  */
