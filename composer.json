@@ -3,7 +3,7 @@
     "description": "A lightweight and highly modular structure framework for PHP. ",
     "type": "library",
     "keywords": ["PHP", "Framework", "Cervo"],
-    "homepage": "https://github.com/Manhim/Cervo",
+    "homepage": "https://github.com/Nevraxe/Cervo",
     "license": "BSD-2-Clause",
     "authors": [
         {
@@ -13,7 +13,7 @@
         }
     ],
     "support": {
-        "issues": "https://github.com/Manhim/Cervo/issues"
+        "issues": "https://github.com/Nevraxe/Cervo/issues"
     },
     "require": {
         "php": ">=5.4.0"
