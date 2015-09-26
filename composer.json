@@ -1,26 +1,34 @@
 {
-    "name": "nevraxe/cervo",
-    "description": "A lightweight and highly modular structure framework for PHP. ",
-    "type": "library",
-    "keywords": ["PHP", "Framework", "Cervo"],
-    "homepage": "https://github.com/Nevraxe/Cervo",
-    "license": "BSD-2-Clause",
-    "authors": [
-        {
-            "name": "Marc André Audet",
-            "email": "root@manhim.net",
-            "homepage": "http://manhim.net"
-        }
-    ],
-    "support": {
-        "issues": "https://github.com/Nevraxe/Cervo/issues"
+  "name": "nevraxe/cervo",
+  "description": "A lightweight and highly modular structure framework for PHP. ",
+  "type": "library",
+  "keywords": [
+    "PHP",
+    "Framework",
+    "Cervo"
+  ],
+  "homepage": "https://github.com/Nevraxe/Cervo",
+  "license": "BSD-2-Clause",
+  "authors": [
+    {
+      "name": "Nevraxe inc.",
+      "homepage": "https://nevraxe.com"
     },
-    "require": {
-        "php": ">=5.4.0"
-    },
-    "autoload": {
-        "files": [
-            "library/Cervo/bootstrap.php"
-        ]
+    {
+      "name": "Marc André Audet",
+      "email": "root@manhim.net",
+      "homepage": "https://blog.manhim.net"
     }
+  ],
+  "support": {
+    "issues": "https://github.com/Nevraxe/Cervo/issues"
+  },
+  "require": {
+    "php": ">=5.4.0"
+  },
+  "autoload": {
+    "files": [
+      "library/Cervo/bootstrap.php"
+    ]
+  }
 }
