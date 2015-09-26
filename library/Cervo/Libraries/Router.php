@@ -108,7 +108,7 @@ class Router
      *
      * @return $this
      */
-    public function &addRoute($path, $controller, $http_method = RouterPath::M_ANY, $params = [])
+    public function addRoute($path, $controller, $http_method = RouterPath::M_ANY, $params = [])
     {
         $this->routes[] = new Route($path, $controller, $http_method, $params);
         return $this;
@@ -121,7 +121,7 @@ class Router
      *
      * @return $this
      */
-    public function &addRouteObject(Route $route)
+    public function addRouteObject(Route $route)
     {
         $this->routes[] = $route;
         return $this;
@@ -138,7 +138,7 @@ class Router
      *
      * @return $this
      */
-    public function &addEvent($path, $callback, $http_method = RouterPath::M_ANY, $params = [], $priority = 0)
+    public function addEvent($path, $callback, $http_method = RouterPath::M_ANY, $params = [], $priority = 0)
     {
         $this->events[] = new Event($path, $callback, $http_method, $params, $priority);
         return $this;
@@ -151,7 +151,7 @@ class Router
      *
      * @return $this
      */
-    public function &addEventObject(Event $event)
+    public function addEventObject(Event $event)
     {
         $this->events[] = $event;
         return $this;
@@ -264,7 +264,7 @@ class Router
 
         $path = $this->getPathInfo();
 
-        if (trim($path, '/') != '' && $path != '/' . SELF)
+        if (trim($path, '/') != '' && $path != '/')
         {
             return $path;
         }
@@ -371,7 +371,7 @@ class Router
         return $this->path;
     }
 
-    public function &preventEvents()
+    public function preventEvents()
     {
         $this->prevent_events = true;
         return $this;
@@ -382,7 +382,7 @@ class Router
         return $this->prevent_events;
     }
 
-    public function &preventRoute()
+    public function preventRoute()
     {
         $this->prevent_route = true;
         return $this;
@@ -393,7 +393,7 @@ class Router
         return $this->prevent_route;
     }
 
-    public function &preventDefault()
+    public function preventDefault()
     {
         $this->prevent_default = true;
         return $this;

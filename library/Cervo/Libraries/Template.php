@@ -97,7 +97,7 @@ class Template
      *
      * @return $this
      */
-    public function &assign($data = array())
+    public function assign($data = array())
     {
         $this->data = $data;
         return $this;

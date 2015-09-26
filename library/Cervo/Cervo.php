@@ -37,7 +37,7 @@ class Cervo
     /**
      * The current version of Cervo.
      */
-    const VERSION = '2.6.0';
+    const VERSION = '3.0.0';
 
     /**
      * All the libraries instances that have been initialized through getLibrary().
@@ -182,7 +182,7 @@ class Cervo
      *
      * @return object
      */
-    public static function &getLibrary($name)
+    public static function getLibrary($name)
     {
         if (is_object(self::$libraries[$name]))
             return self::$libraries[$name];
@@ -218,7 +218,7 @@ class Cervo
      *
      * @return object
      */
-    public static function &getController($name)
+    public static function getController($name)
     {
         if (is_object(self::$controllers[$name]))
             return self::$controllers[$name];
@@ -247,7 +247,7 @@ class Cervo
      *
      * @return object
      */
-    public static function &getModel($name)
+    public static function getModel($name)
     {
         $path = explode('/', $name);
 
@@ -272,7 +272,7 @@ class Cervo
      *
      * @return object
      */
-    public static function &getView($name)
+    public static function getView($name)
     {
         $path = explode('/', $name);
 
@@ -297,7 +297,7 @@ class Cervo
      *
      * @return \Cervo\Libraries\Template
      */
-    public static function &getTemplate($name)
+    public static function getTemplate($name)
     {
         return new \Cervo\Libraries\Template($name);
     }
@@ -315,7 +315,7 @@ class Cervo
      *
      * @deprecated Replaced by the Cervo/Config library.
      */
-    public static function &getConfig($name)
+    public static function getConfig($name)
     {
         $config = &self::getLibrary('Cervo/Config');
 

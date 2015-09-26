@@ -68,7 +68,7 @@ class Config
      *
      * @return $this
      */
-    public function &add($name, $value)
+    public function add($name, $value)
     {
         if (!is_array($name))
             $name = explode('/', trim($name, "/\t\n\r\0\x0B"));
@@ -94,7 +94,7 @@ class Config
      *
      * @return $this
      */
-    public function &set($name, $value)
+    public function set($name, $value)
     {
         if (!is_array($name))
             $name = explode('/', $name);
@@ -117,7 +117,7 @@ class Config
      *
      * @return $this
      */
-    public function &setDefault($name, $value)
+    public function setDefault($name, $value)
     {
         if (!is_array($name))
             $name = explode('/', $name);
