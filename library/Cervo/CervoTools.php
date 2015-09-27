@@ -90,10 +90,8 @@ class CervoTools
         $files = self::globRecursive([$path]);
         $classes = [];
 
-        foreach ($files as $file)
-        {
-            if (strncmp($path, $file, $len) === 0 && substr($file, -4) === '.php')
-            {
+        foreach ($files as $file) {
+            if (strncmp($path, $file, $len) === 0 && substr($file, -4) === '.php') {
                 $classes[] = str_replace('\\', '/', substr($file, $len, -4));
             }
         }
@@ -115,16 +113,13 @@ class CervoTools
         $path_len = strlen($path);
         $classes = [];
 
-        foreach ($files as $file)
-        {
-            if (strncmp($path, $file, $path_len) === 0 && substr($file, -4) === '.php')
-            {
+        foreach ($files as $file) {
+            if (strncmp($path, $file, $path_len) === 0 && substr($file, -4) === '.php') {
                 $cur = str_replace('\\', '/', str_replace(\DS . $sub_path, '/', substr($file, $path_len, -4)));
 
                 $ex = explode('/', $cur);
 
-                if (count($ex) === 2 && $ex[0] === $ex[1])
-                {
+                if (count($ex) === 2 && $ex[0] === $ex[1]) {
                     $cur = $ex[0];
                 }
 
@@ -156,27 +151,23 @@ METADATA;
 
 METADATA;
 
-        foreach ($cervo_libraries as $f)
-        {
+        foreach ($cervo_libraries as $f) {
             $class = str_replace('/', '\\', $f);
 
-            if ($f === 'Exceptions')
+            if ($f === 'Exceptions') {
                 continue;
+            }
 
             $towrite .= '            \'Cervo/' . $f . '\' instanceof \Cervo\Libraries\\' . $class . ",\n";
         }
 
-        foreach ($libraries as $f)
-        {
+        foreach ($libraries as $f) {
             $ex = explode('/', $f);
 
-            if (count($ex) <= 1)
-            {
+            if (count($ex) <= 1) {
                 $towrite .= '            \'' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\Libraries\\' . $ex[0] . ",\n";
                 $towrite .= '            \'' . $ex[0] . '/' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\Libraries\\' . $ex[0] . ",\n";
-            }
-            else
-            {
+            } else {
                 $towrite .= '            \'' . $f . '\' instanceof \Application\\' . $ex[0] . 'Module\Libraries\\' . implode('\\', array_slice($ex, 1)) . ",\n";
             }
         }
@@ -196,17 +187,13 @@ METADATA;
 
 METADATA;
 
-        foreach ($controllers as $f)
-        {
+        foreach ($controllers as $f) {
             $ex = explode('/', $f);
 
-            if (count($ex) <= 1)
-            {
+            if (count($ex) <= 1) {
                 $towrite .= '            \'' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\Controllers\\' . $ex[0] . ",\n";
                 $towrite .= '            \'' . $ex[0] . '/' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\Controllers\\' . $ex[0] . ",\n";
-            }
-            else
-            {
+            } else {
                 $towrite .= '            \'' . $f . '\' instanceof \Application\\' . $ex[0] . 'Module\Controllers\\' . implode('\\', array_slice($ex, 1)) . ",\n";
             }
         }
@@ -226,17 +213,13 @@ METADATA;
 
 METADATA;
 
-        foreach ($models as $f)
-        {
+        foreach ($models as $f) {
             $ex = explode('/', $f);
 
-            if (count($ex) <= 1)
-            {
+            if (count($ex) <= 1) {
                 $towrite .= '            \'' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\Models\\' . $ex[0] . ",\n";
                 $towrite .= '            \'' . $ex[0] . '/' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\Models\\' . $ex[0] . ",\n";
-            }
-            else
-            {
+            } else {
                 $towrite .= '            \'' . $f . '\' instanceof \Application\\' . $ex[0] . 'Module\Models\\' . implode('\\', array_slice($ex, 1)) . ",\n";
             }
         }
@@ -256,17 +239,13 @@ METADATA;
 
 METADATA;
 
-        foreach ($views as $f)
-        {
+        foreach ($views as $f) {
             $ex = explode('/', $f);
 
-            if (count($ex) <= 1)
-            {
+            if (count($ex) <= 1) {
                 $towrite .= '            \'' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\Views\\' . $ex[0] . ",\n";
                 $towrite .= '            \'' . $ex[0] . '/' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\Views\\' . $ex[0] . ",\n";
-            }
-            else
-            {
+            } else {
                 $towrite .= '            \'' . $f . '\' instanceof \Application\\' . $ex[0] . 'Module\Views\\' . implode('\\', array_slice($ex, 1)) . ",\n";
             }
         }
@@ -303,20 +282,14 @@ METADATA;
     {
         $files = [];
 
-        while (count($folders) > 0)
-        {
+        while (count($folders) > 0) {
             $cur = array_pop($folders);
 
-            foreach (glob($cur . '*', GLOB_MARK) as $file)
-            {
-                if (is_dir($file))
-                {
+            foreach (glob($cur . '*', GLOB_MARK) as $file) {
+                if (is_dir($file)) {
                     array_push($folders, $file);
-                }
-                else
-                {
-                    if (is_file($file) && is_readable($file))
-                    {
+                } else {
+                    if (is_file($file) && is_readable($file)) {
                         $files[] = $file;
                     }
                 }

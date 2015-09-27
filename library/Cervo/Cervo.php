@@ -74,8 +74,9 @@ class Cervo
     {
         // Check if the system is already initiated
 
-        if (self::$is_init)
+        if (self::$is_init) {
             return;
+        }
 
         self::$is_init = true;
 
@@ -110,8 +111,7 @@ class Cervo
 
         $route = $router->getRoute();
 
-        if ($route instanceof \Cervo\Libraries\RouterPath\Route)
-        {
+        if ($route instanceof \Cervo\Libraries\RouterPath\Route) {
             $events->fire('Cervo/Controller/Before');
 
             $method = $route->getMethod() . $config->get('Cervo/Application/MethodSuffix');
@@ -135,8 +135,9 @@ class Cervo
     {
         // Small shortcut
 
-        if (!defined('DS'))
+        if (!defined('DS')) {
             define('DS', \DIRECTORY_SEPARATOR);
+        }
 
 
         // Include the Exceptions manually
@@ -161,11 +162,9 @@ class Cervo
             ->setDefault('Cervo/Application/ViewsPath', 'Views' . \DS)
             ->setDefault('Cervo/Application/LibariesPath', 'Libraries' . \DS)
             ->setDefault('Cervo/Application/TemplatesPath', 'Templates' . \DS)
-            ->setDefault('Production', false)
-        ;
+            ->setDefault('Production', false);
 
-        if ($json_config_file !== null)
-        {
+        if ($json_config_file !== null) {
             $config->importJSON($json_config_file);
         }
     }
@@ -186,23 +185,18 @@ class Cervo
      */
     public static function getLibrary($name)
     {
-        if (is_object(self::$libraries[$name]))
+        if (is_object(self::$libraries[$name])) {
             return self::$libraries[$name];
+        }
 
         $path = explode('/', $name);
 
-        if (count($path) <= 1)
-        {
+        if (count($path) <= 1) {
             $i_name = '\Application\\' . $path[0] . 'Module\Libraries\\' . $path[0];
-        }
-        else
-        {
-            if ($path[0] === 'Cervo')
-            {
+        } else {
+            if ($path[0] === 'Cervo') {
                 $i_name = '\Cervo\Libraries\\' . implode('\\', array_slice($path, 1));
-            }
-            else
-            {
+            } else {
                 $i_name = '\Application\\' . $path[0] . 'Module\Libraries\\' . implode('\\', array_slice($path, 1));
             }
         }
@@ -222,17 +216,15 @@ class Cervo
      */
     public static function getController($name)
     {
-        if (is_object(self::$controllers[$name]))
+        if (is_object(self::$controllers[$name])) {
             return self::$controllers[$name];
+        }
 
         $path = explode('/', $name);
 
-        if (count($path) <= 1)
-        {
+        if (count($path) <= 1) {
             $i_name = '\Application\\' . $path[0] . 'Module\Controllers\\' . $path[0];
-        }
-        else
-        {
+        } else {
             $i_name = '\Application\\' . $path[0] . 'Module\Controllers\\' . implode('\\', array_slice($path, 1));
         }
 
@@ -253,12 +245,9 @@ class Cervo
     {
         $path = explode('/', $name);
 
-        if (count($path) <= 1)
-        {
+        if (count($path) <= 1) {
             $i_name = '\Application\\' . $path[0] . 'Module\Models\\' . $path[0];
-        }
-        else
-        {
+        } else {
             $i_name = '\Application\\' . $path[0] . 'Module\Models\\' . implode('\\', array_slice($path, 1));
         }
 
@@ -278,12 +267,9 @@ class Cervo
     {
         $path = explode('/', $name);
 
-        if (count($path) <= 1)
-        {
+        if (count($path) <= 1) {
             $i_name = '\Application\\' . $path[0] . 'Module\Views\\' . $path[0];
-        }
-        else
-        {
+        } else {
             $i_name = '\Application\\' . $path[0] . 'Module\Views\\' . implode('\\', array_slice($path, 1));
         }
 
@@ -312,18 +298,14 @@ class Cervo
      */
     public static function autoload($name)
     {
-        if (strpos($name, 'Application\\') === 0 || strpos($name, 'Cervo\Libraries\\') === 0)
-        {
+        if (strpos($name, 'Application\\') === 0 || strpos($name, 'Cervo\Libraries\\') === 0) {
             $config = &self::getLibrary('Cervo/Config');
 
             $ex = explode('\\', $name);
 
-            if ($ex[0] === 'Cervo' && $ex[1] === 'Libraries')
-            {
+            if ($ex[0] === 'Cervo' && $ex[1] === 'Libraries') {
                 require $config->get('Cervo/Libraries/Directory') . implode(\DS, array_slice($ex, 2)) . '.php';
-            }
-            else if ($ex[0] === 'Application' && substr($ex[1], -1 * 6) === 'Module')
-            {
+            } elseif ($ex[0] === 'Application' && substr($ex[1], -1 * 6) === 'Module') {
                 require $config->get('Cervo/Application/Directory') . substr($ex[1], 0, strlen($ex[1]) - 6) . \DS . implode(\DS, array_slice($ex, 2)) . '.php';
             }
         }
@@ -339,8 +321,7 @@ class Cervo
     {
         $c_autoloads = count(self::$autoloads);
 
-        for ($i = 0; $i < $c_autoloads; $i++)
-        {
+        for ($i = 0; $i < $c_autoloads; $i++) {
             $func = self::$autoloads[$i];
             $func($name);
         }

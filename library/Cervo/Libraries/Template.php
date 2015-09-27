@@ -68,8 +68,7 @@ class Template
 
         $this->name = explode('/', $name);
 
-        if (!file_exists($config->get('Cervo/Application/Directory') . $this->name[0] . \DS . $config->get('Cervo/Application/TemplatesPath') . implode('/', array_slice($this->name, 1)) . '.php'))
-        {
+        if (!file_exists($config->get('Cervo/Application/Directory') . $this->name[0] . \DS . $config->get('Cervo/Application/TemplatesPath') . implode('/', array_slice($this->name, 1)) . '.php')) {
             throw new _\Libraries\Exceptions\TemplateFileMissingException();
         }
     }
@@ -83,12 +82,9 @@ class Template
      */
     public function __get($name)
     {
-        if (isset($this->data[$name]))
-        {
+        if (isset($this->data[$name])) {
             return $this->data[$name];
-        }
-        else
-        {
+        } else {
             return null;
         }
     }

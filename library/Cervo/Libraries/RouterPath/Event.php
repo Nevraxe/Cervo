@@ -70,8 +70,9 @@ class Event extends RouterPath
      */
     public static function priority_sort(self $a, self $b)
     {
-        if ($a->getPriority() == $b->getPriority())
+        if ($a->getPriority() == $b->getPriority()) {
             return 0;
+        }
 
         return $a->getPriority() < $b->getPriority() ? -1 : 1;
     }
@@ -82,9 +83,9 @@ class Event extends RouterPath
      *
      * @param string $path
      * @param string $callback
-     * @param int    $http_method
-     * @param array  $params
-     * @param int    $priority
+     * @param int $http_method
+     * @param array $params
+     * @param int $priority
      */
     public function __construct($path, $callback, $http_method = self::M_ANY, $params = [], $priority = 0)
     {

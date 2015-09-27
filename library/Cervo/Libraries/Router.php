@@ -95,8 +95,9 @@ class Router
     {
         $this->path = trim($this->parseRoute(), '/');
 
-        while (strpos($this->path, '//') !== false)
+        while (strpos($this->path, '//') !== false) {
             $this->path = str_replace('//', '/', $this->path);
+        }
 
         $this->route();
     }
@@ -107,14 +108,15 @@ class Router
      *
      * @param string $path
      * @param string $controller
-     * @param int    $http_method
-     * @param array  $params
+     * @param int $http_method
+     * @param array $params
      *
      * @return $this
      */
     public function addRoute($path, $controller, $http_method = RouterPath::M_ANY, $params = [])
     {
         $this->routes[] = new Route($path, $controller, $http_method, $params);
+
         return $this;
     }
 
@@ -128,6 +130,7 @@ class Router
     public function addRouteObject(Route $route)
     {
         $this->routes[] = $route;
+
         return $this;
     }
 
@@ -136,15 +139,16 @@ class Router
      *
      * @param string $path
      * @param string $callback
-     * @param int    $http_method
-     * @param array  $params
-     * @param int    $priority
+     * @param int $http_method
+     * @param array $params
+     * @param int $priority
      *
      * @return $this
      */
     public function addEvent($path, $callback, $http_method = RouterPath::M_ANY, $params = [], $priority = 0)
     {
         $this->events[] = new Event($path, $callback, $http_method, $params, $priority);
+
         return $this;
     }
 
@@ -158,6 +162,7 @@ class Router
     public function addEventObject(Event $event)
     {
         $this->events[] = $event;
+
         return $this;
     }
 
@@ -173,17 +178,15 @@ class Router
      */
     public function getRoute()
     {
-        if ($this->route !== null)
+        if ($this->route !== null) {
             return $this->route;
+        }
 
         $this->runEvents();
 
-        if (!$this->prevent_default && !$this->prevent_route)
-        {
+        if (!$this->prevent_default && !$this->prevent_route) {
             return $this->runRoutes();
-        }
-        else
-        {
+        } else {
             return false;
         }
     }
@@ -193,19 +196,19 @@ class Router
      */
     protected function runEvents()
     {
-        if ($this->prevent_default || $this->prevent_events)
+        if ($this->prevent_default || $this->prevent_events) {
             return;
+        }
 
         usort($this->events, '\Cervo\Libraries\RouterPath\Event::priority_sort');
 
-        foreach ($this->events as $e)
-        {
-            if ($e->compare($this->path) === RouterPath::FULL_MATCH)
-            {
+        foreach ($this->events as $e) {
+            if ($e->compare($this->path) === RouterPath::FULL_MATCH) {
                 $e->run();
 
-                if ($this->prevent_default || $this->prevent_events)
+                if ($this->prevent_default || $this->prevent_events) {
                     break;
+                }
             }
         }
     }
@@ -222,27 +225,20 @@ class Router
     {
         $returns = [];
 
-        foreach ($this->routes as $r)
-        {
-            if ($r->compare($this->path) === RouterPath::FULL_MATCH)
-            {
+        foreach ($this->routes as $r) {
+            if ($r->compare($this->path) === RouterPath::FULL_MATCH) {
                 $returns[] = $r;
             }
         }
 
         $c_returns = count($returns);
 
-        if ($c_returns == 1)
-        {
+        if ($c_returns == 1) {
             $this->route = current($returns);
             return $this->route;
-        }
-        else if ($c_returns > 1)
-        {
+        } elseif ($c_returns > 1) {
             throw new _\Libraries\Exceptions\TooManyRoutesException();
-        }
-        else
-        {
+        } else {
             throw new _\Libraries\Exceptions\RouteNotFoundException();
         }
     }
@@ -255,30 +251,26 @@ class Router
      */
     protected function parseRoute()
     {
-        if (defined('STDIN'))
-        {
+        if (defined('STDIN')) {
             $args = array_slice($_SERVER['argv'], 1);
             return $args ? '/' . implode('/', $args) : '';
         }
 
         $uri = $this->detectUri();
 
-        if ($uri)
-        {
+        if ($uri) {
             return $uri;
         }
 
         $path = $this->getPathInfo();
 
-        if (trim($path, '/') != '' && $path != '/')
-        {
+        if (trim($path, '/') != '' && $path != '/') {
             return $path;
         }
 
         $path = $this->getQueryString();
 
-        if (trim($path, '/') != '')
-        {
+        if (trim($path, '/') != '') {
             return $path;
         }
 
@@ -312,43 +304,34 @@ class Router
      */
     protected function detectUri()
     {
-        if (!isset($_SERVER['REQUEST_URI']) || !isset($_SERVER['SCRIPT_NAME']))
-        {
+        if (!isset($_SERVER['REQUEST_URI']) || !isset($_SERVER['SCRIPT_NAME'])) {
             return '';
         }
 
         $uri = $_SERVER['REQUEST_URI'];
 
-        if (strpos($uri, $_SERVER['SCRIPT_NAME']) === 0)
-        {
+        if (strpos($uri, $_SERVER['SCRIPT_NAME']) === 0) {
             $uri = substr($uri, strlen($_SERVER['SCRIPT_NAME']));
-        }
-        elseif (strpos($uri, dirname($_SERVER['SCRIPT_NAME'])) === 0)
-        {
+        } elseif (strpos($uri, dirname($_SERVER['SCRIPT_NAME'])) === 0) {
             $uri = substr($uri, strlen(dirname($_SERVER['SCRIPT_NAME'])));
         }
 
-        if (strpos($uri, '?/') === 0)
-        {
+        if (strpos($uri, '?/') === 0) {
             $uri = substr($uri, 2);
         }
 
         $parts = preg_split('#\?#i', $uri, 2);
         $uri = $parts[0];
 
-        if (isset($parts[1]))
-        {
+        if (isset($parts[1])) {
             $_SERVER['QUERY_STRING'] = $parts[1];
             parse_str($_SERVER['QUERY_STRING'], $_GET);
-        }
-        else
-        {
+        } else {
             $_SERVER['QUERY_STRING'] = '';
             $_GET = [];
         }
 
-        if ($uri == '/' || empty($uri))
-        {
+        if ($uri == '/' || empty($uri)) {
             return '/';
         }
 
@@ -366,8 +349,7 @@ class Router
     {
         $config = &_::getLibrary('Cervo/Config');
 
-        foreach (glob($config->get('Cervo/Application/Directory') . '*' . \DS . 'Router.php', \GLOB_NOSORT | \GLOB_NOESCAPE) as $file)
-        {
+        foreach (glob($config->get('Cervo/Application/Directory') . '*' . \DS . 'Router.php', \GLOB_NOSORT | \GLOB_NOESCAPE) as $file) {
             require $file;
         }
     }
@@ -380,6 +362,7 @@ class Router
     public function preventEvents()
     {
         $this->prevent_events = true;
+
         return $this;
     }
 
@@ -391,6 +374,7 @@ class Router
     public function preventRoute()
     {
         $this->prevent_route = true;
+
         return $this;
     }
 
@@ -402,6 +386,7 @@ class Router
     public function preventDefault()
     {
         $this->prevent_default = true;
+
         return $this;
     }
 

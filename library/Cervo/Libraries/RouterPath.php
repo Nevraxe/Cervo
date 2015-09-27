@@ -86,7 +86,7 @@ abstract class RouterPath
      * Set the path, the module, the controller and the method.
      * Sanitize the path and compute the regex.
      *
-     * @param int    $http_method
+     * @param int $http_method
      * @param string $path
      */
     public function __construct($path, $http_method = self::M_ANY)
@@ -95,33 +95,26 @@ abstract class RouterPath
 
         $this->path = trim($path, '/');
 
-        while (strpos($this->path, '//') !== false)
+        while (strpos($this->path, '//') !== false) {
             $this->path = str_replace('//', '/', $this->path);
+        }
 
         $arraypath = ($this->path == '' ? [] : explode('/', $this->path));
 
         $c_arraypath = count($arraypath);
         $this->regex .= '/^';
 
-        for ($i = 0; $i < $c_arraypath; $i++)
-        {
-            if ($arraypath[$i] == '*')
-            {
+        for ($i = 0; $i < $c_arraypath; $i++) {
+            if ($arraypath[$i] == '*') {
                 $this->regex .= '(?:\/(.+))?';
-            }
-            else
-            {
-                if ($i > 0)
-                {
+            } else {
+                if ($i > 0) {
                     $this->regex .= '\/';
                 }
 
-                if ($arraypath[$i] == '?')
-                {
+                if ($arraypath[$i] == '?') {
                     $this->regex .= '([^\/]+)';
-                }
-                else
-                {
+                } else {
                     $this->regex .= preg_quote(strtolower($arraypath[$i]), '/');
                 }
             }
@@ -138,40 +131,42 @@ abstract class RouterPath
      */
     public function compare($path)
     {
-        if ($this->http_method !== self::M_ANY)
-        {
-            if (defined('STDIN'))
-            {
-                if ($this->http_method & self::M_CLI !== self::M_CLI)
+        if ($this->http_method !== self::M_ANY) {
+            if (defined('STDIN')) {
+                if ($this->http_method & self::M_CLI !== self::M_CLI) {
                     return self::NO_MATCH;
-            }
-            else
-            {
-                switch ($_SERVER['REQUEST_METHOD'])
-                {
+                }
+            } else {
+                switch ($_SERVER['REQUEST_METHOD']) {
                     case 'GET':
-                        if (($this->http_method & self::M_HTTP_GET) !== self::M_HTTP_GET)
+                        if (($this->http_method & self::M_HTTP_GET) !== self::M_HTTP_GET) {
                             return self::NO_MATCH;
+                        }
                         break;
                     case 'POST':
-                        if (($this->http_method & self::M_HTTP_POST) !== self::M_HTTP_POST)
+                        if (($this->http_method & self::M_HTTP_POST) !== self::M_HTTP_POST) {
                             return self::NO_MATCH;
+                        }
                         break;
                     case 'PUT':
-                        if (($this->http_method & self::M_HTTP_PUT) !== self::M_HTTP_PUT)
+                        if (($this->http_method & self::M_HTTP_PUT) !== self::M_HTTP_PUT) {
                             return self::NO_MATCH;
+                        }
                         break;
                     case 'DELETE':
-                        if (($this->http_method & self::M_HTTP_DELETE) !== self::M_HTTP_DELETE)
+                        if (($this->http_method & self::M_HTTP_DELETE) !== self::M_HTTP_DELETE) {
                             return self::NO_MATCH;
+                        }
                         break;
                     case 'UPDATE':
-                        if (($this->http_method & self::M_HTTP_UPDATE) !== self::M_HTTP_UPDATE)
+                        if (($this->http_method & self::M_HTTP_UPDATE) !== self::M_HTTP_UPDATE) {
                             return self::NO_MATCH;
+                        }
                         break;
                     case 'PATCH':
-                        if (($this->http_method & self::M_HTTP_PATCH) !== self::M_HTTP_PATCH)
+                        if (($this->http_method & self::M_HTTP_PATCH) !== self::M_HTTP_PATCH) {
                             return self::NO_MATCH;
+                        }
                         break;
                     default:
                         return self::NO_MATCH;
@@ -180,14 +175,12 @@ abstract class RouterPath
         }
 
         $matches = null;
-        if (preg_match($this->regex, $path, $matches) !== 1)
-        {
+        if (preg_match($this->regex, $path, $matches) !== 1) {
             return self::NO_MATCH;
         }
 
         $c_matches = count($matches);
-        for ($i = 1; $i < $c_matches; $i++)
-        {
+        for ($i = 1; $i < $c_matches; $i++) {
             $this->args = array_merge($this->args, explode('/', $matches[$i]));
         }
 

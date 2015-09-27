@@ -43,7 +43,7 @@ class Response
      * Render a view with a specific response code.
      *
      * @param View $view
-     * @param int  $status_code
+     * @param int $status_code
      */
     public function renderView(View $view, $status_code = 200)
     {

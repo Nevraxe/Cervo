@@ -31,8 +31,9 @@
 
 // A small shortcut that is used througout Cervo
 
-if (!defined('DS'))
+if (!defined('DS')) {
     define('DS', \DIRECTORY_SEPARATOR);
+}
 
 
 $current_directory = realpath(dirname(__FILE__)) . \DS;

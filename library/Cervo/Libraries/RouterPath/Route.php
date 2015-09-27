@@ -71,29 +71,25 @@ class Route extends RouterPath
      * Set the path, the module, the controller and the method.
      * Sanitize the path and compute the regex.
      *
-     * @param string          $path
+     * @param string $path
      * @param string|callable $method_path
-     * @param int             $http_method
-     * @param array           $params
+     * @param int $http_method
+     * @param array $params
      *
      * @throws InvalidControllerException
      */
     public function __construct($path, $method_path, $http_method = RouterPath::M_ANY, $params = [])
     {
-        if (is_callable($method_path))
-        {
+        if (is_callable($method_path)) {
             $method_path = $method_path();
         }
 
         $controller_e = explode('/', $method_path);
         $c_controller_e = count($controller_e);
 
-        if ($c_controller_e < 3)
-        {
+        if ($c_controller_e < 3) {
             throw new InvalidControllerException;
-        }
-        else
-        {
+        } else {
             $module = $controller_e[0];
             $controller_p = implode('/', array_slice($controller_e, 1, $c_controller_e - 2));
             $method = $controller_e[$c_controller_e - 1];
