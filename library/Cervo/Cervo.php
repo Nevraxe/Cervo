@@ -140,11 +140,6 @@ class Cervo
         }
 
 
-        // Include the Exceptions manually
-
-        require_once 'Libraries/Exceptions.php';
-
-
         // Set the default configuration values
 
         $config = &self::getLibrary('Cervo/Config');
