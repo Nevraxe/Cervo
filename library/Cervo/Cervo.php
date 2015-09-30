@@ -88,7 +88,7 @@ class Cervo
 
         // Events startup
 
-        $events = &self::getLibrary('Cervo/Events');
+        $events = self::getLibrary('Cervo/Events');
 
         $events->register('Cervo/System/Before');
         $events->register('Cervo/Controller/Before');
@@ -103,8 +103,8 @@ class Cervo
 
         // Get the required libraries
 
-        $router = &self::getLibrary('Cervo/Router');
-        $config = &self::getLibrary('Cervo/Config');
+        $router = self::getLibrary('Cervo/Router');
+        $config = self::getLibrary('Cervo/Config');
 
 
         // Initialise the system
@@ -142,7 +142,7 @@ class Cervo
 
         // Set the default configuration values
 
-        $config = &self::getLibrary('Cervo/Config');
+        $config = self::getLibrary('Cervo/Config');
 
         $cervo_directory = realpath(dirname(__FILE__)) . \DS;
 
@@ -294,7 +294,7 @@ class Cervo
     public static function autoload($name)
     {
         if (strpos($name, 'Application\\') === 0 || strpos($name, 'Cervo\Libraries\\') === 0) {
-            $config = &self::getLibrary('Cervo/Config');
+            $config = self::getLibrary('Cervo/Config');
 
             $ex = explode('\\', $name);
 

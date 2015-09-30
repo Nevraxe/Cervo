@@ -64,7 +64,7 @@ class Template
      */
     public function __construct($name)
     {
-        $config = &_::getLibrary('Cervo/Config');
+        $config = _::getLibrary('Cervo/Config');
 
         $this->name = explode('/', $name);
 
@@ -108,7 +108,7 @@ class Template
      */
     public function render()
     {
-        $config = &_::getLibrary('Cervo/Config');
+        $config = _::getLibrary('Cervo/Config');
 
         require $config->get('Cervo/Application/Directory') . $this->name[0] . \DS . $config->get('Cervo/Application/TemplatesPath') . implode('/', array_slice($this->name, 1)) . '.php';
     }

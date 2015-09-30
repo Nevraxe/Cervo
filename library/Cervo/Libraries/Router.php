@@ -347,7 +347,7 @@ class Router
      */
     protected function route()
     {
-        $config = &_::getLibrary('Cervo/Config');
+        $config = _::getLibrary('Cervo/Config');
 
         foreach (glob($config->get('Cervo/Application/Directory') . '*' . \DS . 'Router.php', \GLOB_NOSORT | \GLOB_NOESCAPE) as $file) {
             require $file;

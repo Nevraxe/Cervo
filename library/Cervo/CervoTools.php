@@ -57,7 +57,7 @@ class CervoTools
         // Start the configuration process
 
         _::initConfig($json_config_file);
-        $config = &_::getLibrary('Cervo/Config');
+        $config = _::getLibrary('Cervo/Config');
 
 
         // Print out the results
