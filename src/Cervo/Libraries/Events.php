@@ -32,7 +32,7 @@
 namespace Cervo\Libraries;
 
 
-use Cervo as _;
+use Cervo\Core as _;
 
 
 /**
@@ -62,7 +62,7 @@ class Events
      *
      * @return int
      */
-    public static function priority_sort($a, $b)
+    public static function prioritySort($a, $b)
     {
         if ($a['priority'] == $b['priority']) {
             return 0;
@@ -167,7 +167,7 @@ class Events
 
         $this->in_progress = true;
 
-        usort($this->events[$name], '\\' . __CLASS__ . '::priority_sort');
+        usort($this->events[$name], '\\' . __CLASS__ . '::prioritySort');
 
         foreach ($this->events[$name] as $call) {
             call_user_func($call['call'], $name, $params);
