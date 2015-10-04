@@ -28,8 +28,8 @@
     "php": ">=5.4.0"
   },
   "autoload": {
-    "files": [
-      "library/Cervo/bootstrap.php"
-    ]
+    "psr-4": {
+      "Cervo\\": "src"
+    }
   }
 }
