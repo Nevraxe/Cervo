@@ -210,7 +210,7 @@ class Core
     /**
      * Return a controller. It will be stored in an internal cache and reused if called again.
      * $name format: [Module]/[Name]
-     * Name MAY contain slashes (/) to go deeper in the tree.
+     * $name MAY contain slashes (/) to go deeper in the tree.
      *
      * @param string $name The path name
      *
@@ -237,7 +237,7 @@ class Core
     /**
      * Return a model.
      * $name format: [Module]/[Name]
-     * Name MAY contain slashes (/) to go deeper in the tree.
+     * $name MAY contain slashes (/) to go deeper in the tree.
      *
      * @param string $name The path name
      *
@@ -245,21 +245,13 @@ class Core
      */
     public static function getModel($name)
     {
-        $path = explode('/', $name);
-
-        if (count($path) <= 1) {
-            $i_name = '\Application\\' . $path[0] . 'Module\Models\\' . $path[0];
-        } else {
-            $i_name = '\Application\\' . $path[0] . 'Module\Models\\' . implode('\\', array_slice($path, 1));
-        }
-
-        return new $i_name;
+        return self::getPath($name, 'Models');
     }
 
     /**
      * Return a view.
      * $name format: [Module]/[Name]
-     * Name MAY contain slashes (/) to go deeper in the tree.
+     * $name MAY contain slashes (/) to go deeper in the tree.
      *
      * @param string $name The path name
      *
@@ -267,12 +259,28 @@ class Core
      */
     public static function getView($name)
     {
-        $path = explode('/', $name);
+        return self::getPath($name, 'Views');
+    }
+
+    /**
+     * Return an instanciated object depending on the module sub-folder.
+     * $class_path format: [Module]/[Name]
+     * $class_path MAY contain slashes (/) to go deeper in the tree.
+     * $application_path is the module sub-folder to look in for.
+     *
+     * @param string $class_path The path name
+     * @param string $application_path The sub-folder within the module
+     *
+     * @return object
+     */
+    public static function getPath($class_path, $application_path)
+    {
+        $path = explode('/', $class_path);
 
         if (count($path) <= 1) {
-            $i_name = '\Application\\' . $path[0] . 'Module\Views\\' . $path[0];
+            $i_name = '\Application\\' . $path[0] . 'Module\\' . $application_path . '\\' . $path[0];
         } else {
-            $i_name = '\Application\\' . $path[0] . 'Module\Views\\' . implode('\\', array_slice($path, 1));
+            $i_name = '\Application\\' . $path[0] . 'Module\\' . $application_path . '\\' . implode('\\', array_slice($path, 1));
         }
 
         return new $i_name;
