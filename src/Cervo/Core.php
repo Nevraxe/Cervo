@@ -29,12 +29,15 @@
  */
 
 
+namespace Cervo;
+
+
 /**
- * Master class for Cervo.
+ * Core class for Cervo.
  *
  * @author Marc André Audet <root@manhim.net>
  */
-class Cervo
+class Core
 {
     /**
      * The current version of Cervo.
@@ -79,6 +82,10 @@ class Cervo
         }
 
         self::$is_init = true;
+
+
+        // Add the autoloader
+        spl_autoload_register('\Cervo\Core::autoload');
 
 
         // Start the configuration process
@@ -293,42 +300,14 @@ class Cervo
      */
     public static function autoload($name)
     {
-        if (strpos($name, 'Application\\') === 0 || strpos($name, 'Cervo\Libraries\\') === 0) {
+        if (strpos($name, 'Application\\') === 0) {
             $config = self::getLibrary('Cervo/Config');
 
             $ex = explode('\\', $name);
 
-            if ($ex[0] === 'Cervo' && $ex[1] === 'Libraries') {
-                require $config->get('Cervo/Libraries/Directory') . implode(\DS, array_slice($ex, 2)) . '.php';
-            } elseif ($ex[0] === 'Application' && substr($ex[1], -1 * 6) === 'Module') {
+            if ($ex[0] === 'Application' && substr($ex[1], -1 * 6) === 'Module') {
                 require $config->get('Cervo/Application/Directory') . substr($ex[1], 0, strlen($ex[1]) - 6) . \DS . implode(\DS, array_slice($ex, 2)) . '.php';
             }
         }
-    }
-
-    /**
-     * The dynamic class autoloader.
-     * You can use self::register_autoload to add a new autoloader.
-     *
-     * @param string $name The class full name (Include the namespace(s))
-     */
-    public static function dynamic_autoload($name)
-    {
-        $c_autoloads = count(self::$autoloads);
-
-        for ($i = 0; $i < $c_autoloads; $i++) {
-            $func = self::$autoloads[$i];
-            $func($name);
-        }
-    }
-
-    /**
-     * Add a new autoload function to the autoloader.
-     *
-     * @param callable $function
-     */
-    public static function register_autoload($function)
-    {
-        self::$autoloads[] = $function;
     }
 }

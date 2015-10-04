@@ -18,7 +18,7 @@
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+ * DISCLAIMED. IN NO EVENT SHALL MARC ANDRÉ "MANHIM" AUDET BE LIABLE FOR ANY
  * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
@@ -29,20 +29,13 @@
  */
 
 
-// A small shortcut that is used througout Cervo
+namespace Cervo\Libraries;
 
-if (!defined('DS')) {
-    define('DS', \DIRECTORY_SEPARATOR);
+
+class RouteParser
+{
+    public function parse($route)
+    {
+
+    }
 }
-
-
-$current_directory = realpath(dirname(__FILE__)) . \DS;
-
-
-require $current_directory . 'Libraries/Config.php';
-require $current_directory . 'Cervo.php';
-require $current_directory . 'CervoTools.php';
-
-
-spl_autoload_register('\Cervo::autoload');
-spl_autoload_register('\Cervo::dynamic_autoload');
