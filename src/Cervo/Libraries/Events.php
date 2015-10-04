@@ -111,11 +111,7 @@ class Events
      */
     public function isRegistered($name)
     {
-        if (isset($this->events[$name])) {
-            return true;
-        } else {
-            return false;
-        }
+        return isset($this->events[$name]);
     }
 
     /**
