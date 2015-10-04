@@ -222,15 +222,7 @@ class Core
             return self::$controllers[$name];
         }
 
-        $path = explode('/', $name);
-
-        if (count($path) <= 1) {
-            $i_name = '\Application\\' . $path[0] . 'Module\Controllers\\' . $path[0];
-        } else {
-            $i_name = '\Application\\' . $path[0] . 'Module\Controllers\\' . implode('\\', array_slice($path, 1));
-        }
-
-        self::$controllers[$name] = new $i_name;
+        self::$controllers[$name] = self::getPath($name, 'Controllers');
         return self::$controllers[$name];
     }
 
