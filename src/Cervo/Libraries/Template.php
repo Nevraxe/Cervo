@@ -32,7 +32,7 @@
 namespace Cervo\Libraries;
 
 
-use Cervo as _;
+use Cervo\Core as _;
 
 
 /**
