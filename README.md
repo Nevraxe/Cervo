@@ -71,7 +71,7 @@ require 'vendor/autoload.php';
 
 
 // We get the Config Cervo library
-$config = &\Cervo::getLibrary('Cervo/Config');
+$config = \Cervo::getLibrary('Cervo/Config');
 
 // This configuration is required. It can be set either here, or in the config.json file directly.
 $config->set('Cervo/Application/Directory', realpath(__DIR__ . '/Application') . \DS);

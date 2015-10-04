@@ -29,7 +29,10 @@
  */
 
 
-use Cervo as _;
+namespace Cervo;
+
+
+use Cervo\Core as _;
 
 
 /**
@@ -37,7 +40,7 @@ use Cervo as _;
  *
  * @author Marc André Audet <root@manhim.net>
  */
-class CervoTools
+class Tools
 {
     /**
      * Generates the content to put in a metadata file for PHPStorm.
