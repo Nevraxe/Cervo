@@ -47,6 +47,8 @@ abstract class View
     /**
      * Render the View.
      * Usually contain a Template->render().
+     *
+     * @return void
      */
     abstract public function render();
 }

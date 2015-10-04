@@ -32,7 +32,7 @@
 namespace Cervo\Libraries;
 
 
-use Cervo as _;
+use Cervo\Core as _;
 use Cervo\Libraries\RouterPath\Route;
 use Cervo\Libraries\RouterPath\Event;
 use Cervo\Libraries\RouterPath;
