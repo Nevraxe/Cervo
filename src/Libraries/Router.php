@@ -178,7 +178,7 @@ class Router
         if ($this->generateCache) {
             file_put_contents(
                 $this->cacheFilePath,
-                '<?php return ' . var_export($dispatchData, true) . ';'
+                '<?php return ' . var_export($dispatchData, true) . ';' . PHP_EOL
             );
         }
 
