@@ -32,10 +32,10 @@
 namespace Cervo\Libraries\Exceptions;
 
 
-class RouteNotFoundException extends NotFoundException
+class InvalidControllerException extends \RuntimeException
 {
-    public function __construct($message = 'Route not found.', \Exception $previous = null)
+    public function __construct($message = 'Invalid controller.', \Exception $previous = null)
     {
-        parent::__construct($message, $previous);
+        parent::__construct($message, 500, $previous);
     }
 }

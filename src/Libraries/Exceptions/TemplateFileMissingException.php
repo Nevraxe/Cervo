@@ -32,10 +32,10 @@
 namespace Cervo\Libraries\Exceptions;
 
 
-class NotFoundException extends \RuntimeException
+class TemplateFileMissingException extends \RuntimeException
 {
-    public function __construct($message = 'Not found.', \Exception $previous = null)
+    public function __construct($message = 'Template file missing.', \Exception $previous = null)
     {
-        parent::__construct($message, 404, $previous);
+        parent::__construct($message, 500, $previous);
     }
 }

@@ -43,7 +43,7 @@ class Config
      * The currently set default values in a multi-dimensional array.
      * @var array
      */
-    protected $default_values = [];
+    protected $defaultValues = [];
 
     /**
      * The currently set values in a multi-dimensional array.
@@ -120,7 +120,7 @@ class Config
             $name = explode('/', $name);
         }
 
-        $current = &$this->default_values;
+        $current = &$this->defaultValues;
 
         foreach ($name as $key) {
             $current = &$current[$key];
@@ -179,7 +179,7 @@ class Config
             $name = explode('/', $name);
         }
 
-        $current = &$this->default_values;
+        $current = &$this->defaultValues;
 
         foreach ($name as $key) {
             if ($current[$key]) {

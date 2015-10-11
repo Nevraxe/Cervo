@@ -32,10 +32,10 @@
 namespace Cervo\Libraries\Exceptions;
 
 
-class TooManyRoutesException extends NotFoundException
+class NotFoundException extends \RuntimeException
 {
-    public function __construct($message = 'Too many routes matched.', \Exception $previous = null)
+    public function __construct($message = 'Not found.', \Exception $previous = null)
     {
-        parent::__construct($message, $previous);
+        parent::__construct($message, 404, $previous);
     }
 }
