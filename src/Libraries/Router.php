@@ -73,6 +73,12 @@ class Router
     protected $usingCache = false;
 
     /**
+     * Set to true if we need to generate the cache
+     * @var bool
+     */
+    protected $generateCache = false;
+
+    /**
      * Initialize the route configurations.
      */
     public function __construct()
@@ -83,6 +89,8 @@ class Router
 
         if ($config->get('Production') == true && file_exists($cache_file_path)) {
             $this->usingCache = true;
+        } elseif ($config->get('Production') == true) {
+            $this->generateCache = true;
         } else {
             $this->routeCollector = new RouteCollector(
                 new RouteParser\Std(),
@@ -118,6 +126,13 @@ class Router
             }
         } else {
             $dispatchData = $this->routeCollector->getData();
+        }
+
+        if ($this->generateCache) {
+            file_put_contents(
+                $this->cacheFilePath,
+                '<?php return ' . var_export($dispatchData, true) . ';'
+            );
         }
 
         $this->dispatcher = new Dispatcher\GroupCountBased($dispatchData);
