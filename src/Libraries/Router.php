@@ -204,10 +204,6 @@ class Router
             $uri = substr($uri, strlen(dirname($_SERVER['SCRIPT_NAME'])));
         }
 
-        if (strpos($uri, '?/') === 0) {
-            $uri = substr($uri, 2);
-        }
-
         if ($uri == '/' || empty($uri)) {
             return '/';
         }
