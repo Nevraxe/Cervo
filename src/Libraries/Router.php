@@ -81,7 +81,7 @@ class Router
 
         $this->cacheFilePath = $config->get('Cervo/Application/Directory') . \DS . 'router.cache.php';
 
-        if ($config->get('Production') == true && file_exists($cache_file_path)) {
+        if ($config->get('Production') == true && file_exists($this->cacheFilePath)) {
             $this->usingCache = true;
         } else {
             if ($config->get('Production') == true) {
