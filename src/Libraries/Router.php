@@ -59,8 +59,6 @@ class Router
             new DataGenerator\GroupCountBased()
         );
 
-        $this->dispatcher = new Dispatcher\GroupCountBased($this->routeCollector->getData());
-
         foreach (glob($config->get('Cervo/Application/Directory') . '*' . \DS . 'Router.php', \GLOB_NOSORT | \GLOB_NOESCAPE) as $file) {
             $function = require $file;
 
@@ -72,10 +70,8 @@ class Router
 
     public function dispatch()
     {
-        $httpMethod = $_SERVER['REQUEST_METHOD'];
-        $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-
-        $routeInfo = $this->dispatcher->dispatch($httpMethod, $uri);
+        $this->dispatcher = new Dispatcher\GroupCountBased($this->routeCollector->getData());
+        $routeInfo = $this->dispatcher->dispatch($_SERVER['REQUEST_METHOD'], $this->detectUri());
 
         switch ($routeInfo[0]) {
             case Dispatcher::NOT_FOUND:
@@ -88,17 +84,17 @@ class Router
             case Dispatcher::FOUND:
 
                 $handler = $routeInfo[1];
-                $vars = $routeInfo[2];
+                $arguments = $routeInfo[2];
 
                 $middleware = $handler['middleware'];
 
                 if (is_callable($middleware)) {
                     if (!$middleware($this)) {
-                        throw new RouteNotFoundException;
+                        return false;
                     }
                 }
 
-                return new Route($handler['method_path'], $handler['parameters'], $vars);
+                return new Route($handler['method_path'], $handler['parameters'], $arguments);
 
                 break;
         }
@@ -111,5 +107,42 @@ class Router
             'middleware' => $middleware,
             'parameters' => $parameters
         ]);
+    }
+
+    protected function detectUri()
+    {
+        if (!isset($_SERVER['REQUEST_URI']) || !isset($_SERVER['SCRIPT_NAME'])) {
+            return '';
+        }
+
+        $uri = $_SERVER['REQUEST_URI'];
+
+        if (strpos($uri, $_SERVER['SCRIPT_NAME']) === 0) {
+            $uri = substr($uri, strlen($_SERVER['SCRIPT_NAME']));
+        } elseif (strpos($uri, dirname($_SERVER['SCRIPT_NAME'])) === 0) {
+            $uri = substr($uri, strlen(dirname($_SERVER['SCRIPT_NAME'])));
+        }
+
+        if (strpos($uri, '?/') === 0) {
+            $uri = substr($uri, 2);
+        }
+
+        $parts = preg_split('#\?#i', $uri, 2);
+        $uri = $parts[0];
+
+        if (isset($parts[1])) {
+            $_SERVER['QUERY_STRING'] = $parts[1];
+            parse_str($_SERVER['QUERY_STRING'], $_GET);
+        } else {
+            $_SERVER['QUERY_STRING'] = '';
+            $_GET = [];
+        }
+
+        if ($uri == '/' || empty($uri)) {
+            return '/';
+        }
+
+        $uri = parse_url($uri, PHP_URL_PATH);
+        return '/' . str_replace(['//', '../', '/..'], '/', trim($uri, '/'));
     }
 }

@@ -125,7 +125,7 @@ class Core
             $events->fire('Cervo/Controller/Before');
 
             $method = $route->getMethod() . $config->get('Cervo/Application/MethodSuffix');
-            self::getController($route->getModule() . '/' . $route->getController())->$method($route->getArgs(), $route->getParams());
+            self::getController($route->getModule() . '/' . $route->getController())->$method($route->getArguments(), $route->getParameters());
 
             $events->fire('Cervo/Controller/After');
         }

@@ -47,9 +47,9 @@ class Route
     protected $controller;
     protected $method;
     protected $parameters = [];
-    protected $variables = [];
+    protected $arguments = [];
 
-    public function __construct($method_path, $parameters = [], $variables = [])
+    public function __construct($method_path, $parameters = [], $arguments = [])
     {
         if (is_callable($method_path)) {
             $method_path = $method_path();
@@ -66,7 +66,7 @@ class Route
         $this->controller = implode('/', array_slice($controller_e, 1, $c_controller_e - 2));
         $this->method = $controller_e[$c_controller_e - 1];
         $this->parameters = $parameters;
-        $this->variables = $variables;
+        $this->arguments = $arguments;
     }
 
     public function getModule()
@@ -89,8 +89,8 @@ class Route
         return $this->parameters;
     }
 
-    public function getVariables()
+    public function getArguments()
     {
-        return $this->variables;
+        return $this->arguments;
     }
 }
