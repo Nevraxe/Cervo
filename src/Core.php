@@ -159,14 +159,14 @@ class Core
         $config
             ->setDefault('Cervo/Application/Directory', '')
             ->setDefault('Cervo/Directory', $cervo_directory)
-            ->setDefault('Cervo/Libraries/Directory', realpath($cervo_directory . 'libraries') . \DS)
+            ->setDefault('Cervo/Libraries/Directory', realpath($cervo_directory . 'Libraries') . \DS)
             ->setDefault('Cervo/Application/MethodSuffix', 'Method')
-            ->setDefault('Cervo/Application/EventsPath', 'events' . \DS)
-            ->setDefault('Cervo/Application/ControllersPath', 'controllers' . \DS)
-            ->setDefault('Cervo/Application/ModelsPath', 'models' . \DS)
-            ->setDefault('Cervo/Application/ViewsPath', 'views' . \DS)
-            ->setDefault('Cervo/Application/LibariesPath', 'libraries' . \DS)
-            ->setDefault('Cervo/Application/TemplatesPath', 'templates' . \DS)
+            ->setDefault('Cervo/Application/EventsPath', 'Events' . \DS)
+            ->setDefault('Cervo/Application/ControllersPath', 'Controllers' . \DS)
+            ->setDefault('Cervo/Application/ModelsPath', 'Models' . \DS)
+            ->setDefault('Cervo/Application/ViewsPath', 'Views' . \DS)
+            ->setDefault('Cervo/Application/LibariesPath', 'Libraries' . \DS)
+            ->setDefault('Cervo/Application/TemplatesPath', 'Templates' . \DS)
             ->setDefault('Production', false);
 
         if ($json_config_file !== null) {
