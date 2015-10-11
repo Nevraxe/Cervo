@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  *
  * Copyright (c) 2015 Marc André "Manhim" Audet <root@manhim.net>. All rights reserved.
@@ -27,17 +28,14 @@
  *
  */
 
-namespace Cervo\Libraries;
 
-/**
- * Controller master object.
- *
- * @author Marc André Audet <root@manhim.net>
- */
-abstract class Controller
+namespace Cervo\Libraries\Exceptions;
+
+
+class NotFoundException extends \RuntimeException
 {
-    public function __construct()
+    public function __construct($message = 'Not found.', \Exception $previous = null)
     {
-
+        parent::__construct($message, 404, $previous);
     }
 }

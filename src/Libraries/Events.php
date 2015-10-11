@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  *
  * Copyright (c) 2015 Marc André "Manhim" Audet <root@manhim.net>. All rights reserved.
@@ -27,9 +28,12 @@
  *
  */
 
+
 namespace Cervo\Libraries;
 
-use Cervo as _;
+
+use Cervo\Core as _;
+
 
 /**
  * Events manager for Cervo.
@@ -48,7 +52,7 @@ class Events
      * True while an event is fired.
      * @var bool
      */
-    protected $in_progress = false;
+    protected $inProgress = false;
 
     /**
      * Custom sort for priority.
@@ -58,10 +62,11 @@ class Events
      *
      * @return int
      */
-    public static function priority_sort($a, $b)
+    public static function prioritySort($a, $b)
     {
-        if ($a['priority'] == $b['priority'])
+        if ($a['priority'] == $b['priority']) {
             return 0;
+        }
 
         return $a['priority'] < $b['priority'] ? -1 : 1;
     }
@@ -71,10 +76,9 @@ class Events
      */
     public function __construct()
     {
-        $config = &_::getLibrary('Cervo/Config');
+        $config = _::getLibrary('Cervo/Config');
 
-        foreach (glob($config->get('Cervo/Application/Directory') . '*' . \DS . $config->get('Cervo/Application/EventsPath') . '*.php', \GLOB_NOSORT | \GLOB_NOESCAPE) as $file)
-        {
+        foreach (glob($config->get('Cervo/Application/Directory') . '*' . \DS . $config->get('Cervo/Application/EventsPath') . '*.php', \GLOB_NOSORT | \GLOB_NOESCAPE) as $file) {
             require $file;
         }
     }
@@ -89,8 +93,9 @@ class Events
      */
     public function register($name)
     {
-        if ($this->isRegistered($name))
+        if ($this->isRegistered($name)) {
             return false;
+        }
 
         $this->events[$name] = [];
 
@@ -106,10 +111,11 @@ class Events
      */
     public function isRegistered($name)
     {
-        if (isset($this->events[$name]))
+        if (isset($this->events[$name])) {
             return true;
-        else
+        } else {
             return false;
+        }
     }
 
     /**
@@ -125,16 +131,17 @@ class Events
     /**
      * Hook a callable to an event.
      *
-     * @param string   $name
+     * @param string $name
      * @param callable $call
-     * @param int      $priority
+     * @param int $priority
      *
      * @return bool
      */
     public function hook($name, $call, $priority = 0)
     {
-        if (!$this->isRegistered($name))
+        if (!$this->isRegistered($name)) {
             $this->register($name);
+        }
 
         $this->events[$name][] = [
             'call' => $call,
@@ -148,25 +155,25 @@ class Events
      * Fire an event and call all the hooked callables.
      *
      * @param string $name
-     * @param array  $params
+     * @param array $params
      *
      * @return bool
      */
-    public function fire($name, $params = array())
+    public function fire($name, $params = [])
     {
-        if (!is_array($params) || !$this->isRegistered($name))
+        if (!is_array($params) || !$this->isRegistered($name)) {
             return false;
+        }
 
-        $this->in_progress = true;
+        $this->inProgress = true;
 
-        usort($this->events[$name], '\\' . __CLASS__ . '::priority_sort');
+        usort($this->events[$name], '\\' . __CLASS__ . '::prioritySort');
 
-        foreach ($this->events[$name] as $call)
-        {
+        foreach ($this->events[$name] as $call) {
             call_user_func($call['call'], $name, $params);
         }
 
-        $this->in_progress = false;
+        $this->inProgress = false;
 
         return true;
     }
@@ -178,6 +185,6 @@ class Events
      */
     public function isInProgress()
     {
-        return $this->in_progress;
+        return $this->inProgress;
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  *
  * Copyright (c) 2015 Marc André "Manhim" Audet <root@manhim.net>. All rights reserved.
@@ -27,30 +28,19 @@
  *
  */
 
+
 namespace Cervo\Libraries;
 
-use Cervo as _;
 
 /**
- * Response helper.
+ * Model master class.
  *
  * @author Marc André Audet <root@manhim.net>
  */
-class Response
+abstract class Model
 {
-    public function renderView(View $view, $status_code = 200)
+    public function __construct()
     {
-        $this->responseCode($status_code);
-        $view->render();
-    }
 
-    public function responseCode($status_code = 200)
-    {
-        http_response_code($status_code);
-    }
-
-    public function redirect($location)
-    {
-        header('Location: ' . $location);
     }
 }

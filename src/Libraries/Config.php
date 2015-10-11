@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  *
  * Copyright (c) 2015 Marc André "Manhim" Audet <root@manhim.net>. All rights reserved.
@@ -27,7 +28,9 @@
  *
  */
 
+
 namespace Cervo\Libraries;
+
 
 /**
  * Configuration manager for Cervo.
@@ -40,7 +43,7 @@ class Config
      * The currently set default values in a multi-dimensional array.
      * @var array
      */
-    protected $default_values = [];
+    protected $defaultValues = [];
 
     /**
      * The currently set values in a multi-dimensional array.
@@ -49,37 +52,29 @@ class Config
     protected $values = [];
 
     /**
-     * Magic method for set().
-     *
-     * @param string|array $name
-     * @param mixed        $value
-     */
-    public function __set($name, $value)
-    {
-        $this->set($name, $value);
-    }
-
-    /**
      * Add a new array element to the specified configuration path.
      * Warning: If the current value is not an array, it is overwritten.
      *
      * @param string|array $name The configuration path
-     * @param mixed        $value
+     * @param mixed $value
      *
      * @return $this
      */
-    public function &add($name, $value)
+    public function add($name, $value)
     {
-        if (!is_array($name))
+        if (!is_array($name)) {
             $name = explode('/', trim($name, "/\t\n\r\0\x0B"));
+        }
 
         $current = &$this->values;
 
-        foreach ($name as $key)
+        foreach ($name as $key) {
             $current = &$current[$key];
+        }
 
-        if (!is_array($current))
+        if (!is_array($current)) {
             $current = [];
+        }
 
         $current[] = $value;
 
@@ -90,19 +85,21 @@ class Config
      * Set the value at the specified configuration path.
      *
      * @param string|array $name The configuration path
-     * @param mixed        $value
+     * @param mixed $value
      *
      * @return $this
      */
-    public function &set($name, $value)
+    public function set($name, $value)
     {
-        if (!is_array($name))
+        if (!is_array($name)) {
             $name = explode('/', $name);
+        }
 
         $current = &$this->values;
 
-        foreach ($name as $key)
+        foreach ($name as $key) {
             $current = &$current[$key];
+        }
 
         $current = $value;
 
@@ -113,35 +110,25 @@ class Config
      * Set the default fallback value for the specified configuration path.
      *
      * @param string|array $name The configuration path
-     * @param mixed        $value
+     * @param mixed $value
      *
      * @return $this
      */
-    public function &setDefault($name, $value)
+    public function setDefault($name, $value)
     {
-        if (!is_array($name))
+        if (!is_array($name)) {
             $name = explode('/', $name);
+        }
 
-        $current = &$this->default_values;
+        $current = &$this->defaultValues;
 
-        foreach ($name as $key)
+        foreach ($name as $key) {
             $current = &$current[$key];
+        }
 
         $current = $value;
 
         return $this;
-    }
-
-    /**
-     * Magic method for get().
-     *
-     * @param string $name The configuration path
-     *
-     * @return mixed
-     */
-    public function __get($name)
-    {
-        return $this->get($name);
     }
 
     /**
@@ -155,27 +142,23 @@ class Config
      */
     public function get($name)
     {
-        if (!is_array($name))
+        if (!is_array($name)) {
             $name = explode('/', $name);
+        }
 
         $current = &$this->values;
         $is_set = true;
 
-        foreach ($name as $key)
-        {
-            if ($current[$key])
-            {
+        foreach ($name as $key) {
+            if ($current[$key]) {
                 $current = &$current[$key];
-            }
-            else
-            {
+            } else {
                 $is_set = false;
                 break;
             }
         }
 
-        if ($is_set === true && $current)
-        {
+        if ($is_set === true && $current) {
             return $current;
         }
 
@@ -192,25 +175,23 @@ class Config
      */
     public function getDefault($name)
     {
-        if (!is_array($name))
+        if (!is_array($name)) {
             $name = explode('/', $name);
+        }
 
-        $current = &$this->default_values;
+        $current = &$this->defaultValues;
 
-        foreach ($name as $key)
-        {
-            if ($current[$key])
-            {
+        foreach ($name as $key) {
+            if ($current[$key]) {
                 $current = &$current[$key];
-            }
-            else
-            {
+            } else {
                 return null;
             }
         }
 
-        if ($current)
+        if ($current) {
             return $current;
+        }
 
         return null;
     }
@@ -225,8 +206,9 @@ class Config
      */
     public function importJSON($file)
     {
-        if (!file_exists($file))
+        if (!file_exists($file)) {
             return false;
+        }
 
         $this->setFromArrayRecursive(json_decode(file_get_contents($file), true));
 
@@ -242,14 +224,10 @@ class Config
      */
     protected function setFromArrayRecursive($array, $current_path = [])
     {
-        foreach ($array as $key => $el)
-        {
-            if (is_array($el))
-            {
+        foreach ($array as $key => $el) {
+            if (is_array($el)) {
                 $this->setFromArrayRecursive($el, array_merge($current_path, [$key]));
-            }
-            else
-            {
+            } else {
                 $this->set(array_merge($current_path, [$key]), $el);
             }
         }

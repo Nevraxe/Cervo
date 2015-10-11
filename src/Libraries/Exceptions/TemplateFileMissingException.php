@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  *
  * Copyright (c) 2015 Marc André "Manhim" Audet <root@manhim.net>. All rights reserved.
@@ -27,34 +28,14 @@
  *
  */
 
+
 namespace Cervo\Libraries\Exceptions;
 
-class Exception extends \Exception
+
+class TemplateFileMissingException extends \RuntimeException
 {
-
-}
-
-class NotFoundException extends Exception
-{
-
-}
-
-class RouteNotFoundException extends NotFoundException
-{
-
-}
-
-class TooManyRoutesException extends RouteNotFoundException
-{
-
-}
-
-class TemplateNotFoundException extends NotFoundException
-{
-
-}
-
-class InvalidControllerException extends Exception
-{
-
+    public function __construct($message = 'Template file missing.', \Exception $previous = null)
+    {
+        parent::__construct($message, 500, $previous);
+    }
 }

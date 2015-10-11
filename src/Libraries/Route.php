@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  *
  * Copyright (c) 2015 Marc André "Manhim" Audet <root@manhim.net>. All rights reserved.
@@ -28,89 +29,44 @@
  */
 
 
-
-namespace Cervo\Libraries\RouterPath;
-
+namespace Cervo\Libraries;
 
 
+use Cervo\Core as _;
 use Cervo\Libraries\Exceptions\InvalidControllerException;
 
 
-
 /**
- * Used in Router. Each of the module's routes are RouterPath objects.
+ * Route manager for Cervo.
  *
  * @author Marc André Audet <root@manhim.net>
  */
-class Route extends \Cervo\Libraries\RouterPath
+class Route
 {
-    /**
-     * The route's module.
-     * @var string
-     */
     protected $module;
-
-    /**
-     * The route's controller.
-     * @var string
-     */
     protected $controller;
-
-    /**
-     * The route's method.
-     * @var string
-     */
     protected $method;
+    protected $parameters = [];
+    protected $arguments = [];
 
-    /**
-     * The paramters to pass.
-     * @var array
-     */
-    protected $params = [];
-
-    /**
-     * Set the path, the module, the controller and the method.
-     * Sanitize the path and compute the regex.
-     *
-     * @param string          $path
-     * @param string|callable $method_path
-     * @param int             $http_method
-     * @param array           $params
-     *
-     * @throws InvalidControllerException
-     */
-    public function __construct($path, $method_path, $http_method = self::M_ALL, $params = [])
+    public function __construct($method_path, $parameters = [], $arguments = [])
     {
-        if (is_callable($method_path))
-        {
+        if (is_callable($method_path)) {
             $method_path = $method_path();
         }
 
         $controller_e = explode('/', $method_path);
         $c_controller_e = count($controller_e);
 
-        if ($c_controller_e < 3)
-        {
+        if ($c_controller_e < 3) {
             throw new InvalidControllerException;
         }
-        else
-        {
-            $module = $controller_e[0];
-            $controller_p = implode('/', array_slice($controller_e, 1, $c_controller_e - 2));
-            $method = $controller_e[$c_controller_e - 1];
-        }
 
-        $this->module = $module;
-        $this->controller = $controller_p;
-        $this->method = $method;
-        $this->params = $params;
-
-        parent::__construct($path, $http_method);
-    }
-
-    public function compare($path)
-    {
-        return parent::compare($path);
+        $this->module = $controller_e[0];
+        $this->controller = implode('/', array_slice($controller_e, 1, $c_controller_e - 2));
+        $this->method = $controller_e[$c_controller_e - 1];
+        $this->parameters = $parameters;
+        $this->arguments = $arguments;
     }
 
     public function getModule()
@@ -128,8 +84,13 @@ class Route extends \Cervo\Libraries\RouterPath
         return $this->method;
     }
 
-    public function getParams()
+    public function getParameters()
     {
-        return $this->params;
+        return $this->parameters;
+    }
+
+    public function getArguments()
+    {
+        return $this->arguments;
     }
 }

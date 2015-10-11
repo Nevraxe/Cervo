@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  *
  * Copyright (c) 2015 Marc André "Manhim" Audet <root@manhim.net>. All rights reserved.
@@ -27,9 +28,13 @@
  *
  */
 
+
 namespace Cervo\Libraries;
 
-use Cervo as _;
+
+use Cervo\Core as _;
+use Cervo\Libraries\Exceptions\TemplateFileMissingException;
+
 
 /**
  * Template class for Cervo.
@@ -49,24 +54,23 @@ class Template
      * Usually set from the View.
      * @var array
      */
-    protected $data = array();
+    protected $data = [];
 
     /**
      * Initialize the template.
      *
      * @param string $name The template (file)name.
      *
-     * @throws Exceptions\TemplateNotFoundException
+     * @throws Exceptions\TemplateFileMissingException
      */
     public function __construct($name)
     {
-        $config = &_::getLibrary('Cervo/Config');
+        $config = _::getLibrary('Cervo/Config');
 
         $this->name = explode('/', $name);
 
-        if (!file_exists($config->get('Cervo/Application/Directory') . $this->name[0] . \DS . $config->get('Cervo/Application/TemplatesPath') . implode('/', array_slice($this->name, 1)) . '.php'))
-        {
-            throw new _\Libraries\Exceptions\TemplateNotFoundException();
+        if (!file_exists($config->get('Cervo/Application/Directory') . $this->name[0] . \DS . $config->get('Cervo/Application/TemplatesPath') . implode('/', array_slice($this->name, 1)) . '.php')) {
+            throw new TemplateFileMissingException();
         }
     }
 
@@ -79,12 +83,9 @@ class Template
      */
     public function __get($name)
     {
-        if (isset($this->data[$name]))
-        {
+        if (isset($this->data[$name])) {
             return $this->data[$name];
-        }
-        else
-        {
+        } else {
             return null;
         }
     }
@@ -97,7 +98,7 @@ class Template
      *
      * @return $this
      */
-    public function &assign($data = array())
+    public function assign($data = [])
     {
         $this->data = $data;
         return $this;
@@ -108,7 +109,7 @@ class Template
      */
     public function render()
     {
-        $config = &_::getLibrary('Cervo/Config');
+        $config = _::getLibrary('Cervo/Config');
 
         require $config->get('Cervo/Application/Directory') . $this->name[0] . \DS . $config->get('Cervo/Application/TemplatesPath') . implode('/', array_slice($this->name, 1)) . '.php';
     }

@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  *
  * Copyright (c) 2015 Marc André "Manhim" Audet <root@manhim.net>. All rights reserved.
@@ -28,83 +29,45 @@
  */
 
 
-
-namespace Cervo\Libraries\RouterPath;
-
+namespace Cervo\Libraries;
 
 
 /**
- * Used in Router. Each of the module's routes are RouterPath objects.
+ * Response helper.
  *
  * @author Marc André Audet <root@manhim.net>
  */
-class Event extends \Cervo\Libraries\RouterPath
+class Response
 {
     /**
-     * The route's callback.
-     * @var string
-     */
-    protected $callback;
-
-    /**
-     * Priotity of the event over others.
-     * @var int
-     */
-    protected $priority;
-
-    /**
-     * Arguments to send while calling the function.
-     * @var array
-     */
-    protected $params = [];
-
-    /**
-     * Custom sort for priority.
+     * Render a view with a specific response code.
      *
-     * @param self $a
-     * @param self $b
-     *
-     * @return int
+     * @param View $view
+     * @param int $statusCode
      */
-    public static function priority_sort(self $a, self $b)
+    public function renderView(View $view, $statusCode = 200)
     {
-        if ($a->getPriority() == $b->getPriority())
-            return 0;
-
-        return $a->getPriority() < $b->getPriority() ? -1 : 1;
+        $this->responseCode($statusCode);
+        $view->render();
     }
 
     /**
-     * Set the path and the callback.
-     * Sanitize the path and compute the regex.
+     * Changes the HTTP Response Code.
      *
-     * @param string $path
-     * @param string $callback
-     * @param int    $http_method
-     * @param array  $params
-     * @param int    $priority
+     * @param int $statusCode
      */
-    public function __construct($path, $callback, $http_method = self::M_ANY, $params = [], $priority = 0)
+    public function responseCode($statusCode = 200)
     {
-        $this->callback = $callback;
-        $this->params = $params;
-        $this->priority = $priority;
-
-        parent::__construct($path, $http_method);
+        http_response_code($statusCode);
     }
 
-    public function getCallback()
+    /**
+     * Change the Location header.
+     *
+     * @param string $location
+     */
+    public function redirect($location)
     {
-        return $this->callback;
-    }
-
-    public function getPriority()
-    {
-        return $this->priority;
-    }
-
-    public function run()
-    {
-        call_user_func($this->getCallback(), $this, $this->params);
+        header('Location: ' . $location);
     }
 }

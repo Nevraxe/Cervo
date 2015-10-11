@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  *
  * Copyright (c) 2015 Marc André "Manhim" Audet <root@manhim.net>. All rights reserved.
@@ -27,23 +28,19 @@
  *
  */
 
+
 namespace Cervo\Libraries;
 
+
 /**
- * View master object.
+ * Controller master class.
  *
  * @author Marc André Audet <root@manhim.net>
  */
-abstract class View
+abstract class Controller
 {
     public function __construct()
     {
 
     }
-
-    /**
-     * Render the View.
-     * Usually contain a Template->render().
-     */
-    abstract public function render();
 }

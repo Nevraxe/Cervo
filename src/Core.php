@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  *
  * Copyright (c) 2015 Marc André "Manhim" Audet <root@manhim.net>. All rights reserved.
@@ -27,17 +28,24 @@
  *
  */
 
+
+namespace Cervo;
+
+
+use Cervo\Libraries\Route;
+
+
 /**
- * Master class for Cervo.
+ * Core class for Cervo.
  *
  * @author Marc André Audet <root@manhim.net>
  */
-class Cervo
+class Core
 {
     /**
      * The current version of Cervo.
      */
-    const VERSION = '2.6.0';
+    const VERSION = '3.0.0';
 
     /**
      * All the libraries instances that have been initialized through getLibrary().
@@ -72,10 +80,15 @@ class Cervo
     {
         // Check if the system is already initiated
 
-        if (self::$is_init)
+        if (self::$is_init) {
             return;
+        }
 
         self::$is_init = true;
+
+
+        // Add the autoloader
+        spl_autoload_register('\Cervo\Core::autoload');
 
 
         // Start the configuration process
@@ -85,7 +98,7 @@ class Cervo
 
         // Events startup
 
-        $events = &self::getLibrary('Cervo/Events');
+        $events = self::getLibrary('Cervo/Events');
 
         $events->register('Cervo/System/Before');
         $events->register('Cervo/Controller/Before');
@@ -100,20 +113,19 @@ class Cervo
 
         // Get the required libraries
 
-        $router = &self::getLibrary('Cervo/Router');
-        $config = &self::getLibrary('Cervo/Config');
+        $router = self::getLibrary('Cervo/Router');
+        $config = self::getLibrary('Cervo/Config');
 
 
         // Initialise the system
 
-        $route = $router->getRoute();
+        $route = $router->dispatch();
 
-        if ($route instanceof \Cervo\Libraries\RouterPath\Route)
-        {
+        if ($route instanceof Route) {
             $events->fire('Cervo/Controller/Before');
 
             $method = $route->getMethod() . $config->get('Cervo/Application/MethodSuffix');
-            self::getController($route->getModule() . '/' . $route->getController())->$method($route->getArgs(), $route->getParams());
+            self::getController($route->getModule() . '/' . $route->getController())->$method($route->getArguments(), $route->getParameters());
 
             $events->fire('Cervo/Controller/After');
         }
@@ -133,18 +145,14 @@ class Cervo
     {
         // Small shortcut
 
-        if (!defined('DS'))
+        if (!defined('DS')) {
             define('DS', \DIRECTORY_SEPARATOR);
-
-
-        // Include the Exceptions manually
-
-        require_once 'Libraries/Exceptions.php';
+        }
 
 
         // Set the default configuration values
 
-        $config = &self::getLibrary('Cervo/Config');
+        $config = self::getLibrary('Cervo/Config');
 
         $cervo_directory = realpath(dirname(__FILE__)) . \DS;
 
@@ -159,11 +167,9 @@ class Cervo
             ->setDefault('Cervo/Application/ViewsPath', 'Views' . \DS)
             ->setDefault('Cervo/Application/LibariesPath', 'Libraries' . \DS)
             ->setDefault('Cervo/Application/TemplatesPath', 'Templates' . \DS)
-            ->setDefault('Production', false)
-        ;
+            ->setDefault('Production', false);
 
-        if ($json_config_file !== null)
-        {
+        if ($json_config_file !== null) {
             $config->importJSON($json_config_file);
         }
     }
@@ -182,25 +188,20 @@ class Cervo
      *
      * @return object
      */
-    public static function &getLibrary($name)
+    public static function getLibrary($name)
     {
-        if (is_object(self::$libraries[$name]))
+        if (is_object(self::$libraries[$name])) {
             return self::$libraries[$name];
+        }
 
         $path = explode('/', $name);
 
-        if (count($path) <= 1)
-        {
+        if (count($path) <= 1) {
             $i_name = '\Application\\' . $path[0] . 'Module\Libraries\\' . $path[0];
-        }
-        else
-        {
-            if ($path[0] === 'Cervo')
-            {
+        } else {
+            if ($path[0] === 'Cervo') {
                 $i_name = '\Cervo\Libraries\\' . implode('\\', array_slice($path, 1));
-            }
-            else
-            {
+            } else {
                 $i_name = '\Application\\' . $path[0] . 'Module\Libraries\\' . implode('\\', array_slice($path, 1));
             }
         }
@@ -212,77 +213,69 @@ class Cervo
     /**
      * Return a controller. It will be stored in an internal cache and reused if called again.
      * $name format: [Module]/[Name]
-     * Name MAY contain slashes (/) to go deeper in the tree.
+     * $name MAY contain slashes (/) to go deeper in the tree.
      *
      * @param string $name The path name
      *
      * @return object
      */
-    public static function &getController($name)
+    public static function getController($name)
     {
-        if (is_object(self::$controllers[$name]))
+        if (is_object(self::$controllers[$name])) {
             return self::$controllers[$name];
-
-        $path = explode('/', $name);
-
-        if (count($path) <= 1)
-        {
-            $i_name = '\Application\\' . $path[0] . 'Module\Controllers\\' . $path[0];
-        }
-        else
-        {
-            $i_name = '\Application\\' . $path[0] . 'Module\Controllers\\' . implode('\\', array_slice($path, 1));
         }
 
-        self::$controllers[$name] = new $i_name;
+        self::$controllers[$name] = self::getPath($name, 'Controllers');
         return self::$controllers[$name];
     }
 
     /**
      * Return a model.
      * $name format: [Module]/[Name]
-     * Name MAY contain slashes (/) to go deeper in the tree.
+     * $name MAY contain slashes (/) to go deeper in the tree.
      *
      * @param string $name The path name
      *
      * @return object
      */
-    public static function &getModel($name)
+    public static function getModel($name)
     {
-        $path = explode('/', $name);
-
-        if (count($path) <= 1)
-        {
-            $i_name = '\Application\\' . $path[0] . 'Module\Models\\' . $path[0];
-        }
-        else
-        {
-            $i_name = '\Application\\' . $path[0] . 'Module\Models\\' . implode('\\', array_slice($path, 1));
-        }
-
-        return new $i_name;
+        return self::getPath($name, 'Models');
     }
 
     /**
      * Return a view.
      * $name format: [Module]/[Name]
-     * Name MAY contain slashes (/) to go deeper in the tree.
+     * $name MAY contain slashes (/) to go deeper in the tree.
      *
      * @param string $name The path name
      *
      * @return object
      */
-    public static function &getView($name)
+    public static function getView($name)
     {
-        $path = explode('/', $name);
+        return self::getPath($name, 'Views');
+    }
 
-        if (count($path) <= 1)
-        {
-            $i_name = '\Application\\' . $path[0] . 'Module\Views\\' . $path[0];
-        }
-        else
-        {
-            $i_name = '\Application\\' . $path[0] . 'Module\Views\\' . implode('\\', array_slice($path, 1));
+    /**
+     * Return an instanciated object depending on the module sub-folder.
+     * $class_path format: [Module]/[Name]
+     * $class_path MAY contain slashes (/) to go deeper in the tree.
+     * $application_path is the module sub-folder to look in for.
+     *
+     * @param string $class_path The path name
+     * @param string $application_path The sub-folder within the module
+     *
+     * @return object
+     */
+    public static function getPath($class_path, $application_path)
+    {
+        $path = explode('/', $class_path);
+
+        if (count($path) <= 1) {
+            $i_name = '\Application\\' . $path[0] . 'Module\\' . $application_path . '\\' . $path[0];
+        } else {
+            $i_name = '\Application\\' . $path[0] . 'Module\\' . $application_path . '\\' . implode('\\', array_slice($path, 1));
         }
 
         return new $i_name;
@@ -297,36 +290,9 @@ class Cervo
      *
      * @return \Cervo\Libraries\Template
      */
-    public static function &getTemplate($name)
+    public static function getTemplate($name)
     {
         return new \Cervo\Libraries\Template($name);
-    }
-
-    /**
-     * Return the configuration file's result (expect an array).
-     * Will fetch [$name]/Config.php
-     * Return an empty array if the file does not exists.
-     *
-     * DEPRECATED! Replaced by the Cervo/Config library.
-     *
-     * @param string $name The module name
-     *
-     * @return array
-     *
-     * @deprecated Replaced by the Cervo/Config library.
-     */
-    public static function &getConfig($name)
-    {
-        $config = &self::getLibrary('Cervo/Config');
-
-        if (file_exists($config->get('Cervo/Application/Directory') . $name . \DS . 'Config.php'))
-        {
-            return require $config->get('Cervo/Application/Directory') . $name . \DS . 'Config.php';
-        }
-        else
-        {
-            return [];
-        }
     }
 
     /**
@@ -337,47 +303,14 @@ class Cervo
      */
     public static function autoload($name)
     {
-        if (strpos($name, 'Application\\') === 0 || strpos($name, 'Cervo\Libraries\\') === 0)
-        {
-            $config = &self::getLibrary('Cervo/Config');
+        if (strpos($name, 'Application\\') === 0) {
+            $config = self::getLibrary('Cervo/Config');
 
             $ex = explode('\\', $name);
 
-            if ($ex[0] === 'Cervo' && $ex[1] === 'Libraries')
-            {
-                require $config->get('Cervo/Libraries/Directory') . implode(\DS, array_slice($ex, 2)) . '.php';
-            }
-            else if ($ex[0] === 'Application' && substr($ex[1], -1 * 6) === 'Module')
-            {
+            if ($ex[0] === 'Application' && substr($ex[1], -1 * 6) === 'Module') {
                 require $config->get('Cervo/Application/Directory') . substr($ex[1], 0, strlen($ex[1]) - 6) . \DS . implode(\DS, array_slice($ex, 2)) . '.php';
             }
         }
-    }
-
-    /**
-     * The dynamic class autoloader.
-     * You can use self::register_autoload to add a new autoloader.
-     *
-     * @param string $name The class full name (Include the namespace(s))
-     */
-    public static function dynamic_autoload($name)
-    {
-        $c_autoloads = count(self::$autoloads);
-
-        for ($i = 0; $i < $c_autoloads; $i++)
-        {
-            $func = self::$autoloads[$i];
-            $func($name);
-        }
-    }
-
-    /**
-     * Add a new autoload function to the autoloader.
-     *
-     * @param callable $function
-     */
-    public static function register_autoload($function)
-    {
-        self::$autoloads[] = $function;
     }
 }
