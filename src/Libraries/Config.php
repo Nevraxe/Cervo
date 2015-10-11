@@ -91,18 +91,7 @@ class Config
      */
     public function set($name, $value)
     {
-        if (!is_array($name)) {
-            $name = explode('/', $name);
-        }
-
-        $current = &$this->values;
-
-        foreach ($name as $key) {
-            $current = &$current[$key];
-        }
-
-        $current = $value;
-
+        $this->_set($name, $value, false);
         return $this;
     }
 
@@ -116,18 +105,7 @@ class Config
      */
     public function setDefault($name, $value)
     {
-        if (!is_array($name)) {
-            $name = explode('/', $name);
-        }
-
-        $current = &$this->defaultValues;
-
-        foreach ($name as $key) {
-            $current = &$current[$key];
-        }
-
-        $current = $value;
-
+        $this->_set($name, $value, true);
         return $this;
     }
 
@@ -220,16 +198,35 @@ class Config
      * Usually used when importing.
      *
      * @param array $array
-     * @param array $current_path
+     * @param array $currentPath
      */
-    protected function setFromArrayRecursive($array, $current_path = [])
+    protected function setFromArrayRecursive($array, $currentPath = [])
     {
         foreach ($array as $key => $el) {
             if (is_array($el)) {
-                $this->setFromArrayRecursive($el, array_merge($current_path, [$key]));
+                $this->setFromArrayRecursive($el, array_merge($currentPath, [$key]));
             } else {
-                $this->set(array_merge($current_path, [$key]), $el);
+                $this->set(array_merge($currentPath, [$key]), $el);
             }
         }
+    }
+
+    protected function _set($name, $value, $isDefault = false)
+    {
+        if (!is_array($name)) {
+            $name = explode('/', $name);
+        }
+
+        if ($isDefault) {
+            $current = &$this->defaultValues;
+        } else {
+            $current = &$this->values;
+        }
+
+        foreach ($name as $key) {
+            $current = &$current[$key];
+        }
+
+        $current = $value;
     }
 }

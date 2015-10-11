@@ -112,7 +112,13 @@ class Router
     {
         $dispatcher = $this->getDispatcher();
 
-        $routeInfo = $dispatcher->dispatch($_SERVER['REQUEST_METHOD'], $this->detectUri());
+        if (defined('STDIN')) {
+            $request_method = 'CLI';
+        } else {
+            $request_method = $_SERVER['REQUEST_METHOD'];
+        }
+
+        $routeInfo = $dispatcher->dispatch($request_method, $this->detectUri());
 
         switch ($routeInfo[0]) {
             case Dispatcher::NOT_FOUND:
@@ -192,10 +198,27 @@ class Router
      */
     protected function detectUri()
     {
-        if (!isset($_SERVER['REQUEST_URI']) || !isset($_SERVER['SCRIPT_NAME'])) {
-            return '';
+        if (defined('STDIN')) {
+            $args = array_slice($_SERVER['argv'], 1);
+            return $args ? '/' . implode('/', $args) : '/';
         }
 
+        if (!isset($_SERVER['REQUEST_URI']) || !isset($_SERVER['SCRIPT_NAME'])) {
+            return '/';
+        }
+
+        $uri = $this->getQueryStringUri($this->getBaseUri());
+
+        if ($uri == '/' || empty($uri)) {
+            return '/';
+        }
+
+        $uri = parse_url($uri, PHP_URL_PATH);
+        return '/' . str_replace(['//', '../', '/..'], '/', trim($uri, '/'));
+    }
+
+    protected function getBaseUri()
+    {
         $uri = $_SERVER['REQUEST_URI'];
 
         if (strpos($uri, $_SERVER['SCRIPT_NAME']) === 0) {
@@ -204,12 +227,17 @@ class Router
             $uri = substr($uri, strlen(dirname($_SERVER['SCRIPT_NAME'])));
         }
 
-        if (strpos($uri, '?/') === 0) {
-            $uri = substr($uri, 2);
+        return $uri;
+    }
+
+    protected function getQueryStringUri($baseUri)
+    {
+        if (strpos($baseUri, '?/') === 0) {
+            $baseUri = substr($baseUri, 2);
         }
 
-        $parts = preg_split('#\?#i', $uri, 2);
-        $uri = $parts[0];
+        $parts = preg_split('#\?#i', $baseUri, 2);
+        $baseUri = $parts[0];
 
         if (isset($parts[1])) {
             $_SERVER['QUERY_STRING'] = $parts[1];
@@ -219,11 +247,6 @@ class Router
             $_GET = [];
         }
 
-        if ($uri == '/' || empty($uri)) {
-            return '/';
-        }
-
-        $uri = parse_url($uri, PHP_URL_PATH);
-        return '/' . str_replace(['//', '../', '/..'], '/', trim($uri, '/'));
+        return $baseUri;
     }
 }
