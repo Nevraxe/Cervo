@@ -208,17 +208,6 @@ class Router
             $uri = substr($uri, 2);
         }
 
-        $parts = preg_split('#\?#i', $uri, 2);
-        $uri = $parts[0];
-
-        if (isset($parts[1])) {
-            $_SERVER['QUERY_STRING'] = $parts[1];
-            parse_str($_SERVER['QUERY_STRING'], $_GET);
-        } else {
-            $_SERVER['QUERY_STRING'] = '';
-            $_GET = [];
-        }
-
         if ($uri == '/' || empty($uri)) {
             return '/';
         }
