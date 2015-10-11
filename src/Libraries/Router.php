@@ -217,6 +217,11 @@ class Router
         return '/' . str_replace(['//', '../', '/..'], '/', trim($uri, '/'));
     }
 
+    /**
+     * Return the base URI for a request
+     *
+     * @return string
+     */
     protected function getBaseUri()
     {
         $uri = $_SERVER['REQUEST_URI'];
@@ -230,6 +235,13 @@ class Router
         return $uri;
     }
 
+    /**
+     * Return the uri with the query string parsed if the request is made using the query string method
+     *
+     * @param string $baseUri
+     *
+     * @return string
+     */
     protected function getQueryStringUri($baseUri)
     {
         if (strpos($baseUri, '?/') === 0) {
