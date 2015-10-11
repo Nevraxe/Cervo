@@ -32,6 +32,9 @@
 namespace Cervo;
 
 
+use Cervo\Libraries\Route;
+
+
 /**
  * Core class for Cervo.
  *
@@ -116,13 +119,13 @@ class Core
 
         // Initialise the system
 
-        $route = $router->getRoute();
+        $route = $router->dispatch();
 
-        if ($route instanceof \Cervo\Libraries\RouterPath\Route) {
+        if ($route instanceof Route) {
             $events->fire('Cervo/Controller/Before');
 
             $method = $route->getMethod() . $config->get('Cervo/Application/MethodSuffix');
-            self::getController($route->getModule() . '/' . $route->getController())->$method($route->getArgs(), $route->getParams());
+            self::getController($route->getModule() . '/' . $route->getController())->$method($route->getArguments(), $route->getParameters());
 
             $events->fire('Cervo/Controller/After');
         }

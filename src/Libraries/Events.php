@@ -52,7 +52,7 @@ class Events
      * True while an event is fired.
      * @var bool
      */
-    protected $in_progress = false;
+    protected $inProgress = false;
 
     /**
      * Custom sort for priority.
@@ -165,7 +165,7 @@ class Events
             return false;
         }
 
-        $this->in_progress = true;
+        $this->inProgress = true;
 
         usort($this->events[$name], '\\' . __CLASS__ . '::prioritySort');
 
@@ -173,7 +173,7 @@ class Events
             call_user_func($call['call'], $name, $params);
         }
 
-        $this->in_progress = false;
+        $this->inProgress = false;
 
         return true;
     }
@@ -185,6 +185,6 @@ class Events
      */
     public function isInProgress()
     {
-        return $this->in_progress;
+        return $this->inProgress;
     }
 }

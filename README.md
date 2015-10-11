@@ -12,35 +12,27 @@ Requirements
 
 Requires *PHP 5.4.0*.
 
-Does not depend on any other libraries.
-
 
 Versioning
 ----------
 
-Version model: (major).(minor).(hotfix)
+Version model: (MAJOR).(MINOR).(PATCH)
 
- - **Major** version changes when there are major rewrites, major changes, non-backward compatible changes, and/or removal of deprecated features.
- - **Minor** version changes are all backward compatible and may contain newly deprecated features, and/or new features.
- - **Hotfix** version changes are for bug fixes and small feature additions.
+ - **MAJOR** version when we make incompatible API changes,
+ - **MINOR** version when we add functionality in a backwards-compatible manner, and
+ - **PATCH** version when we make backwards-compatible bug fixes.
 
 
 Installing
 ----------
 
-### Using composer
+Using composer
 
 ```json
 "require": {
     "nevraxe/cervo": "3.0.*"
 }
 ```
-
-### Manual install
-
-Copy the *library* folder to your website. Rather then including composer's autoload in the example, you simply have to include the `bootstrap.php` file in the *Cervo* folder.
-
-No packaging is currently made, but may be done if there is enough requests.
 
 
 How to get started
