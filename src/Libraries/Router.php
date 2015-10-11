@@ -89,9 +89,11 @@ class Router
 
         if ($config->get('Production') == true && file_exists($cache_file_path)) {
             $this->usingCache = true;
-        } elseif ($config->get('Production') == true) {
-            $this->generateCache = true;
         } else {
+            if ($config->get('Production') == true) {
+                $this->generateCache = true;
+            }
+
             $this->routeCollector = new RouteCollector(
                 new RouteParser\Std(),
                 new DataGenerator\GroupCountBased()
