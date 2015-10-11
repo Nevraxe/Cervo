@@ -33,6 +33,7 @@ namespace Cervo\Libraries;
 
 
 use Cervo\Core as _;
+use Cervo\Libraries\Exceptions\InvalidRouterCacheException;
 use Cervo\Libraries\Exceptions\RouteNotFoundException;
 use FastRoute\RouteCollector;
 use FastRoute\RouteParser as RouteParser;
@@ -51,13 +52,25 @@ class Router
      * FastRoute
      * @var RouteCollector
      */
-    private $routeCollector;
+    protected $routeCollector;
 
     /**
      * FastRoute
      * @var Dispatcher
      */
-    private $dispatcher;
+    protected $dispatcher;
+
+    /**
+     * FastRoute cache file path.
+     * @var string
+     */
+    protected $cacheFilePath;
+
+    /**
+     * This is set to true if we are using the cache.
+     * @var bool
+     */
+    protected $usingCache = false;
 
     /**
      * Initialize the route configurations.
@@ -66,16 +79,22 @@ class Router
     {
         $config = _::getLibrary('Cervo/Config');
 
-        $this->routeCollector = new RouteCollector(
-            new RouteParser\Std(),
-            new DataGenerator\GroupCountBased()
-        );
+        $this->cacheFilePath = $config->get('Cervo/Application/Directory') . \DS . 'router.cache.php';
 
-        foreach (glob($config->get('Cervo/Application/Directory') . '*' . \DS . 'Router.php', \GLOB_NOSORT | \GLOB_NOESCAPE) as $file) {
-            $function = require $file;
+        if ($config->get('Production') == true && file_exists($cache_file_path)) {
+            $this->usingCache = true;
+        } else {
+            $this->routeCollector = new RouteCollector(
+                new RouteParser\Std(),
+                new DataGenerator\GroupCountBased()
+            );
 
-            if (is_callable($function)) {
-                $function($this);
+            foreach (glob($config->get('Cervo/Application/Directory') . '*' . \DS . 'Router.php', \GLOB_NOSORT | \GLOB_NOESCAPE) as $file) {
+                $function = require $file;
+
+                if (is_callable($function)) {
+                    $function($this);
+                }
             }
         }
     }
@@ -87,7 +106,22 @@ class Router
      */
     public function dispatch()
     {
-        $this->dispatcher = new Dispatcher\GroupCountBased($this->routeCollector->getData());
+        $config = _::getLibrary('Cervo/Config');
+
+        $dispatchData = null;
+
+        if ($this->usingCache) {
+            $dispatchData = require $this->cacheFilePath;
+
+            if (!is_array($dispatchData)) {
+                throw new InvalidRouterCacheException;
+            }
+        } else {
+            $dispatchData = $this->routeCollector->getData();
+        }
+
+        $this->dispatcher = new Dispatcher\GroupCountBased($dispatchData);
+
         $routeInfo = $this->dispatcher->dispatch($_SERVER['REQUEST_METHOD'], $this->detectUri());
 
         switch ($routeInfo[0]) {
@@ -126,6 +160,10 @@ class Router
      */
     public function addRoute($httpMethod, $route, $method_path, $middleware = null, $parameters = [])
     {
+        if ($this->usingCache) {
+            return;
+        }
+
         $this->routeCollector->addRoute($httpMethod, $route, [
             'method_path' => $method_path,
             'middleware' => $middleware,
