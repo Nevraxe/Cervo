@@ -1,6 +1,8 @@
 Cervo
 =====
 
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Nevraxe/Cervo/badges/quality-score.png?b=3.0)](https://scrutinizer-ci.com/g/Nevraxe/Cervo/?branch=3.0)
+
 About Cervo
 -----------
 
