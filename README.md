@@ -65,14 +65,14 @@ require 'vendor/autoload.php';
 
 
 // We get the Config Cervo library
-$config = \Cervo::getLibrary('Cervo/Config');
+$config = \Cervo\Core::getLibrary('Cervo/Config');
 
 // This configuration is required. It can be set either here, or in the config.json file directly.
 $config->set('Cervo/Application/Directory', realpath(__DIR__ . '/Application') . \DS);
 
 
 // We initialize Cervo and load config.json.
-\Cervo::initConfig(__DIR__ . '/config.json');
+\Cervo\Core::init(__DIR__ . '/config.json');
 
 ```
 
@@ -112,11 +112,11 @@ Checklist
 
 namespace Application\MyModule\Controllers;
 
-use Cervo as _;
+use Cervo\Core as _;
 
 class My extends _\Libraries\Controller
 {
-    public function IndexMethod($args = [])
+    public function IndexMethod($args = [], $params = [])
     {
         // We process the user input
         $value = $args[0];
@@ -155,7 +155,7 @@ Checklist
 
 namespace Application\MyModule\Views;
 
-use Cervo as _;
+use Cervo\Core as _;
 
 class Index extends _\Libraries\Views
 {
@@ -220,13 +220,13 @@ Checklist
 
 A library is simply a singleton class that contains code that is re-used. The Cervo `getLibrary()` function handled the singleton part, so you can use your class directly in your tests.
 
-```
+```php
 <?php
 // Application/My/Libraries/My.php
 
 namespace Application\MyModule\Libraries;
 
-use Cervo as _;
+use Cervo\Core as _;
 
 class My
 {
@@ -243,25 +243,31 @@ class My
 
 The `Router.php` file in your module's root is loaded automatically by Cervo's Router. It is included from within the Router's object so you can use it's methods.
 
-```
+```php
 <?php
 // Application/My/Router.php
 
-/** @var $this \Cervo\Libraries\Router */
+return function (\Cervo\Libraries\Router $router) {
 
-use \Cervo\Libraries\RouterPath\Route as Route;
+    // The first parameter is the HTTP method. You may use an array to define multiple.
+    // The second one is the path. It supports the nikic/FastRoute default notation.
+    // The third parameter is the Module/Controller/Method, you can a controller in a sub-folder, so you could load it like Module/SubFolder/Controller/Method.
+    $router->addRoute('GET', '/', 'Test/Test/Test');
+    $router->addRoute('GET', '/test/{name}', 'Test/Test/Named');
+    
+    // The fourth parameter can be a callable that will run before the controller/method is called.
+    $router->addRoute('GET', '/admin/test/{name}', 'Test/Admin/Test/Named', function (\Cervo\Libraries\Router $router) {
+        if (\Cervo\Core::getLibrary('Users')->getCurrentUser() === null) {
+            // Returning false will prevent the controller/method to be called.
+            return false;
+        }
+        
+        return true;
+    }, ['param' => 'test']);
+    
+    // You can add an array as the fifth parameter, those informations will be passed to the controller/method as second parameter.
 
-// The first parameter is the path
-// The second one is the Module/Controller/Method, you can put a controller in a sub-folder, so you could load it like Module/SubFolder/Controller/Method.
-// The third parameter is the HTTP method. You may use "Route::M_ANY" or "Route::M_ANY ^ Route::M_CLI" as well.
-$this->addRoute('', 'My/My/Index', Route::M_HTTP_GET);
-$this->addRoute('index', 'My/My/Index', Route::M_HTTP_GET);
-
-// The arguments passed to the controller's method are defined with interogation marks and stars.
-// ?  -->  Matches exactly one argument.
-// *  -->  Matches zero or more arguments.
-// You can use mix of the both if you want to require 2 arguments, but may have up to any.
-$this->addRoute('index/?', 'My/My/Index', Router::M_HTTP_GET);
+};
 
 ```
 
