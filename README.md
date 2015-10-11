@@ -235,6 +235,16 @@ class My
         // Sanitize $input...
         return $input;
     }
+    
+    public function verify(\Cervo\Libraries\Router $router)
+    {
+        if (\Cervo\Core::getLibrary('Users')->getCurrentUser() === null) {
+            // Returning false will prevent the controller/method to be called.
+            return false;
+        }
+        
+        return true;
+    }
 }
 ```
 
@@ -255,17 +265,10 @@ return function (\Cervo\Libraries\Router $router) {
     $router->addRoute('GET', '/', 'Test/Test/Test');
     $router->addRoute('GET', '/test/{name}', 'Test/Test/Named');
     
-    // The fourth parameter can be a callable that will run before the controller/method is called.
-    $router->addRoute('GET', '/admin/test/{name}', 'Test/Admin/Test/Named', function (\Cervo\Libraries\Router $router) {
-        if (\Cervo\Core::getLibrary('Users')->getCurrentUser() === null) {
-            // Returning false will prevent the controller/method to be called.
-            return false;
-        }
-        
-        return true;
-    }, ['param' => 'test']);
-    
+    // The fourth parameter is an array in the format ['MyModule/MyLibrary', 'Method']. The first part is the equivalent of doing \Cervo\Core::getLibrary() and the second part is the method called.
     // You can add an array as the fifth parameter, those informations will be passed to the controller/method as second parameter.
+    $router->addRoute('GET', '/admin/test/{name}', 'Test/Admin/Test/Named', ['My', 'verify'], ['param' => 'test']);
+    
 
 };
 

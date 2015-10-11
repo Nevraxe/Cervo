@@ -128,10 +128,10 @@ class Router
 
                 $middleware = $handler['middleware'];
 
-                if (is_callable($middleware)) {
-                    if (!$middleware($this)) {
-                        return false;
-                    }
+                $middleware_library = _::getLibrary($middleware[0]);
+
+                if (!$middleware_library->$middleware[1]($this)) {
+                    return false;
                 }
 
                 return new Route($handler['method_path'], $handler['parameters'], $arguments);
@@ -145,10 +145,10 @@ class Router
      * @param string $httpMethod The HTTP method, example: GET, POST, PATCH, etc.
      * @param string $route The route
      * @param string $method_path The Method Path
-     * @param callable|null $middleware Call a middleware before executing the route. If the middleware return false, the route does not get called.
+     * @param callable|null $middleware Call a middleware before executing the route. The format is ['MyModule/MyLibrary', 'MyMethod']
      * @param array $parameters The parameters to pass
      */
-    public function addRoute($httpMethod, $route, $method_path, $middleware = null, $parameters = [])
+    public function addRoute($httpMethod, $route, $method_path, $middleware = [], $parameters = [])
     {
         if ($this->usingCache) {
             return;
