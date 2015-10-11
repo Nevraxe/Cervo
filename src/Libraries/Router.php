@@ -59,7 +59,7 @@ class Router
             new DataGenerator\GroupCountBased()
         );
 
-        $this->dispatcher = new Dispatcher\GroupCountBased($this->routeCollector);
+        $this->dispatcher = new Dispatcher\GroupCountBased($this->routeCollector->getData());
 
         foreach (glob($config->get('Cervo/Application/Directory') . '*' . \DS . 'Router.php', \GLOB_NOSORT | \GLOB_NOESCAPE) as $file) {
             $function = require $file;
