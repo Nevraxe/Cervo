@@ -198,13 +198,13 @@ class Router
      */
     protected function detectUri()
     {
-        if (!isset($_SERVER['REQUEST_URI']) || !isset($_SERVER['SCRIPT_NAME'])) {
-            return '/';
-        }
-
         if (defined('STDIN')) {
             $args = array_slice($_SERVER['argv'], 1);
             return $args ? '/' . implode('/', $args) : '/';
+        }
+
+        if (!isset($_SERVER['REQUEST_URI']) || !isset($_SERVER['SCRIPT_NAME'])) {
+            return '/';
         }
 
         $uri = $this->getQueryStringUri($this->getBaseUri());
