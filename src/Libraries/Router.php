@@ -49,16 +49,10 @@ use FastRoute\Dispatcher as Dispatcher;
 class Router
 {
     /**
-     * FastRoute
+     * FastRoute, null if usingCache is set
      * @var RouteCollector
      */
     protected $routeCollector;
-
-    /**
-     * FastRoute
-     * @var Dispatcher
-     */
-    protected $dispatcher;
 
     /**
      * FastRoute cache file path.
@@ -137,9 +131,9 @@ class Router
             );
         }
 
-        $this->dispatcher = new Dispatcher\GroupCountBased($dispatchData);
+        $dispatcher = new Dispatcher\GroupCountBased($dispatchData);
 
-        $routeInfo = $this->dispatcher->dispatch($_SERVER['REQUEST_METHOD'], $this->detectUri());
+        $routeInfo = $dispatcher->dispatch($_SERVER['REQUEST_METHOD'], $this->detectUri());
 
         switch ($routeInfo[0]) {
             case Dispatcher::NOT_FOUND:
