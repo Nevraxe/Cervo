@@ -61,7 +61,7 @@ class Router
 
         $this->dispatcher = new Dispatcher\GroupCountBased($this->routeCollector);
 
-        foreach (glob($config->get('Cervo/Application/Directory') . '*' . \DS . 'router.php', \GLOB_NOSORT | \GLOB_NOESCAPE) as $file) {
+        foreach (glob($config->get('Cervo/Application/Directory') . '*' . \DS . 'Router.php', \GLOB_NOSORT | \GLOB_NOESCAPE) as $file) {
             $function = require $file;
 
             if (is_callable($function)) {
