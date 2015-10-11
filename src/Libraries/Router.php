@@ -110,28 +110,7 @@ class Router
      */
     public function dispatch()
     {
-        $config = _::getLibrary('Cervo/Config');
-
-        $dispatchData = null;
-
-        if ($this->usingCache) {
-            $dispatchData = require $this->cacheFilePath;
-
-            if (!is_array($dispatchData)) {
-                throw new InvalidRouterCacheException;
-            }
-        } else {
-            $dispatchData = $this->routeCollector->getData();
-        }
-
-        if ($this->generateCache) {
-            file_put_contents(
-                $this->cacheFilePath,
-                '<?php return ' . var_export($dispatchData, true) . ';'
-            );
-        }
-
-        $dispatcher = new Dispatcher\GroupCountBased($dispatchData);
+        $dispatcher = $this->getDispatcher();
 
         $routeInfo = $dispatcher->dispatch($_SERVER['REQUEST_METHOD'], $this->detectUri());
 
@@ -180,6 +159,30 @@ class Router
             'middleware' => $middleware,
             'parameters' => $parameters
         ]);
+    }
+
+    protected function getDispatcher()
+    {
+        $dispatchData = null;
+
+        if ($this->usingCache) {
+            $dispatchData = require $this->cacheFilePath;
+
+            if (!is_array($dispatchData)) {
+                throw new InvalidRouterCacheException;
+            }
+        } else {
+            $dispatchData = $this->routeCollector->getData();
+        }
+
+        if ($this->generateCache) {
+            file_put_contents(
+                $this->cacheFilePath,
+                '<?php return ' . var_export($dispatchData, true) . ';'
+            );
+        }
+
+        return new Dispatcher\GroupCountBased($dispatchData);
     }
 
     /**
