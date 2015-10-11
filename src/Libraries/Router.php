@@ -47,9 +47,21 @@ use FastRoute\Dispatcher as Dispatcher;
  */
 class Router
 {
+    /**
+     * FastRoute
+     * @var RouteCollector
+     */
     private $routeCollector;
+
+    /**
+     * FastRoute
+     * @var Dispatcher
+     */
     private $dispatcher;
 
+    /**
+     * Initialize the route configurations.
+     */
     public function __construct()
     {
         $config = _::getLibrary('Cervo/Config');
@@ -68,6 +80,11 @@ class Router
         }
     }
 
+    /**
+     * Dispatch the request to the router.
+     *
+     * @return bool|Route
+     */
     public function dispatch()
     {
         $this->dispatcher = new Dispatcher\GroupCountBased($this->routeCollector->getData());
@@ -80,7 +97,6 @@ class Router
 
                 throw new RouteNotFoundException;
 
-                break;
             case Dispatcher::FOUND:
 
                 $handler = $routeInfo[1];
@@ -96,10 +112,18 @@ class Router
 
                 return new Route($handler['method_path'], $handler['parameters'], $arguments);
 
-                break;
         }
     }
 
+    /**
+     * Add a new route.
+     *
+     * @param string $httpMethod The HTTP method, example: GET, POST, PATCH, etc.
+     * @param string $route The route
+     * @param string $method_path The Method Path
+     * @param callable|null $middleware Call a middleware before executing the route. If the middleware return false, the route does not get called.
+     * @param array $parameters The parameters to pass
+     */
     public function addRoute($httpMethod, $route, $method_path, $middleware = null, $parameters = [])
     {
         $this->routeCollector->addRoute($httpMethod, $route, [
@@ -109,6 +133,11 @@ class Router
         ]);
     }
 
+    /**
+     * Returns a parsable URI
+     *
+     * @return string
+     */
     protected function detectUri()
     {
         if (!isset($_SERVER['REQUEST_URI']) || !isset($_SERVER['SCRIPT_NAME'])) {

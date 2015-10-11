@@ -32,7 +32,6 @@
 namespace Cervo\Libraries;
 
 
-use Cervo\Core as _;
 use Cervo\Libraries\Exceptions\InvalidControllerException;
 
 
@@ -43,12 +42,44 @@ use Cervo\Libraries\Exceptions\InvalidControllerException;
  */
 class Route
 {
+    /**
+     * The route's module
+     * @var string
+     */
     protected $module;
+
+    /**
+     * The route's controller
+     * @var string
+     */
     protected $controller;
+
+    /**
+     * The route's method
+     * @var string
+     */
     protected $method;
+
+    /**
+     * The parameters to pass
+     * @var array
+     */
     protected $parameters = [];
+
+    /**
+     * The arguments to pass
+     * @var array
+     */
     protected $arguments = [];
 
+    /**
+     * Set the method path.
+     * Sanitize and split the method_path.
+     *
+     * @param $method_path
+     * @param array $parameters
+     * @param array $arguments
+     */
     public function __construct($method_path, $parameters = [], $arguments = [])
     {
         if (is_callable($method_path)) {
