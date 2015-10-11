@@ -33,6 +33,7 @@ namespace Cervo\Libraries;
 
 
 use Cervo\Core as _;
+use Cervo\Libraries\Exceptions\TemplateFileMissingException;
 
 
 /**
@@ -69,7 +70,7 @@ class Template
         $this->name = explode('/', $name);
 
         if (!file_exists($config->get('Cervo/Application/Directory') . $this->name[0] . \DS . $config->get('Cervo/Application/TemplatesPath') . implode('/', array_slice($this->name, 1)) . '.php')) {
-            throw new _\Libraries\Exceptions\TemplateFileMissingException();
+            throw new TemplateFileMissingException();
         }
     }
 

@@ -29,56 +29,27 @@
  */
 
 
-namespace Cervo\Libraries\RouterPath;
+namespace Cervo\Libraries;
 
 
+use Cervo\Core as _;
 use Cervo\Libraries\Exceptions\InvalidControllerException;
-use Cervo\Libraries\RouterPath;
 
 
 /**
- * Used in Router. Each of the module's routes are RouterPath objects.
+ * Route manager for Cervo.
  *
  * @author Marc André Audet <root@manhim.net>
  */
-class Route extends RouterPath
+class Route
 {
-    /**
-     * The route's module.
-     * @var string
-     */
     protected $module;
-
-    /**
-     * The route's controller.
-     * @var string
-     */
     protected $controller;
-
-    /**
-     * The route's method.
-     * @var string
-     */
     protected $method;
+    protected $parameters = [];
+    protected $variables = [];
 
-    /**
-     * The paramters to pass.
-     * @var array
-     */
-    protected $params = [];
-
-    /**
-     * Set the path, the module, the controller and the method.
-     * Sanitize the path and compute the regex.
-     *
-     * @param string $path
-     * @param string|callable $method_path
-     * @param int $http_method
-     * @param array $params
-     *
-     * @throws InvalidControllerException
-     */
-    public function __construct($path, $method_path, $http_method = RouterPath::M_ANY, $params = [])
+    public function __construct($method_path, $parameters = [], $variables = [])
     {
         if (is_callable($method_path)) {
             $method_path = $method_path();
@@ -89,30 +60,13 @@ class Route extends RouterPath
 
         if ($c_controller_e < 3) {
             throw new InvalidControllerException;
-        } else {
-            $module = $controller_e[0];
-            $controller_p = implode('/', array_slice($controller_e, 1, $c_controller_e - 2));
-            $method = $controller_e[$c_controller_e - 1];
         }
 
-        $this->module = $module;
-        $this->controller = $controller_p;
-        $this->method = $method;
-        $this->params = $params;
-
-        parent::__construct($path, $http_method);
-    }
-
-    /**
-     * Compare the input path to the regex.
-     *
-     * @param string $path
-     *
-     * @return bool
-     */
-    public function compare($path)
-    {
-        return parent::compare($path);
+        $this->module = $controller_e[0];
+        $this->controller = implode('/', array_slice($controller_e, 1, $c_controller_e - 2));
+        $this->method = $controller_e[$c_controller_e - 1];
+        $this->parameters = $parameters;
+        $this->variables = $variables;
     }
 
     public function getModule()
@@ -130,8 +84,13 @@ class Route extends RouterPath
         return $this->method;
     }
 
-    public function getParams()
+    public function getParameters()
     {
-        return $this->params;
+        return $this->parameters;
+    }
+
+    public function getVariables()
+    {
+        return $this->variables;
     }
 }

@@ -43,22 +43,22 @@ class Response
      * Render a view with a specific response code.
      *
      * @param View $view
-     * @param int $status_code
+     * @param int $statusCode
      */
-    public function renderView(View $view, $status_code = 200)
+    public function renderView(View $view, $statusCode = 200)
     {
-        $this->responseCode($status_code);
+        $this->responseCode($statusCode);
         $view->render();
     }
 
     /**
      * Changes the HTTP Response Code.
      *
-     * @param int $status_code
+     * @param int $statusCode
      */
-    public function responseCode($status_code = 200)
+    public function responseCode($statusCode = 200)
     {
-        http_response_code($status_code);
+        http_response_code($statusCode);
     }
 
     /**
