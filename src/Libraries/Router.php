@@ -120,28 +120,22 @@ class Router
 
         $routeInfo = $dispatcher->dispatch($request_method, $this->detectUri());
 
-        switch ($routeInfo[0]) {
-            case Dispatcher::NOT_FOUND:
-            case Dispatcher::METHOD_NOT_ALLOWED:
-            default:
+        if ($routeInfo[0] === Dispatcher::FOUND) {
+            $handler = $routeInfo[1];
+            $arguments = $routeInfo[2];
+            $middleware = $handler['middleware'];
 
-                throw new RouteNotFoundException;
-
-            case Dispatcher::FOUND:
-
-                $handler = $routeInfo[1];
-                $arguments = $routeInfo[2];
-
-                $middleware = $handler['middleware'];
-
+            if (is_array($middleware) && count($middleware) === 2) {
                 $middleware_library = _::getLibrary($middleware[0]);
 
                 if (!$middleware_library->$middleware[1]($this)) {
                     return false;
                 }
+            }
 
-                return new Route($handler['method_path'], $handler['parameters'], $arguments);
-
+            return new Route($handler['method_path'], $handler['parameters'], $arguments);
+        } else {
+            throw new RouteNotFoundException;
         }
     }
 
