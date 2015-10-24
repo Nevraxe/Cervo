@@ -131,13 +131,14 @@ class Router
 
                 $handler = $routeInfo[1];
                 $arguments = $routeInfo[2];
-
                 $middleware = $handler['middleware'];
 
-                $middleware_library = _::getLibrary($middleware[0]);
+                if (is_array($middleware) && count($middleware) === 2) {
+                    $middleware_library = _::getLibrary($middleware[0]);
 
-                if (!$middleware_library->$middleware[1]($this)) {
-                    return false;
+                    if (!$middleware_library->$middleware[1]($this)) {
+                        return false;
+                    }
                 }
 
                 return new Route($handler['method_path'], $handler['parameters'], $arguments);
