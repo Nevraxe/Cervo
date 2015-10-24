@@ -33,6 +33,7 @@ namespace Cervo;
 
 
 use Cervo\Libraries\Route;
+use Cervo\Libraries\Template;
 
 
 /**
@@ -45,7 +46,7 @@ class Core
     /**
      * The current version of Cervo.
      */
-    const VERSION = '3.0.0';
+    const VERSION = '3.0.2';
 
     /**
      * All the libraries instances that have been initialized through getLibrary().
@@ -85,10 +86,6 @@ class Core
         }
 
         self::$is_init = true;
-
-
-        // Add the autoloader
-        spl_autoload_register('\Cervo\Core::autoload');
 
 
         // Start the configuration process
@@ -143,6 +140,11 @@ class Core
      */
     public static function initConfig($json_config_file = null)
     {
+        // Add the autoloader
+        spl_autoload_register('\Cervo\Core::autoload');
+
+
+
         // Small shortcut
 
         if (!defined('DS')) {
@@ -288,11 +290,11 @@ class Core
      *
      * @param string $name The path name
      *
-     * @return \Cervo\Libraries\Template
+     * @return Template
      */
     public static function getTemplate($name)
     {
-        return new \Cervo\Libraries\Template($name);
+        return new Template($name);
     }
 
     /**
