@@ -46,7 +46,7 @@ class Core
     /**
      * The current version of Cervo.
      */
-    const VERSION = '3.0.2';
+    const VERSION = '3.0.3';
 
     /**
      * All the libraries instances that have been initialized through getLibrary().
