@@ -95,7 +95,11 @@ class Tools
 
         foreach ($files as $file) {
             if (strncmp($path, $file, $len) === 0 && substr($file, -4) === '.php') {
-                $classes[] = str_replace('\\', '/', substr($file, $len, -4));
+                $class = str_replace('\\', '/', substr($file, $len, -4));
+
+                if (strpos($class, 'Exceptions/') !== 0) {
+                    $classes[] = $class;
+                }
             }
         }
 
