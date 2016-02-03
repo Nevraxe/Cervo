@@ -140,8 +140,6 @@ class Tools
 
 namespace PHPSTORM_META
 {
-    /** @noinspection PhpUnusedLocalVariableInspection */
-    /** @noinspection PhpIllegalArrayKeyTypeInspection */
     \$STATIC_METHOD_TYPES = [
 
 METADATA;
@@ -150,7 +148,7 @@ METADATA;
     private static function phpstormMetadataLibraries($cervo_libraries, $libraries)
     {
         $towrite = <<<METADATA
-        \Cervo::getLibrary('') => [
+        \Cervo\Core::getLibrary('') => [
 
 METADATA;
 
