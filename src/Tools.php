@@ -117,9 +117,10 @@ class Tools
         $classes = [];
 
         foreach ($files as $file) {
-            if (strncmp($path, $file, $path_len) === 0 && substr($file, -4) === '.php') {
-                $cur = str_replace('\\', '/', str_replace(\DS . $sub_path, '/', substr($file, $path_len, -4)));
 
+            if (strncmp($path, $file, $path_len) === 0 && substr($file, -4) === '.php') {
+
+                $cur = str_replace('\\', '/', str_replace(\DS . $sub_path, '/', substr($file, $path_len, -4)));
                 $ex = explode('/', $cur);
 
                 if (count($ex) === 2 && $ex[0] === $ex[1]) {
@@ -127,7 +128,9 @@ class Tools
                 }
 
                 $classes[] = $cur;
+
             }
+
         }
 
         return $classes;
@@ -243,9 +246,11 @@ METADATA;
         $files = [];
 
         while (count($folders) > 0) {
+
             $cur = array_pop($folders);
 
             foreach (glob($cur . '*', GLOB_MARK) as $file) {
+
                 if (is_dir($file)) {
                     array_push($folders, $file);
                 } else {
@@ -253,7 +258,9 @@ METADATA;
                         $files[] = $file;
                     }
                 }
+
             }
+
         }
 
         return $files;

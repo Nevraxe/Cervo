@@ -185,7 +185,7 @@ class Router
         $dir = dirname($this->cacheFilePath);
 
         if ($this->generateCache && !file_exists($this->cacheFilePath) && is_dir($dir) && is_writable($dir)) {
-            @file_put_contents(
+            file_put_contents(
                 $this->cacheFilePath,
                 '<?php return ' . var_export($dispatchData, true) . ';' . PHP_EOL,
                 LOCK_EX

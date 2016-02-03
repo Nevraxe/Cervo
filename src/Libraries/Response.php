@@ -36,6 +36,7 @@ namespace Cervo\Libraries;
  * Response helper.
  *
  * @author Marc André Audet <root@manhim.net>
+ * @deprecated
  */
 class Response
 {

@@ -306,6 +306,7 @@ class Core
     public static function autoload($name)
     {
         if (strpos($name, 'Application\\') === 0) {
+
             $config = self::getLibrary('Cervo/Config');
 
             $ex = explode('\\', $name);
@@ -313,6 +314,7 @@ class Core
             if ($ex[0] === 'Application' && substr($ex[1], -1 * 6) === 'Module') {
                 require $config->get('Cervo/Application/Directory') . substr($ex[1], 0, strlen($ex[1]) - 6) . \DS . implode(\DS, array_slice($ex, 2)) . '.php';
             }
+
         }
     }
 }
