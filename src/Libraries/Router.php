@@ -84,6 +84,8 @@ class Router
         if ($config->get('Production') == true && file_exists($this->cacheFilePath)) {
             $this->usingCache = true;
         } else {
+
+            // TODO: This can be simplified by checking the Production config at the moment where we want to generate the cache
             if ($config->get('Production') == true) {
                 $this->generateCache = true;
             }
@@ -100,6 +102,7 @@ class Router
                     $function($this);
                 }
             }
+
         }
     }
 
@@ -121,6 +124,7 @@ class Router
         $routeInfo = $dispatcher->dispatch($request_method, $this->detectUri());
 
         if ($routeInfo[0] === Dispatcher::FOUND) {
+
             $handler = $routeInfo[1];
             $arguments = $routeInfo[2];
             $middleware = $handler['middleware'];
@@ -134,6 +138,7 @@ class Router
             }
 
             return new Route($handler['method_path'], $handler['parameters'], $arguments);
+
         } else {
             throw new RouteNotFoundException;
         }
@@ -145,7 +150,7 @@ class Router
      * @param string $httpMethod The HTTP method, example: GET, POST, PATCH, etc.
      * @param string $route The route
      * @param string $method_path The Method Path
-     * @param callable|null $middleware Call a middleware before executing the route. The format is ['MyModule/MyLibrary', 'MyMethod']
+     * @param array $middleware Call a middleware before executing the route. The format is ['MyModule/MyLibrary', 'MyMethod']
      * @param array $parameters The parameters to pass
      */
     public function addRoute($httpMethod, $route, $method_path, $middleware = [], $parameters = [])
@@ -166,19 +171,24 @@ class Router
         $dispatchData = null;
 
         if ($this->usingCache) {
+
             $dispatchData = require $this->cacheFilePath;
 
             if (!is_array($dispatchData)) {
                 throw new InvalidRouterCacheException;
             }
+
         } else {
             $dispatchData = $this->routeCollector->getData();
         }
 
-        if ($this->generateCache) {
-            file_put_contents(
+        $dir = dirname($this->cacheFilePath);
+
+        if ($this->generateCache && !file_exists($this->cacheFilePath) && is_dir($dir) && is_writable($dir)) {
+            @file_put_contents(
                 $this->cacheFilePath,
-                '<?php return ' . var_export($dispatchData, true) . ';' . PHP_EOL
+                '<?php return ' . var_export($dispatchData, true) . ';' . PHP_EOL,
+                LOCK_EX
             );
         }
 
