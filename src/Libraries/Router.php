@@ -248,19 +248,24 @@ class Router
      */
     protected function getQueryStringUri($baseUri)
     {
+        $from_query_string = false;
+
         if (strpos($baseUri, '?/') === 0) {
+            $from_query_string = true;
             $baseUri = substr($baseUri, 2);
         }
 
         $parts = preg_split('#\?#i', $baseUri, 2);
         $baseUri = $parts[0];
 
-        if (isset($parts[1])) {
-            $_SERVER['QUERY_STRING'] = $parts[1];
-            parse_str($_SERVER['QUERY_STRING'], $_GET);
-        } else {
-            $_SERVER['QUERY_STRING'] = '';
-            $_GET = [];
+        if ($from_query_string) {
+            if (isset($parts[1])) {
+                $_SERVER['QUERY_STRING'] = $parts[1];
+                parse_str($_SERVER['QUERY_STRING'], $_GET);
+            } else {
+                $_SERVER['QUERY_STRING'] = '';
+                $_GET = [];
+            }
         }
 
         return $baseUri;
