@@ -1,7 +1,7 @@
 Cervo
 =====
 
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Nevraxe/Cervo/badges/quality-score.png?b=3.0)](https://scrutinizer-ci.com/g/Nevraxe/Cervo/?branch=3.0)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Nevraxe/Cervo/badges/quality-score.png?b=4.0)](https://scrutinizer-ci.com/g/Nevraxe/Cervo/?branch=4.0)
 
 About Cervo
 -----------
@@ -32,7 +32,7 @@ Using composer
 
 ```json
 "require": {
-    "nevraxe/cervo": "3.0.*"
+    "nevraxe/cervo": "4.0.*"
 }
 ```
 
@@ -104,7 +104,7 @@ Checklist
  - The filename requires to be __exactly__ the same as the class name (With correct case).
  - The class requires to extend the `\Cervo\Libraries\Controller` class or a derivative.
  - The methods that serves as an end-point for a request needs to be suffixed with `Method`.
- - The end-point methods may have an `$args` parameter to receive the arguments from the `Router`.
+ - The end-point methods may have an `$args` and a `$params` parameters to receive the arguments from the `Router` calls and the parameters set in the route.
 
 ```php
 <?php
@@ -259,14 +259,16 @@ The `Router.php` file in your module's root is loaded automatically by Cervo's R
 
 return function (\Cervo\Libraries\Router $router) {
 
-    // The first parameter is the HTTP method. You may use an array to define multiple.
+    // The first parameter is the HTTP method or CLI. You may use an array to define multiple.
     // The second one is the path. It supports the nikic/FastRoute default notation.
-    // The third parameter is the Module/Controller/Method, you can a controller in a sub-folder, so you could load it like Module/SubFolder/Controller/Method.
+    // The third parameter is the Module/Controller/Method, you can use a controller that is in a sub-folder, so you could load it like Module/SubFolder/Controller/Method.
+    // The sub-folder structure supports infinite dept: Module/SubFolder/AnotherSubFolder/YetAnotherSubFoler/Controller/Method
     $router->addRoute('GET', '/', 'Test/Test/Test');
     $router->addRoute('GET', '/test/{name}', 'Test/Test/Named');
     
     // The fourth parameter is an array in the format ['MyModule/MyLibrary', 'Method']. The first part is the equivalent of doing \Cervo\Core::getLibrary() and the second part is the method called.
     // You can add an array as the fifth parameter, those informations will be passed to the controller/method as second parameter.
+    // Any data that you put in each routes needs to be serializable in order to be cached.
     $router->addRoute('GET', '/admin/test/{name}', 'Test/Admin/Test/Named', ['My', 'verify'], ['param' => 'test']);
     
 

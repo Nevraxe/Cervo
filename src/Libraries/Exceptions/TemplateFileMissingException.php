@@ -3,7 +3,7 @@
 
 /**
  *
- * Copyright (c) 2015 Marc André "Manhim" Audet <root@manhim.net>. All rights reserved.
+ * Copyright (c) 2010-2016 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
