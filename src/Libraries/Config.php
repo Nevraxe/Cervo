@@ -198,26 +198,26 @@ class Config
      * Usually used when importing.
      *
      * @param array $array
-     * @param array $currentPath
+     * @param array $current_path
      */
-    protected function setFromArrayRecursive($array, $currentPath = [])
+    protected function setFromArrayRecursive($array, $current_path = [])
     {
         foreach ($array as $key => $el) {
             if (is_array($el)) {
-                $this->setFromArrayRecursive($el, array_merge($currentPath, [$key]));
+                $this->setFromArrayRecursive($el, array_merge($current_path, [$key]));
             } else {
-                $this->set(array_merge($currentPath, [$key]), $el);
+                $this->set(array_merge($current_path, [$key]), $el);
             }
         }
     }
 
-    protected function _set($name, $value, $isDefault = false)
+    protected function _set($name, $value, $is_default = false)
     {
         if (!is_array($name)) {
             $name = explode('/', $name);
         }
 
-        if ($isDefault) {
+        if ($is_default) {
             $current = &$this->defaultValues;
         } else {
             $current = &$this->values;

@@ -33,6 +33,7 @@ namespace Cervo\Libraries;
 
 
 use Cervo\Core as _;
+use Cervo\Libraries\Exceptions\InvalidMiddlewareException;
 use Cervo\Libraries\Exceptions\InvalidRouterCacheException;
 use Cervo\Libraries\Exceptions\RouteNotFoundException;
 use FastRoute\RouteCollector;
@@ -52,7 +53,7 @@ class Router
      * FastRoute, null if usingCache is set
      * @var RouteCollector
      */
-    protected $routeCollector;
+    protected $routeCollector = null;
 
     /**
      * FastRoute cache file path.
@@ -61,16 +62,10 @@ class Router
     protected $cacheFilePath;
 
     /**
-     * This is set to true if we are using the cache.
-     * @var bool
+     * List of middlewares called using the middleware() method.
+     * @var array
      */
-    protected $usingCache = false;
-
-    /**
-     * Set to true if we need to generate the cache
-     * @var bool
-     */
-    protected $generateCache = false;
+    protected $currentMiddlewares = [];
 
     /**
      * Initialize the route configurations.
@@ -81,27 +76,37 @@ class Router
 
         $this->cacheFilePath = $config->get('Cervo/Application/Directory') . \DS . 'router.cache.php';
 
-        if ($config->get('Production') == true && file_exists($this->cacheFilePath)) {
-            $this->usingCache = true;
-        } else {
+        $this->routeCollector = new RouteCollector(
+            new RouteParser\Std(),
+            new DataGenerator\GroupCountBased()
+        );
 
-            // TODO: This can be simplified by checking the Production config at the moment where we want to generate the cache
-            if ($config->get('Production') == true) {
-                $this->generateCache = true;
+        foreach (glob($config->get('Cervo/Application/Directory') . '*' . \DS . 'Router.php', \GLOB_NOSORT | \GLOB_NOESCAPE) as $file) {
+
+            $function = require $file;
+
+            if (is_callable($function)) {
+                $function($this);
             }
 
-            $this->routeCollector = new RouteCollector(
-                new RouteParser\Std(),
-                new DataGenerator\GroupCountBased()
-            );
+        }
+    }
 
-            foreach (glob($config->get('Cervo/Application/Directory') . '*' . \DS . 'Router.php', \GLOB_NOSORT | \GLOB_NOESCAPE) as $file) {
-                $function = require $file;
+    /**
+     * Encapsulate all the routes that are added from $func(Router) with this middleware.
+     *
+     * @param array $middleware A middleware. The format is ['MyModule/MyLibrary', 'MyMethod'].
+     * @param callable $func
+     */
+    public function middleware($middleware, $func)
+    {
+        if (is_array($middleware) && count($middleware) == 2) {
 
-                if (is_callable($function)) {
-                    $function($this);
-                }
-            }
+            array_push($this->currentMiddlewares, $middleware);
+
+            $func($this);
+
+            array_pop($this->currentMiddlewares);
 
         }
     }
@@ -127,13 +132,23 @@ class Router
 
             $handler = $routeInfo[1];
             $arguments = $routeInfo[2];
-            $middleware = $handler['middleware'];
+            $middlewares = $handler['middlewares'];
 
-            if (is_array($middleware) && count($middleware) === 2) {
-                $middleware_library = _::getLibrary($middleware[0]);
+            if (is_array($middlewares)) {
+                foreach ($middlewares as $middleware) {
 
-                if (!$middleware_library->$middleware[1]($this)) {
-                    return false;
+                    if (is_array($middleware) && count($middleware) == 2) {
+                        
+                        $middleware_library = _::getLibrary($middleware[0]);
+
+                        if (!$middleware_library->$middleware[1]($handler['parameters'], $arguments)) {
+                            throw new RouteNotFoundException;
+                        }
+
+                    } else {
+                        throw new InvalidMiddlewareException;
+                    }
+
                 }
             }
 
@@ -147,21 +162,21 @@ class Router
     /**
      * Add a new route.
      *
-     * @param string $httpMethod The HTTP method, example: GET, POST, PATCH, etc.
+     * @param string|array $http_method The HTTP method, example: GET, POST, PATCH, CLI, etc. Can be an array of values.
      * @param string $route The route
      * @param string $method_path The Method Path
-     * @param array $middleware Call a middleware before executing the route. The format is ['MyModule/MyLibrary', 'MyMethod']
+     * @param array $middlewares Call a middleware before executing the route. The format is [['MyModule/MyLibrary', 'MyMethod'], ...]
      * @param array $parameters The parameters to pass
      */
-    public function addRoute($httpMethod, $route, $method_path, $middleware = [], $parameters = [])
+    public function addRoute($http_method, $route, $method_path, $middlewares = [], $parameters = [])
     {
-        if ($this->usingCache) {
+        if (_::getLibrary('Cervo/Config')->get('Production') == true && file_exists($this->cacheFilePath)) {
             return;
         }
 
-        $this->routeCollector->addRoute($httpMethod, $route, [
+        $this->routeCollector->addRoute($http_method, $route, [
             'method_path' => $method_path,
-            'middleware' => $middleware,
+            'middlewares' => array_merge($this->currentMiddlewares, $middlewares),
             'parameters' => $parameters
         ]);
     }
@@ -170,7 +185,7 @@ class Router
     {
         $dispatchData = null;
 
-        if ($this->usingCache) {
+        if (_::getLibrary('Cervo/Config')->get('Production') == true && file_exists($this->cacheFilePath)) {
 
             $dispatchData = require $this->cacheFilePath;
 
@@ -184,7 +199,7 @@ class Router
 
         $dir = dirname($this->cacheFilePath);
 
-        if ($this->generateCache && !file_exists($this->cacheFilePath) && is_dir($dir) && is_writable($dir)) {
+        if (_::getLibrary('Cervo/Config')->get('Production') == true && !file_exists($this->cacheFilePath) && is_dir($dir) && is_writable($dir)) {
             file_put_contents(
                 $this->cacheFilePath,
                 '<?php return ' . var_export($dispatchData, true) . ';' . PHP_EOL,
@@ -211,9 +226,10 @@ class Router
             return '/';
         }
 
-        $uri = $this->getQueryStringUri($this->getBaseUri());
+        $parts = preg_split('#\?#i', $this->getBaseUri(), 2);
+        $uri = $parts[0];
 
-        if ($uri == '/' || empty($uri)) {
+        if ($uri == '/' || strlen($uri) <= 0) {
             return '/';
         }
 
@@ -237,37 +253,5 @@ class Router
         }
 
         return $uri;
-    }
-
-    /**
-     * Return the uri with the query string parsed if the request is made using the query string method
-     *
-     * @param string $baseUri
-     *
-     * @return string
-     */
-    protected function getQueryStringUri($baseUri)
-    {
-        $from_query_string = false;
-
-        if (strpos($baseUri, '?/') === 0) {
-            $from_query_string = true;
-            $baseUri = substr($baseUri, 2);
-        }
-
-        $parts = preg_split('#\?#i', $baseUri, 2);
-        $baseUri = $parts[0];
-
-        if ($from_query_string) {
-            if (isset($parts[1])) {
-                $_SERVER['QUERY_STRING'] = $parts[1];
-                parse_str($_SERVER['QUERY_STRING'], $_GET);
-            } else {
-                $_SERVER['QUERY_STRING'] = '';
-                $_GET = [];
-            }
-        }
-
-        return $baseUri;
     }
 }

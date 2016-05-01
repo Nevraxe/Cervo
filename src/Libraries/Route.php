@@ -76,16 +76,12 @@ class Route
      * Set the method path.
      * Sanitize and split the method_path.
      *
-     * @param $method_path
+     * @param string $method_path
      * @param array $parameters
      * @param array $arguments
      */
     public function __construct($method_path, $parameters = [], $arguments = [])
     {
-        if (is_callable($method_path)) {
-            $method_path = $method_path();
-        }
-
         $controller_e = explode('/', $method_path);
         $c_controller_e = count($controller_e);
 
