@@ -165,10 +165,9 @@ class Router
      * @param string|array $http_method The HTTP method, example: GET, POST, PATCH, CLI, etc. Can be an array of values.
      * @param string $route The route
      * @param string $method_path The Method Path
-     * @param array $middlewares Call a middleware before executing the route. The format is [['MyModule/MyLibrary', 'MyMethod'], ...]
      * @param array $parameters The parameters to pass
      */
-    public function addRoute($http_method, $route, $method_path, $middlewares = [], $parameters = [])
+    public function addRoute($http_method, $route, $method_path, $parameters = [])
     {
         if (_::getLibrary('Cervo/Config')->get('Production') == true && file_exists($this->cacheFilePath)) {
             return;
@@ -176,7 +175,7 @@ class Router
 
         $this->routeCollector->addRoute($http_method, $route, [
             'method_path' => $method_path,
-            'middlewares' => array_merge($this->currentMiddlewares, $middlewares),
+            'middlewares' => $this->currentMiddlewares,
             'parameters' => $parameters
         ]);
     }

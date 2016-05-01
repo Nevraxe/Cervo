@@ -266,12 +266,13 @@ return function (\Cervo\Libraries\Router $router) {
     $router->addRoute('GET', '/', 'Test/Test/Test');
     $router->addRoute('GET', '/test/{name}', 'Test/Test/Named');
     
-    // The fourth parameter is an array in the format ['MyModule/MyLibrary', 'Method']. The first part is the equivalent of doing \Cervo\Core::getLibrary() and the second part is the method called.
-    // You can add an array as the fifth parameter, those informations will be passed to the controller/method as second parameter.
+    // The middleware is an array in the format ['MyModule/MyLibrary', 'Method']. The first part is the equivalent of doing \Cervo\Core::getLibrary() and the second part is the method called.
+    // You can add an array as the fourth parameter, those informations will be passed to the controller/method as second parameter.
     // Any data that you put in each routes needs to be serializable in order to be cached.
-    $router->addRoute('GET', '/admin/test/{name}', 'Test/Admin/Test/Named', ['My', 'verify'], ['param' => 'test']);
+    $router->middleware(['My', 'verify'], function (\Cervo\Libraries\Router $router) {
+        $router->addRoute('GET', '/admin/test/{name}', 'Test/Admin/Test/Named', ['param' => 'test']);
+    });
     
-
 };
 
 ```
