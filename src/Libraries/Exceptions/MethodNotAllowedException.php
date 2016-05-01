@@ -32,10 +32,10 @@
 namespace Cervo\Libraries\Exceptions;
 
 
-class RouteNotFoundException extends NotFoundException
+class MethodNotAllowedException extends NotFoundException
 {
-    public function __construct($message = 'Route not found.', \Exception $previous = null)
+    public function __construct($message = 'Method not allowed.', \Exception $previous = null)
     {
-        parent::__construct($message, 404, $previous);
+        parent::__construct($message, 405, $previous);
     }
 }

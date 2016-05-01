@@ -277,6 +277,12 @@ return function (\Cervo\Libraries\Router $router) {
 
 ```
 
+### Production
+
+If you set the configuration option `Prodction` to `true`, the Router will automatically create a cache file named `router.cache.php` at the root of your Applications folder.
+
+You will have to delete this file if you make changes to your routes.
+
 
 Documentation
 -----------------

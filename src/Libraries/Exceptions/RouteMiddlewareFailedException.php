@@ -36,6 +36,6 @@ class RouteMiddlewareFailedException extends NotFoundException
 {
     public function __construct($message = 'Route middleware failed.', \Exception $previous = null)
     {
-        parent::__construct($message, $previous);
+        parent::__construct($message, 403, $previous);
     }
 }

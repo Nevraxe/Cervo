@@ -47,7 +47,7 @@ class Template
      * The template path.
      * @var array
      */
-    protected $name;
+    protected $path;
 
     /**
      * The template's data.
@@ -67,9 +67,11 @@ class Template
     {
         $config = _::getLibrary('Cervo/Config');
 
-        $this->name = explode('/', $name);
+        $ex_name = explode('/', $name);
 
-        if (!file_exists($config->get('Cervo/Application/Directory') . $this->name[0] . \DS . $config->get('Cervo/Application/TemplatesPath') . implode('/', array_slice($this->name, 1)) . '.php')) {
+        $this->path = $config->get('Cervo/Application/Directory') . $ex_name[0] . \DS . $config->get('Cervo/Application/TemplatesPath') . implode('/', array_slice($ex_name, 1)) . '.php';
+
+        if (!file_exists($this->path)) {
             throw new TemplateFileMissingException();
         }
     }
@@ -82,6 +84,18 @@ class Template
      * @return mixed
      */
     public function __get($name)
+    {
+        return $this->get($name);
+    }
+
+    /**
+     * Not so magic method to return the data.
+     *
+     * @param string $name
+     *
+     * @return mixed
+     */
+    public function get($name)
     {
         if (isset($this->data[$name])) {
             return $this->data[$name];
@@ -100,17 +114,18 @@ class Template
      */
     public function assign($data = [])
     {
-        $this->data = $data;
+        $this->data = array_merge($data, $this->data);
         return $this;
     }
 
     /**
      * Render the template.
+     *
+     * @param array $data
      */
-    public function render()
+    public function render($data = [])
     {
-        $config = _::getLibrary('Cervo/Config');
-
-        require $config->get('Cervo/Application/Directory') . $this->name[0] . \DS . $config->get('Cervo/Application/TemplatesPath') . implode('/', array_slice($this->name, 1)) . '.php';
+        $this->data = array_merge($data, $this->data);
+        require $this->path;
     }
 }

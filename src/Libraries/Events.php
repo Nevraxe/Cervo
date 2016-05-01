@@ -79,13 +79,18 @@ class Events
         $config = _::getLibrary('Cervo/Config');
 
         foreach (glob($config->get('Cervo/Application/Directory') . '*' . \DS . $config->get('Cervo/Application/EventsPath') . '*.php', \GLOB_NOSORT | \GLOB_NOESCAPE) as $file) {
-            require $file;
+
+            $function = require $file;
+
+            if (is_callable($function)) {
+                $function($this);
+            }
+
         }
     }
 
     /**
      * Register a new event.
-     * Always return true.
      *
      * @param string $name
      *
@@ -126,6 +131,7 @@ class Events
 
     /**
      * Hook a callable to an event.
+     * If the event is not registered, register it.
      *
      * @param string $name
      * @param callable $call

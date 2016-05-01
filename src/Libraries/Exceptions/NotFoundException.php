@@ -34,8 +34,8 @@ namespace Cervo\Libraries\Exceptions;
 
 class NotFoundException extends \RuntimeException
 {
-    public function __construct($message = 'Not found.', \Exception $previous = null)
+    public function __construct($message = 'Not found.', $code = 404, \Exception $previous = null)
     {
-        parent::__construct($message, 404, $previous);
+        parent::__construct($message, $code, $previous);
     }
 }
