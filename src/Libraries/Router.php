@@ -162,7 +162,7 @@ class Router
     /**
      * Add a new route.
      *
-     * @param string|array $http_method The HTTP method, example: GET, POST, PATCH, CLI, etc. Can be an array of values.
+     * @param string|string[] $http_method The HTTP method, example: GET, POST, PATCH, CLI, etc. Can be an array of values.
      * @param string $route The route
      * @param string $method_path The Method Path
      * @param array $parameters The parameters to pass
