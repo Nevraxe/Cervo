@@ -247,7 +247,7 @@ class Router
     }
 
     /**
-     * Throws an exception or return;
+     * Throws an exception or return.
      *
      * @param $middlewares
      * @param $parameters
