@@ -257,10 +257,8 @@ METADATA;
 
                 if (is_dir($file)) {
                     array_push($folders, $file);
-                } else {
-                    if (is_file($file) && is_readable($file)) {
-                        $files[] = $file;
-                    }
+                } else if (is_file($file) && is_readable($file)) {
+                    $files[] = $file;
                 }
 
             }

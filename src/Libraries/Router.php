@@ -35,6 +35,7 @@ namespace Cervo\Libraries;
 use Cervo\Core as _;
 use Cervo\Libraries\Exceptions\InvalidMiddlewareException;
 use Cervo\Libraries\Exceptions\InvalidRouterCacheException;
+use Cervo\Libraries\Exceptions\RouteMiddlewareFailedException;
 use Cervo\Libraries\Exceptions\RouteNotFoundException;
 use FastRoute\RouteCollector;
 use FastRoute\RouteParser as RouteParser;
@@ -135,21 +136,7 @@ class Router
             $middlewares = $handler['middlewares'];
 
             if (is_array($middlewares)) {
-                foreach ($middlewares as $middleware) {
-
-                    if (is_array($middleware) && count($middleware) == 2) {
-                        
-                        $middleware_library = _::getLibrary($middleware[0]);
-
-                        if (!$middleware_library->$middleware[1]($handler['parameters'], $arguments)) {
-                            throw new RouteNotFoundException;
-                        }
-
-                    } else {
-                        throw new InvalidMiddlewareException;
-                    }
-
-                }
+                $this->handleMiddlewares($middlewares, $handler['parameters'], $arguments);
             }
 
             return new Route($handler['method_path'], $handler['parameters'], $arguments);
@@ -196,6 +183,13 @@ class Router
             $dispatchData = $this->routeCollector->getData();
         }
 
+        $this->generateCache($dispatchData);
+
+        return new Dispatcher\GroupCountBased($dispatchData);
+    }
+
+    protected function generateCache($dispatchData)
+    {
         $dir = dirname($this->cacheFilePath);
 
         if (_::getLibrary('Cervo/Config')->get('Production') == true && !file_exists($this->cacheFilePath) && is_dir($dir) && is_writable($dir)) {
@@ -205,8 +199,6 @@ class Router
                 LOCK_EX
             );
         }
-
-        return new Dispatcher\GroupCountBased($dispatchData);
     }
 
     /**
@@ -252,5 +244,33 @@ class Router
         }
 
         return $uri;
+    }
+
+    /**
+     * Throws an exception or return;
+     *
+     * @param $middlewares
+     * @param $parameters
+     * @param $arguments
+     *
+     * @return void
+     */
+    protected function handleMiddlewares($middlewares, $parameters, $arguments)
+    {
+        foreach ($middlewares as $middleware) {
+
+            if (is_array($middleware) && count($middleware) == 2) {
+
+                $middleware_library = _::getLibrary($middleware[0]);
+
+                if (!$middleware_library->$middleware[1]($parameters, $arguments)) {
+                    throw new RouteMiddlewareFailedException;
+                }
+
+            } else {
+                throw new InvalidMiddlewareException;
+            }
+
+        }
     }
 }

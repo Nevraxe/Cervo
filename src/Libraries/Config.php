@@ -114,52 +114,40 @@ class Config
      * If this value is not set, return the default value.
      * Return null if not set.
      *
-     * @param string|array $name The configuration path
+     * @param string $name The configuration path
      *
      * @return mixed
      */
     public function get($name)
     {
-        if (!is_array($name)) {
-            $name = explode('/', $name);
-        }
+        $ex_name = explode('/', $name);
 
         $current = &$this->values;
-        $is_set = true;
 
-        foreach ($name as $key) {
+        foreach ($ex_name as $key) {
             if ($current[$key]) {
                 $current = &$current[$key];
             } else {
-                $is_set = false;
-                break;
+                return $this->getDefault($name);
             }
         }
 
-        if ($is_set === true && $current) {
-            return $current;
-        }
-
-        return $this->getDefault($name);
+        return $current;
     }
 
     /**
      * Return the default value for the specified configuration path.
      * Return null if not set.
      *
-     * @param string|array $name The configuration path
+     * @param string $name The configuration path
      *
      * @return mixed
      */
     public function getDefault($name)
     {
-        if (!is_array($name)) {
-            $name = explode('/', $name);
-        }
-
         $current = &$this->defaultValues;
 
-        foreach ($name as $key) {
+        foreach (explode('/', $name) as $key) {
             if ($current[$key]) {
                 $current = &$current[$key];
             } else {
@@ -184,7 +172,7 @@ class Config
      */
     public function importJSON($file)
     {
-        if (!file_exists($file)) {
+        if ($file === null || !file_exists($file)) {
             return false;
         }
 

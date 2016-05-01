@@ -144,7 +144,6 @@ class Core
         spl_autoload_register('\Cervo\Core::autoload');
 
 
-
         // Small shortcut
 
         if (!defined('DS')) {
@@ -171,9 +170,7 @@ class Core
             ->setDefault('Cervo/Application/TemplatesPath', 'Templates' . \DS)
             ->setDefault('Production', false);
 
-        if ($json_config_file !== null) {
-            $config->importJSON($json_config_file);
-        }
+        $config->importJSON($json_config_file);
     }
 
     /**
