@@ -103,7 +103,6 @@ Checklist
  - In a controller, you have to set your namespace to `Application/MyModule/Controllers`. As you can notice, the `Module` suffix needs to be added for modules.
  - The filename requires to be __exactly__ the same as the class name (With correct case).
  - The class requires to extend the `\Cervo\Libraries\Controller` class or a derivative.
- - The methods that serves as an end-point for a request needs to be suffixed with `Method`.
  - The end-point methods may have an `$args` and a `$params` parameters to receive the arguments from the `Router` calls and the parameters set in the route.
 
 ```php
@@ -116,7 +115,7 @@ use Cervo\Core as _;
 
 class My extends _\Libraries\Controller
 {
-    public function IndexMethod($args = [], $params = [])
+    public function Index($args = [], $params = [])
     {
         // We process the user input
         $value = $args[0];
@@ -279,7 +278,7 @@ return function (\Cervo\Libraries\Router $router) {
 
 ### Production
 
-If you set the configuration option `Prodction` to `true`, the Router will automatically create a cache file named `router.cache.php` at the root of your Applications folder.
+If you set the configuration option `Production` to `true`, the Router will automatically create a cache file named `router.cache.php` at the root of your Application folder.
 
 You will have to delete this file if you make changes to your routes.
 
