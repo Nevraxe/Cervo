@@ -46,7 +46,7 @@ class Core
     /**
      * The current version of Cervo.
      */
-    const VERSION = '3.0.3';
+    const VERSION = '4.0.0';
 
     /**
      * All the libraries instances that have been initialized through getLibrary().
@@ -71,6 +71,12 @@ class Core
      * @var bool
      */
     private static $is_init = false;
+
+    /**
+     * If the configuration/autoloaders have been initialized.
+     * @var bool
+     */
+    private static $is_init_config = false;
 
     /**
      * Initialize Cervo.
@@ -111,7 +117,6 @@ class Core
         // Get the required libraries
 
         $router = self::getLibrary('Cervo/Router');
-        $config = self::getLibrary('Cervo/Config');
 
 
         // Initialise the system
@@ -140,6 +145,15 @@ class Core
      */
     public static function initConfig($json_config_file = null)
     {
+        // Check if the system is already initiated
+
+        if (self::$is_init_config) {
+            return;
+        }
+
+        self::$is_init_config = true;
+
+
         // Add the autoloader
         spl_autoload_register('\Cervo\Core::autoload');
 

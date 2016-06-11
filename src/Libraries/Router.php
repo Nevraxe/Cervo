@@ -35,6 +35,7 @@ namespace Cervo\Libraries;
 use Cervo\Core as _;
 use Cervo\Libraries\Exceptions\InvalidMiddlewareException;
 use Cervo\Libraries\Exceptions\InvalidRouterCacheException;
+use Cervo\Libraries\Exceptions\MethodNotAllowedException;
 use Cervo\Libraries\Exceptions\RouteMiddlewareFailedException;
 use Cervo\Libraries\Exceptions\RouteNotFoundException;
 use FastRoute\RouteCollector;
@@ -142,7 +143,7 @@ class Router
             return new Route($handler['method_path'], $handler['parameters'], $arguments);
 
         } elseif ($routeInfo[0] === Dispatcher::METHOD_NOT_ALLOWED) {
-            throw new RouteMiddlewareFailedException;
+            throw new MethodNotAllowedException;
         } else {
             throw new RouteNotFoundException;
         }
@@ -251,9 +252,9 @@ class Router
     /**
      * Throws an exception or return.
      *
-     * @param $middlewares
-     * @param $parameters
-     * @param $arguments
+     * @param array $middlewares
+     * @param array $parameters
+     * @param array $arguments
      *
      * @return void
      */

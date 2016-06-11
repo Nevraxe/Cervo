@@ -50,7 +50,7 @@ class Events
 
     /**
      * True while an event is fired.
-     * @var bool
+     * @var string|bool
      */
     protected $inProgress = false;
 
@@ -167,7 +167,7 @@ class Events
             return false;
         }
 
-        $this->inProgress = true;
+        $this->inProgress = $name;
 
         usort($this->events[$name], '\\' . __CLASS__ . '::prioritySort');
 
@@ -181,9 +181,9 @@ class Events
     }
 
     /**
-     * Return true if an event is being fired.
+     * Returns the name of the event being fired, false otherwise.
      *
-     * @return bool
+     * @return string|bool
      */
     public function isInProgress()
     {
