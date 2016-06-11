@@ -121,7 +121,7 @@ class Core
         if ($route instanceof Route) {
             $events->fire('Cervo/Controller/Before');
 
-            $method = $route->getMethod() . $config->get('Cervo/Application/MethodSuffix');
+            $method = $route->getMethod();
             self::getController($route->getModule() . '/' . $route->getController())->$method($route->getArguments(), $route->getParameters());
 
             $events->fire('Cervo/Controller/After');
@@ -161,7 +161,6 @@ class Core
             ->setDefault('Cervo/Application/Directory', '')
             ->setDefault('Cervo/Directory', $cervo_directory)
             ->setDefault('Cervo/Libraries/Directory', realpath($cervo_directory . 'Libraries') . \DS)
-            ->setDefault('Cervo/Application/MethodSuffix', 'Method')
             ->setDefault('Cervo/Application/EventsPath', 'Events' . \DS)
             ->setDefault('Cervo/Application/ControllersPath', 'Controllers' . \DS)
             ->setDefault('Cervo/Application/ModelsPath', 'Models' . \DS)
