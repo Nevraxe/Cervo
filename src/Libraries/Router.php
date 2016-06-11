@@ -210,7 +210,7 @@ class Router
      */
     protected function detectUri()
     {
-        if (defined('STDIN')) {
+        if (php_sapi_name() == 'cli') {
             $args = array_slice($_SERVER['argv'], 1);
             return $args ? '/' . implode('/', $args) : '/';
         }
