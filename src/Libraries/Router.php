@@ -266,7 +266,7 @@ class Router
 
                 $middleware_library = _::getLibrary($middleware[0]);
 
-                if (!$middleware_library->$middleware[1]($parameters, $arguments)) {
+                if (!$middleware_library->{$middleware[1]}($parameters, $arguments)) {
                     throw new RouteMiddlewareFailedException;
                 }
 
