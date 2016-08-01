@@ -61,12 +61,6 @@ class Core
     protected static $controllers = [];
 
     /**
-     * Additinal autoloading functions.
-     * @var callable[]
-     */
-    protected static $autoloads = [];
-
-    /**
      * If Cervo have been initialized.
      * @var bool
      */

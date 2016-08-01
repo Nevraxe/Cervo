@@ -49,7 +49,7 @@ class Events
     protected $events = [];
 
     /**
-     * True while an event is fired.
+     * Name of the event in progress, false if there are no active events.
      * @var string|bool
      */
     protected $inProgress = false;
