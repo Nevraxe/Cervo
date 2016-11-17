@@ -188,20 +188,24 @@ class Config
             if (is_array($el)) {
                 $this->setFromArrayRecursive($el, array_merge($current_path, [$key]));
             } else {
-                $this->set(array_merge($current_path, [$key]), $el);
+                $this->_set(array_merge($current_path, [$key]), $el, false);
             }
         }
     }
 
     protected function _set($name, $value, $is_default = false)
     {
+        if (!is_array($name)) {
+            $name = explode('/', $name);
+        }
+
         if ($is_default) {
             $current = &$this->defaultValues;
         } else {
             $current = &$this->values;
         }
 
-        foreach (explode('/', $name) as $key) {
+        foreach ($name as $key) {
             $current = &$current[$key];
         }
 
