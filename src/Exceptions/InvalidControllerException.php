@@ -29,13 +29,13 @@
  */
 
 
-namespace Cervo\Libraries\Exceptions;
+namespace Cervo\Exceptions;
 
 
-class RouteMiddlewareFailedException extends NotFoundException
+class InvalidControllerException extends \RuntimeException
 {
-    public function __construct($message = 'Route middleware failed.', \Exception $previous = null)
+    public function __construct($message = 'Invalid controller.', \Exception $previous = null)
     {
-        parent::__construct($message, 403, $previous);
+        parent::__construct($message, 500, $previous);
     }
 }

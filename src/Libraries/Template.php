@@ -33,7 +33,7 @@ namespace Cervo\Libraries;
 
 
 use Cervo\Core as _;
-use Cervo\Libraries\Exceptions\TemplateFileMissingException;
+use Cervo\Exceptions\TemplateFileMissingException;
 
 
 /**
@@ -61,7 +61,7 @@ class Template
      *
      * @param string $name The template (file)name.
      *
-     * @throws Exceptions\TemplateFileMissingException
+     * @throws TemplateFileMissingException
      */
     public function __construct($name)
     {

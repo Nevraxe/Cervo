@@ -29,12 +29,12 @@
  */
 
 
-namespace Cervo\Libraries\Exceptions;
+namespace Cervo\Exceptions;
 
 
-class InvalidControllerException extends \RuntimeException
+class InvalidMiddlewareException extends \RuntimeException
 {
-    public function __construct($message = 'Invalid controller.', \Exception $previous = null)
+    public function __construct($message = 'Invalid middleware.', \Exception $previous = null)
     {
         parent::__construct($message, 500, $previous);
     }

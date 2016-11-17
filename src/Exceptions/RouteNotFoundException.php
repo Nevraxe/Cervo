@@ -29,13 +29,13 @@
  */
 
 
-namespace Cervo\Libraries\Exceptions;
+namespace Cervo\Exceptions;
 
 
-class InvalidRouterCacheException extends \RuntimeException
+class RouteNotFoundException extends NotFoundException
 {
-    public function __construct($message = 'Invalid router cache.', \Exception $previous = null)
+    public function __construct($message = 'Route not found.', \Exception $previous = null)
     {
-        parent::__construct($message, 500, $previous);
+        parent::__construct($message, 404, $previous);
     }
 }

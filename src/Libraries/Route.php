@@ -32,7 +32,7 @@
 namespace Cervo\Libraries;
 
 
-use Cervo\Libraries\Exceptions\InvalidControllerException;
+use Cervo\Exceptions\InvalidControllerException;
 
 
 /**

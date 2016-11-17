@@ -29,13 +29,13 @@
  */
 
 
-namespace Cervo\Libraries\Exceptions;
+namespace Cervo\Exceptions;
 
 
-class RouteNotFoundException extends NotFoundException
+class TemplateFileMissingException extends \RuntimeException
 {
-    public function __construct($message = 'Route not found.', \Exception $previous = null)
+    public function __construct($message = 'Template file missing.', \Exception $previous = null)
     {
-        parent::__construct($message, 404, $previous);
+        parent::__construct($message, 500, $previous);
     }
 }

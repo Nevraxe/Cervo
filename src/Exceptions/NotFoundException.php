@@ -29,13 +29,13 @@
  */
 
 
-namespace Cervo\Libraries\Exceptions;
+namespace Cervo\Exceptions;
 
 
-class MethodNotAllowedException extends NotFoundException
+class NotFoundException extends \RuntimeException
 {
-    public function __construct($message = 'Method not allowed.', \Exception $previous = null)
+    public function __construct($message = 'Not found.', $code = 404, \Exception $previous = null)
     {
-        parent::__construct($message, 405, $previous);
+        parent::__construct($message, $code, $previous);
     }
 }

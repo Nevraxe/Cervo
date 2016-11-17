@@ -29,13 +29,13 @@
  */
 
 
-namespace Cervo\Libraries\Exceptions;
+namespace Cervo\Exceptions;
 
 
-class InvalidMiddlewareException extends \RuntimeException
+class MethodNotAllowedException extends NotFoundException
 {
-    public function __construct($message = 'Invalid middleware.', \Exception $previous = null)
+    public function __construct($message = 'Method not allowed.', \Exception $previous = null)
     {
-        parent::__construct($message, 500, $previous);
+        parent::__construct($message, 405, $previous);
     }
 }

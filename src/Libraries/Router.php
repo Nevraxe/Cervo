@@ -33,11 +33,11 @@ namespace Cervo\Libraries;
 
 
 use Cervo\Core as _;
-use Cervo\Libraries\Exceptions\InvalidMiddlewareException;
-use Cervo\Libraries\Exceptions\InvalidRouterCacheException;
-use Cervo\Libraries\Exceptions\MethodNotAllowedException;
-use Cervo\Libraries\Exceptions\RouteMiddlewareFailedException;
-use Cervo\Libraries\Exceptions\RouteNotFoundException;
+use Cervo\Exceptions\InvalidMiddlewareException;
+use Cervo\Exceptions\InvalidRouterCacheException;
+use Cervo\Exceptions\MethodNotAllowedException;
+use Cervo\Exceptions\RouteMiddlewareFailedException;
+use Cervo\Exceptions\RouteNotFoundException;
 use FastRoute\RouteCollector;
 use FastRoute\RouteParser as RouteParser;
 use FastRoute\DataGenerator as DataGenerator;
