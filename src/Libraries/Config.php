@@ -62,13 +62,9 @@ class Config
      */
     public function add($name, $value)
     {
-        if (!is_array($name)) {
-            $name = explode('/', trim($name, "/\t\n\r\0\x0B"));
-        }
-
         $current = &$this->values;
 
-        foreach ($name as $key) {
+        foreach (explode('/', $name) as $key) {
             $current = &$current[$key];
         }
 
@@ -120,11 +116,9 @@ class Config
      */
     public function get($name)
     {
-        $ex_name = explode('/', $name);
-
         $current = &$this->values;
 
-        foreach ($ex_name as $key) {
+        foreach (explode('/', $name) as $key) {
             if ($current[$key]) {
                 $current = &$current[$key];
             } else {
@@ -201,17 +195,13 @@ class Config
 
     protected function _set($name, $value, $is_default = false)
     {
-        if (!is_array($name)) {
-            $name = explode('/', $name);
-        }
-
         if ($is_default) {
             $current = &$this->defaultValues;
         } else {
             $current = &$this->values;
         }
 
-        foreach ($name as $key) {
+        foreach (explode('/', $name) as $key) {
             $current = &$current[$key];
         }
 

@@ -76,7 +76,7 @@ $config->set('Cervo/Application/Directory', realpath(__DIR__ . '/Application') .
 
 ```
 
-By default, a `config.json` file is not required unless you want to specify the application directory path in it.
+By default, a `config.json` file is not required unless you want to specify the application directory path in it or want to set `Production` to true in order for Cervo to cache the routing information.
 
 
 ### The folder structure
@@ -238,7 +238,7 @@ class My
     public function verify(\Cervo\Libraries\Router $router)
     {
         if (\Cervo\Core::getLibrary('Users')->getCurrentUser() === null) {
-            // Returning false will prevent the controller/method to be called.
+            // Returning false will prevent the controller to be called.
             return false;
         }
         
