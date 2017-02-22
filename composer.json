@@ -26,7 +26,7 @@
   },
   "require": {
     "php": ">=5.4.7",
-    "nikic/fast-route": "1.0.1"
+    "nikic/fast-route": "1.2.0"
   },
   "autoload": {
     "psr-4": {

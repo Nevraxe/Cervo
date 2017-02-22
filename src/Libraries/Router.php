@@ -70,6 +70,12 @@ class Router
     protected $currentMiddlewares = [];
 
     /**
+     * List of group prefixes called using the group() method.
+     * @var string
+     */
+    protected $currentGroupPrefix;
+
+    /**
      * Initialize the route configurations.
      */
     public function __construct()
@@ -100,7 +106,7 @@ class Router
      * @param array $middleware A middleware. The format is ['MyModule/MyLibrary', 'MyMethod'].
      * @param callable $func
      */
-    public function middleware($middleware, $func)
+    public function middleware($middleware, callable $func)
     {
         if (is_array($middleware) && count($middleware) == 2) {
 
@@ -111,6 +117,22 @@ class Router
             array_pop($this->currentMiddlewares);
 
         }
+    }
+
+    /**
+     * Adds a prefix in front of all the encapsulated routes.
+     *
+     * @param string $prefix The prefix of the group.
+     * @param callable $func
+     */
+    public function group($prefix, callable $func)
+    {
+        $previousGroupPrefix = $this->currentGroupPrefix;
+        $this->currentGroupPrefix = $previousGroupPrefix . $prefix;
+
+        $func($this);
+
+        $this->currentGroupPrefix = $previousGroupPrefix;
     }
 
     /**
@@ -162,6 +184,8 @@ class Router
         if (_::getLibrary('Cervo/Config')->get('Production') == true && file_exists($this->cacheFilePath)) {
             return;
         }
+
+        $route = $this->currentGroupPrefix . $route;
 
         $this->routeCollector->addRoute($http_method, $route, [
             'method_path' => $method_path,
