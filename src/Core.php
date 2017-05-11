@@ -32,7 +32,6 @@
 namespace Cervo;
 
 
-use Cervo\Libraries\Route;
 use Cervo\Libraries\Template;
 
 

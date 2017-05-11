@@ -38,6 +38,7 @@ use Cervo\Exceptions\InvalidRouterCacheException;
 use Cervo\Exceptions\MethodNotAllowedException;
 use Cervo\Exceptions\RouteMiddlewareFailedException;
 use Cervo\Exceptions\RouteNotFoundException;
+use Cervo\Route;
 use FastRoute\RouteCollector;
 use FastRoute\RouteParser as RouteParser;
 use FastRoute\DataGenerator as DataGenerator;
