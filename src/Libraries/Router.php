@@ -169,7 +169,7 @@ class Router
             return new Route($handler['method_path'], $handler['parameters'], $arguments);
 
         } elseif ($routeInfo[0] === Dispatcher::METHOD_NOT_ALLOWED) {
-            throw new MethodNotAllowedException;
+            throw new MethodNotAllowedException($routeInfo[1]);
         } else {
             throw new RouteNotFoundException;
         }

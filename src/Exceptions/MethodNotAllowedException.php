@@ -34,8 +34,17 @@ namespace Cervo\Exceptions;
 
 class MethodNotAllowedException extends NotFoundException
 {
-    public function __construct($message = 'Method not allowed.', \Exception $previous = null)
+    private $allowed_methods = [];
+
+    public function __construct($allowed_methods = [], $message = 'Method not allowed.', \Exception $previous = null)
     {
+        $this->allowed_methods = $allowed_methods;
+
         parent::__construct($message, 405, $previous);
+    }
+
+    public function getAllowedMethods()
+    {
+        return $this->allowed_methods;
     }
 }
