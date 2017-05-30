@@ -3,7 +3,7 @@
 
 /**
  *
- * Copyright (c) 2010-2016 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>. All rights reserved.
+ * Copyright (c) 2010-2017 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
@@ -104,20 +104,23 @@ class Router
     /**
      * Encapsulate all the routes that are added from $func(Router) with this middleware.
      *
-     * @param array $middleware A middleware. The format is ['MyModule/MyLibrary', 'MyMethod'].
+     * If the return value of the middleware is false, throws a RouteMiddlewareFailedException.
+     *
+     * @param string $library_name The library to call through \Cervo\Core::getLibrary( string )
+     * @param string $method_name The method to call through the library
      * @param callable $func
      */
-    public function middleware($middleware, callable $func)
+    public function middleware($library_name, $method_name, callable $func)
     {
-        if (is_array($middleware) && count($middleware) == 2) {
+        // It's easier to cache an array
+        array_push($this->currentMiddlewares, [
+            'library' => $library_name,
+            'method' => $method_name
+        ]);
 
-            array_push($this->currentMiddlewares, $middleware);
+        $func($this);
 
-            $func($this);
-
-            array_pop($this->currentMiddlewares);
-
-        }
+        array_pop($this->currentMiddlewares);
     }
 
     /**
@@ -175,7 +178,7 @@ class Router
     /**
      * Add a new route.
      *
-     * @param string|string[] $http_method The HTTP method, example: GET, POST, PATCH, CLI, etc. Can be an array of values.
+     * @param string|string[] $http_method The HTTP method, example: GET, POST, PATCH, PUT, DELETE, CLI, etc. Can be an array of values.
      * @param string $route The route
      * @param string $method_path The Method Path
      * @param array $parameters The parameters to pass
@@ -193,6 +196,90 @@ class Router
             'middlewares' => $this->currentMiddlewares,
             'parameters' => $parameters
         ]);
+    }
+
+    /**
+     * Add a new route with GET as HTTP method.
+     *
+     * @param string $route The route
+     * @param string $method_path The Method Path
+     * @param array $parameters The parameters to pass
+     */
+    public function get($route, $method_path, $parameters = [])
+    {
+        $this->addRoute('GET', $route, $method_path, $parameters);
+    }
+
+    /**
+     * Add a new route with POST as HTTP method.
+     *
+     * @param string $route The route
+     * @param string $method_path The Method Path
+     * @param array $parameters The parameters to pass
+     */
+    public function post($route, $method_path, $parameters = [])
+    {
+        $this->addRoute('POST', $route, $method_path, $parameters);
+    }
+
+    /**
+     * Add a new route with PUT as HTTP method.
+     *
+     * @param string $route The route
+     * @param string $method_path The Method Path
+     * @param array $parameters The parameters to pass
+     */
+    public function put($route, $method_path, $parameters = [])
+    {
+        $this->addRoute('PUT', $route, $method_path, $parameters);
+    }
+
+    /**
+     * Add a new route with PATCH as HTTP method.
+     *
+     * @param string $route The route
+     * @param string $method_path The Method Path
+     * @param array $parameters The parameters to pass
+     */
+    public function patch($route, $method_path, $parameters = [])
+    {
+        $this->addRoute('PATCH', $route, $method_path, $parameters);
+    }
+
+    /**
+     * Add a new route with DELETE as HTTP method.
+     *
+     * @param string $route The route
+     * @param string $method_path The Method Path
+     * @param array $parameters The parameters to pass
+     */
+    public function delete($route, $method_path, $parameters = [])
+    {
+        $this->addRoute('DELETE', $route, $method_path, $parameters);
+    }
+
+    /**
+     * Add a new route with HEAD as HTTP method.
+     *
+     * @param string $route The route
+     * @param string $method_path The Method Path
+     * @param array $parameters The parameters to pass
+     */
+    public function head($route, $method_path, $parameters = [])
+    {
+        $this->addRoute('HEAD', $route, $method_path, $parameters);
+    }
+
+    /**
+     * Add a new route with CLI as method.
+     *
+     * @param string $route The route
+     * @param string $method_path The Method Path
+     * @param array $parameters The parameters to pass
+     */
+    public function cli($route, $method_path, $parameters = [])
+    {
+        $this->addRoute('CLI', $route, $method_path, $parameters);
     }
 
     protected function getDispatcher()
@@ -291,11 +378,11 @@ class Router
     {
         foreach ($middlewares as $middleware) {
 
-            if (is_array($middleware) && count($middleware) == 2) {
+            if (is_array($middleware) && strlen($middleware['library']) > 0 && strlen($middleware['method']) > 0) {
 
-                $middleware_library = _::getLibrary($middleware[0]);
+                $middleware_library = _::getLibrary($middleware['library']);
 
-                if (!$middleware_library->{$middleware[1]}($parameters, $arguments)) {
+                if (!$middleware_library->{$middleware['method']}($parameters, $arguments)) {
                     throw new RouteMiddlewareFailedException;
                 }
 

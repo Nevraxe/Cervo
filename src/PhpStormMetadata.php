@@ -3,7 +3,7 @@
 
 /**
  *
- * Copyright (c) 2010-2016 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>. All rights reserved.
+ * Copyright (c) 2010-2017 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are
  * permitted provided that the following conditions are met:
@@ -40,7 +40,7 @@ use Cervo\Core as _;
  *
  * @author Marc André Audet <maudet@nevraxe.com>
  */
-class Tools
+final class PhpStormMetadata
 {
     /**
      * Generates the content to put in a metadata file for PHPStorm.
@@ -51,11 +51,11 @@ class Tools
      *
      * To use this, in your index.php file (Or your file that calls
      * \Cervo::init()) you simply need to replace the init() call with
-     * \CervoTools::phpstormMetadata()
+     * \PhpStormMetadata::generate()
      *
      * @param string|null $json_config_file The path to the JSON configuration file to use.
      */
-    public static function phpstormMetadata($json_config_file = null)
+    public static function generate($json_config_file = null)
     {
         // Start the configuration process
 

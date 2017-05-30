@@ -85,6 +85,8 @@ The application folder needs to contains modules which are simply sub-folders of
 
 Inside a module you may have the `Controllers`, `Libraries`, `Templates` and `Views` directories as well as the `Router.php` file.
 
+Any folders fully support the PSR-4 standard, so you can create `Application/My/Classes/MyClass.php` and it will be autoloaded.
+
 ```
 Application/
  -> My/
@@ -102,7 +104,7 @@ Checklist
 
  - In a controller, you have to set your namespace to `Application/MyModule/Controllers`. As you can notice, the `Module` suffix needs to be added for modules.
  - The filename requires to be __exactly__ the same as the class name (With correct case).
- - The class requires to extend the `\Cervo\Libraries\Controller` class or a derivative.
+ - The class requires to extend the `\Cervo\Controller` class or a derivative.
  - The end-point methods may have an `$args` and a `$params` parameters to receive the arguments from the `Router` calls and the parameters set in the route.
 
 ```php
@@ -111,18 +113,22 @@ Checklist
 
 namespace Application\MyModule\Controllers;
 
+use Cervo\Controller;
 use Cervo\Core as _;
 
-class My extends _\Libraries\Controller
+class My extends Controller
 {
     public function Index($args = [], $params = [])
     {
         // We process the user input
         $value = $args[0];
         
-        if (strlen($value) == 0)
-        {
-            $value = 'My default value';
+        if (strlen($value) == 0) {
+            if (strlen($params['default']) > 0) {
+                $value = $params['default'];
+             } else {
+                $value = 'My default value';
+             }
         }
         
         $value = _::getLibrary('My')->sanitize($value);
@@ -145,7 +151,7 @@ Checklist
 
  - In a view, you have to set your namespace to `Application/MyModule/Views`.
  - The filename requires to be __exactly__ the same as the class name (With correct case).
- - The class requires to extend the `\Cervo\Libraries\View` class or a derivative.
+ - The class requires to extend the `\Cervo\View` class or a derivative.
  - The class needs to override the `render()` method and it is recommended to render a template in it.
  
 ```php
@@ -154,12 +160,13 @@ Checklist
 
 namespace Application\MyModule\Views;
 
+use Cervo\View;
 use Cervo\Core as _;
 
-class Index extends _\Libraries\Views
+class Index extends View
 {
-    protected $show_hello_world = false;
-    protected $value = 'My value';
+    private $show_hello_world = false;
+    private $value = 'My value';
     
     public function setShowHelloWorld($show_hello_world)
     {
@@ -217,7 +224,7 @@ Checklist
  - In a library, you have to set your namespace to `Application/MyModule/Libraries`.
  - The filename requires to be __exactly__ the same as the class name (With correct case).
 
-A library is simply a singleton class that contains code that is re-used. The Cervo `getLibrary()` function handled the singleton part, so you can use your class directly in your tests.
+A library is simply a singleton class that contains code that is re-used. The Cervo `getLibrary()` function handles the singleton part, so you can use your class directly in your tests.
 
 ```php
 <?php
@@ -225,6 +232,7 @@ A library is simply a singleton class that contains code that is re-used. The Ce
 
 namespace Application\MyModule\Libraries;
 
+use Cervo\Libraries\Router;
 use Cervo\Core as _;
 
 class My
@@ -235,9 +243,9 @@ class My
         return $input;
     }
     
-    public function verify(\Cervo\Libraries\Router $router)
+    public function verify(Router $router)
     {
-        if (\Cervo\Core::getLibrary('Users')->getCurrentUser() === null) {
+        if (_::getLibrary('Users')->getCurrentUser() === null) {
             // Returning false will prevent the controller to be called.
             return false;
         }
@@ -256,7 +264,9 @@ The `Router.php` file in your module's root is loaded automatically by Cervo's R
 <?php
 // Application/My/Router.php
 
-return function (\Cervo\Libraries\Router $router) {
+use Cervo\Libraries\Router;
+
+return function (Router $router) {
 
     // The first parameter is the HTTP method or CLI. You may use an array to define multiple.
     // The second one is the path. It supports the nikic/FastRoute default notation.
@@ -268,7 +278,7 @@ return function (\Cervo\Libraries\Router $router) {
     // The middleware is an array in the format ['MyModule/MyLibrary', 'Method']. The first part is the equivalent of doing \Cervo\Core::getLibrary() and the second part is the method called.
     // You can add an array as the fourth parameter, those informations will be passed to the controller/method as second parameter.
     // Any data that you put in each routes needs to be serializable in order to be cached.
-    $router->middleware(['My', 'verify'], function (\Cervo\Libraries\Router $router) {
+    $router->middleware('My', 'verify', function (Router $router) {
         $router->addRoute('GET', '/admin/test/{name}', 'Test/Admin/Test/Named', ['param' => 'test']);
     });
     
