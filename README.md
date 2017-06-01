@@ -12,7 +12,7 @@ A lightweight and highly modular structure framework for PHP.
 Requirements
 ------------
 
-Requires *PHP 5.4.7*.
+Requires *PHP 7.1.0*.
 
 
 Versioning

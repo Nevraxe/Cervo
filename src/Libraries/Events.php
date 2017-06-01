@@ -40,36 +40,19 @@ use Cervo\Core as _;
  *
  * @author Marc André Audet <maudet@nevraxe.com>
  */
-class Events
+final class Events
 {
     /**
      * Holds all the events and their callbacks.
      * @var array
      */
-    protected $events = [];
+    private $events = [];
 
     /**
-     * Name of the event in progress, false if there are no active events.
-     * @var string|bool
+     * Name of the event in progress, null if there are no active events.
+     * @var string|null
      */
-    protected $inProgress = false;
-
-    /**
-     * Custom sort for priority.
-     *
-     * @param array $a
-     * @param array $b
-     *
-     * @return int
-     */
-    public static function prioritySort($a, $b)
-    {
-        if ($a['priority'] == $b['priority']) {
-            return 0;
-        }
-
-        return $a['priority'] < $b['priority'] ? -1 : 1;
-    }
+    private $inProgress = null;
 
     /**
      * Include all the events files that may register and/or hook to events.
@@ -96,7 +79,7 @@ class Events
      *
      * @return bool
      */
-    public function register($name)
+    public function register(string $name) : bool
     {
         if ($this->isRegistered($name)) {
             return false;
@@ -114,7 +97,7 @@ class Events
      *
      * @return bool
      */
-    public function isRegistered($name)
+    public function isRegistered(string $name) : bool
     {
         return isset($this->events[$name]);
     }
@@ -124,7 +107,7 @@ class Events
      *
      * @param string $name
      */
-    public function unregister($name)
+    public function unregister(string $name) : void
     {
         unset($this->events[$name]);
     }
@@ -139,7 +122,7 @@ class Events
      *
      * @return bool
      */
-    public function hook($name, $call, $priority = 0)
+    public function hook(string $name, callable $call, int $priority = 0) : bool
     {
         if (!$this->isRegistered($name)) {
             $this->register($name);
@@ -161,7 +144,7 @@ class Events
      *
      * @return bool
      */
-    public function fire($name, $params = [])
+    public function fire(string $name, array $params = []) : bool
     {
         if (!is_array($params) || !$this->isRegistered($name)) {
             return false;
@@ -169,24 +152,36 @@ class Events
 
         $this->inProgress = $name;
 
-        usort($this->events[$name], '\\' . __CLASS__ . '::prioritySort');
+        usort($this->events[$name], function ($a, $b) {
+            return $a['priority'] <=> $b['priority'];
+        });
 
         foreach ($this->events[$name] as $call) {
             call_user_func($call['call'], $name, $params);
         }
 
-        $this->inProgress = false;
+        $this->inProgress = null;
 
         return true;
     }
 
     /**
-     * Returns the name of the event being fired, false otherwise.
+     * Returns the name of the event being fired, null otherwise.
      *
-     * @return string|bool
+     * @return string|null
      */
-    public function isInProgress()
+    public function getInProgress() : ?string
     {
         return $this->inProgress;
+    }
+
+    /**
+     * Returns true if an event is being fired.
+     *
+     * @return bool
+     */
+    public function isInProgress() : bool
+    {
+        return $this->inProgress !== null;
     }
 }

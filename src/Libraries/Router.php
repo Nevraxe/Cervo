@@ -50,31 +50,31 @@ use FastRoute\Dispatcher as Dispatcher;
  *
  * @author Marc André Audet <maudet@nevraxe.com>
  */
-class Router
+final class Router
 {
     /**
      * FastRoute, null if usingCache is set
      * @var RouteCollector
      */
-    protected $routeCollector = null;
+    private $routeCollector = null;
 
     /**
      * FastRoute cache file path.
      * @var string
      */
-    protected $cacheFilePath;
+    private $cacheFilePath;
 
     /**
      * List of middlewares called using the middleware() method.
      * @var array
      */
-    protected $currentMiddlewares = [];
+    private $currentMiddlewares = [];
 
     /**
      * List of group prefixes called using the group() method.
      * @var string
      */
-    protected $currentGroupPrefix;
+    private $currentGroupPrefix;
 
     /**
      * Initialize the route configurations.
@@ -110,7 +110,7 @@ class Router
      * @param string $method_name The method to call through the library
      * @param callable $func
      */
-    public function middleware($library_name, $method_name, callable $func)
+    public function middleware(string $library_name, string $method_name, callable $func) : void
     {
         // It's easier to cache an array
         array_push($this->currentMiddlewares, [
@@ -129,7 +129,7 @@ class Router
      * @param string $prefix The prefix of the group.
      * @param callable $func
      */
-    public function group($prefix, callable $func)
+    public function group(string $prefix, callable $func) : void
     {
         $previousGroupPrefix = $this->currentGroupPrefix;
         $this->currentGroupPrefix = $previousGroupPrefix . $prefix;
@@ -142,9 +142,11 @@ class Router
     /**
      * Dispatch the request to the router.
      *
-     * @return bool|Route
+     * @return Route
+     * @throws MethodNotAllowedException if the request method is not supported, but others are for this route.
+     * @throws RouteNotFoundException if the requested route did not match any routes.
      */
-    public function dispatch()
+    public function dispatch() : Route
     {
         $dispatcher = $this->getDispatcher();
 
@@ -183,7 +185,7 @@ class Router
      * @param string $method_path The Method Path
      * @param array $parameters The parameters to pass
      */
-    public function addRoute($http_method, $route, $method_path, $parameters = [])
+    public function addRoute($http_method, string $route, string $method_path, array $parameters = []) : void
     {
         if (_::getLibrary('Cervo/Config')->get('Production') == true && file_exists($this->cacheFilePath)) {
             return;
@@ -205,7 +207,7 @@ class Router
      * @param string $method_path The Method Path
      * @param array $parameters The parameters to pass
      */
-    public function get($route, $method_path, $parameters = [])
+    public function get(string $route, string $method_path, array $parameters = []) : void
     {
         $this->addRoute('GET', $route, $method_path, $parameters);
     }
@@ -217,7 +219,7 @@ class Router
      * @param string $method_path The Method Path
      * @param array $parameters The parameters to pass
      */
-    public function post($route, $method_path, $parameters = [])
+    public function post(string $route, string $method_path, array $parameters = []) : void
     {
         $this->addRoute('POST', $route, $method_path, $parameters);
     }
@@ -229,7 +231,7 @@ class Router
      * @param string $method_path The Method Path
      * @param array $parameters The parameters to pass
      */
-    public function put($route, $method_path, $parameters = [])
+    public function put(string $route, string $method_path, array $parameters = []) : void
     {
         $this->addRoute('PUT', $route, $method_path, $parameters);
     }
@@ -241,7 +243,7 @@ class Router
      * @param string $method_path The Method Path
      * @param array $parameters The parameters to pass
      */
-    public function patch($route, $method_path, $parameters = [])
+    public function patch(string $route, string $method_path, array $parameters = []) : void
     {
         $this->addRoute('PATCH', $route, $method_path, $parameters);
     }
@@ -253,7 +255,7 @@ class Router
      * @param string $method_path The Method Path
      * @param array $parameters The parameters to pass
      */
-    public function delete($route, $method_path, $parameters = [])
+    public function delete(string $route, string $method_path, array $parameters = []) : void
     {
         $this->addRoute('DELETE', $route, $method_path, $parameters);
     }
@@ -265,7 +267,7 @@ class Router
      * @param string $method_path The Method Path
      * @param array $parameters The parameters to pass
      */
-    public function head($route, $method_path, $parameters = [])
+    public function head(string $route, string $method_path, array $parameters = []) : void
     {
         $this->addRoute('HEAD', $route, $method_path, $parameters);
     }
@@ -277,12 +279,16 @@ class Router
      * @param string $method_path The Method Path
      * @param array $parameters The parameters to pass
      */
-    public function cli($route, $method_path, $parameters = [])
+    public function cli(string $route, string $method_path, array $parameters = []) : void
     {
         $this->addRoute('CLI', $route, $method_path, $parameters);
     }
 
-    protected function getDispatcher()
+    /**
+     * @return Dispatcher\GroupCountBased
+     * @throws InvalidRouterCacheException if the router cache exists and is invalid.
+     */
+    private function getDispatcher() : Dispatcher\GroupCountBased
     {
         $dispatchData = null;
 
@@ -303,7 +309,10 @@ class Router
         return new Dispatcher\GroupCountBased($dispatchData);
     }
 
-    protected function generateCache($dispatchData)
+    /**
+     * @param array $dispatchData
+     */
+    private function generateCache(array $dispatchData) : void
     {
         $dir = dirname($this->cacheFilePath);
 
@@ -321,7 +330,7 @@ class Router
      *
      * @return string
      */
-    protected function detectUri()
+    private function detectUri() : string
     {
         if (php_sapi_name() == 'cli') {
             $args = array_slice($_SERVER['argv'], 1);
@@ -348,7 +357,7 @@ class Router
      *
      * @return string
      */
-    protected function getBaseUri()
+    private function getBaseUri() : string
     {
         $uri = $_SERVER['REQUEST_URI'];
 
@@ -373,8 +382,10 @@ class Router
      * @param array $arguments
      *
      * @return void
+     * @throws RouteMiddlewareFailedException if a route middleware returned false.
+     * @throws InvalidMiddlewareException if a middleware is invalid.
      */
-    protected function handleMiddlewares($middlewares, $parameters, $arguments)
+    private function handleMiddlewares(array $middlewares, array $parameters, array $arguments) : void
     {
         foreach ($middlewares as $middleware) {
 

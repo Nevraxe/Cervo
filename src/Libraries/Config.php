@@ -37,19 +37,19 @@ namespace Cervo\Libraries;
  *
  * @author Marc André Audet <maudet@nevraxe.com>
  */
-class Config
+final class Config
 {
     /**
      * The currently set default values in a multi-dimensional array.
      * @var array
      */
-    protected $defaultValues = [];
+    private $defaultValues = [];
 
     /**
      * The currently set values in a multi-dimensional array.
      * @var array
      */
-    protected $values = [];
+    private $values = [];
 
     /**
      * Add a new array element to the specified configuration path.
@@ -114,7 +114,7 @@ class Config
      *
      * @return mixed
      */
-    public function get($name)
+    public function get(string $name)
     {
         $current = &$this->values;
 
@@ -137,7 +137,7 @@ class Config
      *
      * @return mixed
      */
-    public function getDefault($name)
+    public function getDefault(string $name)
     {
         $current = &$this->defaultValues;
 
@@ -164,7 +164,7 @@ class Config
      *
      * @return bool
      */
-    public function importJSON($file)
+    public function importJSON(string $file) : bool
     {
         if ($file === null || !file_exists($file)) {
             return false;
@@ -182,7 +182,7 @@ class Config
      * @param array $array
      * @param array $current_path
      */
-    protected function setFromArrayRecursive($array, $current_path = [])
+    private function setFromArrayRecursive(array $array, array $current_path = [])
     {
         foreach ($array as $key => $el) {
             if (is_array($el)) {
@@ -193,13 +193,13 @@ class Config
         }
     }
 
-    protected function _set($name, $value, $is_default = false)
+    private function _set($name, $value, bool $is_default = false)
     {
         if (!is_array($name)) {
             $name = explode('/', $name);
         }
 
-        if ($is_default) {
+        if ($is_default === true) {
             $current = &$this->defaultValues;
         } else {
             $current = &$this->values;

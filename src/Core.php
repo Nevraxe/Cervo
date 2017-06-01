@@ -48,13 +48,13 @@ final class Core
      * All the libraries instances that have been initialized through getLibrary().
      * @var array
      */
-    protected static $libraries = [];
+    private static $libraries = [];
 
     /**
      * All the controller instances that have been initialized through getController().
      * @var array
      */
-    protected static $controllers = [];
+    private static $controllers = [];
 
     /**
      * If Cervo have been initialized.
@@ -73,7 +73,7 @@ final class Core
      *
      * @param string|null $json_config_file The path to the JSON configuration file to use.
      */
-    public static function init($json_config_file = null)
+    public static function init(?string $json_config_file = null) : void
     {
         // Check if the system is already initiated
 
@@ -133,7 +133,7 @@ final class Core
      *
      * @param string|null $json_config_file
      */
-    public static function initConfig($json_config_file = null)
+    public static function initConfig(?string $json_config_file = null) : void
     {
         // Check if the system is already initiated
 
@@ -190,7 +190,7 @@ final class Core
      *
      * @return object
      */
-    public static function getLibrary($name)
+    public static function getLibrary(string $name) : object
     {
         if (is_object(self::$libraries[$name])) {
             return self::$libraries[$name];
@@ -221,7 +221,7 @@ final class Core
      *
      * @return object
      */
-    public static function getController($name)
+    public static function getController(string $name) : object
     {
         if (is_object(self::$controllers[$name])) {
             return self::$controllers[$name];
@@ -240,7 +240,7 @@ final class Core
      *
      * @return object
      */
-    public static function getModel($name)
+    public static function getModel(string $name) : object
     {
         return self::getPath($name, 'Models');
     }
@@ -254,7 +254,7 @@ final class Core
      *
      * @return object
      */
-    public static function getView($name)
+    public static function getView(string $name) : object
     {
         return self::getPath($name, 'Views');
     }
@@ -270,7 +270,7 @@ final class Core
      *
      * @return object
      */
-    public static function getPath($class_path, $application_path)
+    public static function getPath(string $class_path, string $application_path) : object
     {
         $path = explode('/', $class_path);
 
@@ -292,7 +292,7 @@ final class Core
      *
      * @return Template
      */
-    public static function getTemplate($name)
+    public static function getTemplate(string $name) : Template
     {
         return new Template($name);
     }
@@ -303,7 +303,7 @@ final class Core
      *
      * @param string $name The class full name (Include the namespace(s))
      */
-    public static function autoload($name)
+    public static function autoload(string $name) : void
     {
         if (strpos($name, 'Application\\') === 0) {
 

@@ -47,21 +47,21 @@ final class Template
      * The template path.
      * @var array
      */
-    protected $path;
+    private $path;
 
     /**
      * The template's data.
      * Usually set from the View.
      * @var array
      */
-    protected $data = [];
+    private $data = [];
 
     /**
      * Initialize the template.
      *
      * @param string $name The template (file)name.
      *
-     * @throws TemplateFileMissingException
+     * @throws TemplateFileMissingException if the template's file doesn't exists.
      */
     public function __construct($name)
     {
@@ -112,7 +112,7 @@ final class Template
      *
      * @return $this
      */
-    public function assign($data = [])
+    public function assign(array $data = [])
     {
         $this->data = array_merge($data, $this->data);
         return $this;
@@ -123,7 +123,7 @@ final class Template
      *
      * @param array $data
      */
-    public function render($data = [])
+    public function render(array $data = [])
     {
         $this->data = array_merge($data, $this->data);
         require $this->path;

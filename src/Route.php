@@ -46,31 +46,31 @@ final class Route
      * The route's module
      * @var string
      */
-    protected $module;
+    private $module;
 
     /**
      * The route's controller
      * @var string
      */
-    protected $controller;
+    private $controller;
 
     /**
      * The route's method
      * @var string
      */
-    protected $method;
+    private $method;
 
     /**
      * The parameters to pass
      * @var array
      */
-    protected $parameters = [];
+    private $parameters = [];
 
     /**
      * The arguments to pass
      * @var array
      */
-    protected $arguments = [];
+    private $arguments = [];
 
     /**
      * Set the method path.
@@ -79,8 +79,10 @@ final class Route
      * @param string $method_path
      * @param array $parameters
      * @param array $arguments
+     *
+     * @throws InvalidControllerException if $method_path is invalid.
      */
-    public function __construct($method_path, $parameters = [], $arguments = [])
+    public function __construct(string $method_path, array $parameters = [], array $arguments = [])
     {
         $controller_e = explode('/', $method_path);
         $c_controller_e = count($controller_e);
@@ -96,27 +98,27 @@ final class Route
         $this->arguments = $arguments;
     }
 
-    public function getModule()
+    public function getModule() : string
     {
         return $this->module;
     }
 
-    public function getController()
+    public function getController() : string
     {
         return $this->controller;
     }
 
-    public function getMethod()
+    public function getMethod() : string
     {
         return $this->method;
     }
 
-    public function getParameters()
+    public function getParameters() : array
     {
         return $this->parameters;
     }
 
-    public function getArguments()
+    public function getArguments() : array
     {
         return $this->arguments;
     }
