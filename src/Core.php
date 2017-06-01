@@ -190,7 +190,7 @@ final class Core
      *
      * @return object
      */
-    public static function getLibrary(string $name) : \object
+    public static function getLibrary(string $name)
     {
         if (is_object(self::$libraries[$name])) {
             return self::$libraries[$name];
@@ -221,7 +221,7 @@ final class Core
      *
      * @return object
      */
-    public static function getController(string $name) : \object
+    public static function getController(string $name)
     {
         if (is_object(self::$controllers[$name])) {
             return self::$controllers[$name];
@@ -240,7 +240,7 @@ final class Core
      *
      * @return object
      */
-    public static function getModel(string $name) : \object
+    public static function getModel(string $name)
     {
         return self::getPath($name, 'Models');
     }
@@ -254,7 +254,7 @@ final class Core
      *
      * @return object
      */
-    public static function getView(string $name) : \object
+    public static function getView(string $name)
     {
         return self::getPath($name, 'Views');
     }
@@ -270,7 +270,7 @@ final class Core
      *
      * @return object
      */
-    public static function getPath(string $class_path, string $application_path) : \object
+    public static function getPath(string $class_path, string $application_path)
     {
         $path = explode('/', $class_path);
 
