@@ -317,10 +317,14 @@ final class Router
             }
 
         } else {
-            $dispatchData = $this->routeCollector->getData();
-        }
 
-        $this->generateCache($dispatchData);
+            $dispatchData = $this->routeCollector->getData();
+
+            if (_::getLibrary('Cervo/Config')->get('Production') == true) {
+                $this->generateCache($dispatchData);
+            }
+
+        }
 
         return new Dispatcher\GroupCountBased($dispatchData);
     }
@@ -334,13 +338,13 @@ final class Router
     {
         $dir = dirname($this->cacheFilePath);
 
-        if (_::getLibrary('Cervo/Config')->get('Production') == true && !file_exists($this->cacheFilePath) && is_dir($dir) && is_writable($dir)) {
+        if (!file_exists($this->cacheFilePath) && is_dir($dir) && is_writable($dir)) {
 
             return file_put_contents(
-                $this->cacheFilePath,
-                '<?php return ' . var_export($dispatchData, true) . ';' . PHP_EOL,
-                LOCK_EX
-            ) !== false;
+                    $this->cacheFilePath,
+                    '<?php return ' . var_export($dispatchData, true) . ';' . PHP_EOL,
+                    LOCK_EX
+                ) !== false;
 
         } else {
             return false;
