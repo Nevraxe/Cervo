@@ -285,6 +285,22 @@ final class Router
     }
 
     /**
+     * Force the generation of the cache file. Delete the current cache file if it exists.
+     */
+    public function forceGenerateCache() : bool
+    {
+        $dispatchData = null;
+
+        if (file_exists($this->cacheFilePath)) {
+            @unlink($this->cacheFilePath);
+        }
+
+        $dispatchData = $this->routeCollector->getData();
+
+        return $this->generateCache($dispatchData);
+    }
+
+    /**
      * @return Dispatcher\GroupCountBased
      * @throws InvalidRouterCacheException if the router cache exists and is invalid.
      */
@@ -311,17 +327,23 @@ final class Router
 
     /**
      * @param array $dispatchData
+     *
+     * @return bool
      */
-    private function generateCache(array $dispatchData) : void
+    private function generateCache(array $dispatchData) : bool
     {
         $dir = dirname($this->cacheFilePath);
 
         if (_::getLibrary('Cervo/Config')->get('Production') == true && !file_exists($this->cacheFilePath) && is_dir($dir) && is_writable($dir)) {
-            file_put_contents(
+
+            return file_put_contents(
                 $this->cacheFilePath,
                 '<?php return ' . var_export($dispatchData, true) . ';' . PHP_EOL,
                 LOCK_EX
-            );
+            ) !== false;
+
+        } else {
+            return false;
         }
     }
 
