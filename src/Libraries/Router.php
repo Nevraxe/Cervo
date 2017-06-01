@@ -289,15 +289,11 @@ final class Router
      */
     public function forceGenerateCache() : bool
     {
-        $dispatchData = null;
-
-        if (file_exists($this->cacheFilePath)) {
-            @unlink($this->cacheFilePath);
+        if (file_exists($this->cacheFilePath) && !unlink($this->cacheFilePath)) {
+            return false;
         }
 
-        $dispatchData = $this->routeCollector->getData();
-
-        return $this->generateCache($dispatchData);
+        return $this->generateCache($this->routeCollector->getData());
     }
 
     /**
