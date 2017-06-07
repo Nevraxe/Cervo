@@ -185,11 +185,15 @@ final class Config
     private function setFromArrayRecursive(array $array, array $current_path = [])
     {
         foreach ($array as $key => $el) {
+
+            array_push($current_path, $key);
+
             if (is_array($el)) {
-                $this->setFromArrayRecursive($el, array_merge($current_path, [$key]));
+                $this->setFromArrayRecursive($el, $current_path);
             } else {
-                $this->_set(array_merge($current_path, [$key]), $el, false);
+                $this->_set($current_path, $el, false);
             }
+
         }
     }
 

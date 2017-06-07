@@ -51,10 +51,22 @@ final class Core
     private static $libraries = [];
 
     /**
+     * All the library classes to be used whend not found in the application through getLibrary().
+     * @var array
+     */
+    private static $injected_libraries = [];
+
+    /**
      * All the controller instances that have been initialized through getController().
      * @var array
      */
     private static $controllers = [];
+
+    /**
+     * All the controller classes to be used when not found in the application through getController().
+     * @var array
+     */
+    private static $injected_controllers = [];
 
     /**
      * If Cervo have been initialized.
@@ -128,6 +140,16 @@ final class Core
         $events->fire('Cervo/System/After');
     }
 
+    public static function getInjectedLibraries() : array
+    {
+        return self::$injected_libraries;
+    }
+
+    public static function getInjectedControllers() : array
+    {
+        return self::$injected_controllers;
+    }
+
     /**
      * Initialize the configuration for Cervo with default configs.
      *
@@ -165,15 +187,19 @@ final class Core
             ->setDefault('Cervo/Application/Directory', '')
             ->setDefault('Cervo/Directory', $cervo_directory)
             ->setDefault('Cervo/Libraries/Directory', realpath($cervo_directory . 'Libraries') . \DS)
-            ->setDefault('Cervo/Application/EventsPath', 'Events' . \DS)
-            ->setDefault('Cervo/Application/ControllersPath', 'Controllers' . \DS)
-            ->setDefault('Cervo/Application/ModelsPath', 'Models' . \DS)
-            ->setDefault('Cervo/Application/ViewsPath', 'Views' . \DS)
-            ->setDefault('Cervo/Application/LibariesPath', 'Libraries' . \DS)
-            ->setDefault('Cervo/Application/TemplatesPath', 'Templates' . \DS)
             ->setDefault('Production', false);
 
         $config->importJSON($json_config_file);
+    }
+
+    /**
+     * First iteration of a provider interface to inject elements into Cervo.
+     *
+     * @param ProviderInterface $provider
+     */
+    public static function register(ProviderInterface $provider)
+    {
+        $provider->register();
     }
 
     /**
@@ -181,10 +207,6 @@ final class Core
      * $name format: [Module]/[Name]
      * Name MAY contain slashes (/) to go deeper in the tree.
      * The module name Cervo may be used to access the Cervo standard libraries.
-     *
-     * If you do not want your library to be re-used, please access the library directly without
-     * using any functions or methods. Ex:
-     * new \Application\[Module]Module\Libraries\[Name]();
      *
      * @param string $name The path name
      *
@@ -198,18 +220,28 @@ final class Core
 
         $path = explode('/', $name);
 
-        if (count($path) <= 1) {
-            $i_name = '\Application\\' . $path[0] . 'Module\Libraries\\' . $path[0];
+        if ($path[0] === 'Cervo') {
+            $i_name = '\Cervo\Libraries\\' . implode('\\', array_slice($path, 1));
         } else {
-            if ($path[0] === 'Cervo') {
-                $i_name = '\Cervo\Libraries\\' . implode('\\', array_slice($path, 1));
-            } else {
-                $i_name = '\Application\\' . $path[0] . 'Module\Libraries\\' . implode('\\', array_slice($path, 1));
-            }
+            $i_name = self::getPath($name, 'Libraries');
         }
 
-        self::$libraries[$name] = new $i_name;
-        return self::$libraries[$name];
+        if (!class_exists($i_name, true) && isset(self::$injected_libraries[$name])) {
+            $i_name = self::$injected_libraries[$name];
+        }
+
+        return (self::$libraries[$name] = new $i_name);
+    }
+
+    /**
+     * Injects a library to be used in getLibrary() if not found in the application.
+     *
+     * @param string $name The path name
+     * @param string $i_name The class name
+     */
+    public static function injectLibrary(string $name, string $i_name)
+    {
+        self::$injected_libraries[$name] = $i_name;
     }
 
     /**
@@ -227,36 +259,24 @@ final class Core
             return self::$controllers[$name];
         }
 
-        self::$controllers[$name] = self::getPath($name, 'Controllers');
-        return self::$controllers[$name];
+        $i_name = self::getPath($name, 'Libraries');
+
+        if (!class_exists($i_name, true) && isset(self::$injected_controllers[$name])) {
+            $i_name = self::$injected_controllers[$name];
+        }
+
+        return (self::$controllers[$name] = new $i_name);
     }
 
     /**
-     * Return a model.
-     * $name format: [Module]/[Name]
-     * $name MAY contain slashes (/) to go deeper in the tree.
+     * Injects a controller to be used in getController() if not found in the application.
      *
      * @param string $name The path name
-     *
-     * @return object
+     * @param string $i_name The class name
      */
-    public static function getModel(string $name)
+    public static function injectController(string $name, string $i_name)
     {
-        return self::getPath($name, 'Models');
-    }
-
-    /**
-     * Return a view.
-     * $name format: [Module]/[Name]
-     * $name MAY contain slashes (/) to go deeper in the tree.
-     *
-     * @param string $name The path name
-     *
-     * @return object
-     */
-    public static function getView(string $name)
-    {
-        return self::getPath($name, 'Views');
+        self::$injected_controllers[$name] = $i_name;
     }
 
     /**
@@ -265,14 +285,14 @@ final class Core
      * $class_path MAY contain slashes (/) to go deeper in the tree.
      * $application_path is the module sub-folder to look in for.
      *
-     * @param string $class_path The path name
+     * @param string $name The path name
      * @param string $application_path The sub-folder within the module
      *
      * @return object
      */
-    public static function getPath(string $class_path, string $application_path)
+    public static function getPath(string $name, string $application_path)
     {
-        $path = explode('/', $class_path);
+        $path = explode('/', $name);
 
         if (count($path) <= 1) {
             $i_name = '\Application\\' . $path[0] . 'Module\\' . $application_path . '\\' . $path[0];

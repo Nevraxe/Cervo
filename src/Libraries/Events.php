@@ -61,7 +61,7 @@ final class Events
     {
         $config = _::getLibrary('Cervo/Config');
 
-        foreach (glob($config->get('Cervo/Application/Directory') . '*' . \DS . $config->get('Cervo/Application/EventsPath') . '*.php', \GLOB_NOSORT | \GLOB_NOESCAPE) as $file) {
+        foreach (glob($config->get('Cervo/Application/Directory') . '*' . \DS . 'Events' . \DS . '*.php', \GLOB_NOSORT | \GLOB_NOESCAPE) as $file) {
 
             $function = require $file;
 

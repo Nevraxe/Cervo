@@ -44,8 +44,6 @@ How to get started
 
 There is a lot of possible configurations for Cervo, but this guide assumes that you are using defaults.
 
-Most of the structural names (including suffixes and folder names) can be changed through the `Config` library.
-
 
 ### Initializing Cervo
 
@@ -133,8 +131,7 @@ class My extends Controller
         
         $value = _::getLibrary('My')->sanitize($value);
     
-        // We fetch the view, set it's value and render it.
-        _::getView('My/Index')->setValue($value)->render();
+        // Then we go through rendering logic
     }
 }
 
@@ -143,58 +140,7 @@ class My extends Controller
 The controllers methods purpose are to serve as an end-point for the router. You should include the data input processing in it.
 
 
-### Creating a View and a Template
-
-#### The View
-
-Checklist
-
- - In a view, you have to set your namespace to `Application/MyModule/Views`.
- - The filename requires to be __exactly__ the same as the class name (With correct case).
- - The class requires to extend the `\Cervo\View` class or a derivative.
- - The class needs to override the `render()` method and it is recommended to render a template in it.
- 
-```php
-<?php
-// Application/My/Views/Index.php
-
-namespace Application\MyModule\Views;
-
-use Cervo\View;
-use Cervo\Core as _;
-
-class Index extends View
-{
-    private $show_hello_world = false;
-    private $value = 'My value';
-    
-    public function setShowHelloWorld($show_hello_world)
-    {
-        $this->show_hello_world = $show_hello_world;
-        return $this;
-    }
-    
-    public function setValue($value)
-    {
-        $this->value = $value;
-        return $this;
-    }
-    
-    public function render()
-    {
-        // We fetch the tempate, assign the parameters and render it.
-        // My/Index will resolve to Application/My/Templates/Index
-        _::getTemplate('My/Index')->assign([
-            'ShowHelloWorld' => $this->show_hello_world,
-            'Value' => $this->value
-        ])->render();
-    }
-}
-
-```
-
-
-#### The Template
+### Creating a Template
 
 The template file is where you put your HTML and consume the variables for display.
 

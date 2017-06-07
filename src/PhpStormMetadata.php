@@ -69,10 +69,8 @@ final class PhpStormMetadata
 
         echo htmlentities(
             self::phpstormMetadataHeader() .
-            self::phpstormMetadataLibraries(self::getCervoLibraries($config->get('Cervo/Libraries/Directory')), self::getApplicationClasses($config->get('Cervo/Application/Directory'), $config->get('Cervo/Application/LibariesPath'))) .
-            self::phpstormMetadataControllers(self::getApplicationClasses($config->get('Cervo/Application/Directory'), $config->get('Cervo/Application/ControllersPath'))) .
-            self::phpstormMetadataModels(self::getApplicationClasses($config->get('Cervo/Application/Directory'), $config->get('Cervo/Application/ModelsPath'))) .
-            self::phpstormMetadataViews(self::getApplicationClasses($config->get('Cervo/Application/Directory'), $config->get('Cervo/Application/ViewsPath'))) .
+            self::phpstormMetadataLibraries(self::getCervoLibraries($config->get('Cervo/Libraries/Directory')), self::getApplicationClasses($config->get('Cervo/Application/Directory'), 'Libraries')) .
+            self::phpstormMetadataControllers(self::getApplicationClasses($config->get('Cervo/Application/Directory'), 'Controllers')) .
             self::phpstormMetadataFooter()
         );
 
@@ -176,30 +174,8 @@ METADATA;
             }
         }
 
-        $towrite .= <<<METADATA
-        ],
-
-METADATA;
-
-        return $towrite;
-    }
-
-    private static function phpStormMetadataGenerator($function_call, $classes, $namespace)
-    {
-        $towrite = <<<METADATA
-        \Cervo\Core::{$function_call}('') => [
-
-METADATA;
-
-        foreach ($classes as $f) {
-            $ex = explode('/', $f);
-
-            if (count($ex) <= 1) {
-                $towrite .= '            \'' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\\' . $namespace . '\\' . $ex[0] . ",\n";
-                $towrite .= '            \'' . $ex[0] . '/' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\\' . $namespace . '\\' . $ex[0] . ",\n";
-            } else {
-                $towrite .= '            \'' . $f . '\' instanceof \Application\\' . $ex[0] . 'Module\\' . $namespace . '\\' . implode('\\', array_slice($ex, 1)) . ",\n";
-            }
+        foreach (_::getInjectedLibraries() as $name => $i_name) {
+            $towrite .= '            \'' . $name . '\' instanceof ' . $i_name . ",\n";
         }
 
         $towrite .= <<<METADATA
@@ -212,17 +188,32 @@ METADATA;
 
     private static function phpstormMetadataControllers($controllers)
     {
-        return self::phpStormMetadataGenerator('getController', $controllers, 'Controllers');
-    }
+        $towrite = <<<METADATA
+        \Cervo\Core::getController('') => [
 
-    private static function phpstormMetadataModels($models)
-    {
-        return self::phpStormMetadataGenerator('getModel', $models, 'Models');
-    }
+METADATA;
 
-    private static function phpstormMetadataViews($views)
-    {
-        return self::phpStormMetadataGenerator('getView', $views, 'Views');
+        foreach ($controllers as $f) {
+            $ex = explode('/', $f);
+
+            if (count($ex) <= 1) {
+                $towrite .= '            \'' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\\Controllers\\' . $ex[0] . ",\n";
+                $towrite .= '            \'' . $ex[0] . '/' . $ex[0] . '\' instanceof \Application\\' . $ex[0] . 'Module\\Controllers\\' . $ex[0] . ",\n";
+            } else {
+                $towrite .= '            \'' . $f . '\' instanceof \Application\\' . $ex[0] . 'Module\\Controllers\\' . implode('\\', array_slice($ex, 1)) . ",\n";
+            }
+        }
+
+        foreach (_::getInjectedControllers() as $name => $i_name) {
+            $towrite .= '            \'' . $name . '\' instanceof ' . $i_name . ",\n";
+        }
+
+        $towrite .= <<<METADATA
+        ],
+
+METADATA;
+
+        return $towrite;
     }
 
     private static function phpstormMetadataFooter()
