@@ -186,12 +186,10 @@ final class Config
     {
         foreach ($array as $key => $el) {
 
-            array_push($current_path, $key);
-
             if (is_array($el)) {
-                $this->setFromArrayRecursive($el, $current_path);
+                $this->setFromArrayRecursive($el, array_merge($current_path, [$key]));
             } else {
-                $this->_set($current_path, $el, false);
+                $this->_set(array_merge($current_path, [$key]), $el, false);
             }
 
         }

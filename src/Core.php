@@ -259,7 +259,7 @@ final class Core
             return self::$controllers[$name];
         }
 
-        $i_name = self::getPath($name, 'Libraries');
+        $i_name = self::getPath($name, 'Controllers');
 
         if (!class_exists($i_name, true) && isset(self::$injected_controllers[$name])) {
             $i_name = self::$injected_controllers[$name];
