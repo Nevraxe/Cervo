@@ -197,7 +197,7 @@ final class Core
      *
      * @param ProviderInterface $provider
      */
-    public static function register(ProviderInterface $provider)
+    public static function register(ProviderInterface $provider) : void
     {
         $provider->register();
     }
@@ -239,7 +239,7 @@ final class Core
      * @param string $name The path name
      * @param string $i_name The class name
      */
-    public static function injectLibrary(string $name, string $i_name)
+    public static function injectLibrary(string $name, string $i_name) : void
     {
         self::$injected_libraries[$name] = $i_name;
     }
@@ -251,9 +251,9 @@ final class Core
      *
      * @param string $name The path name
      *
-     * @return object
+     * @return Controller
      */
-    public static function getController(string $name)
+    public static function getController(string $name) : Controller
     {
         if (is_object(self::$controllers[$name])) {
             return self::$controllers[$name];
@@ -274,7 +274,7 @@ final class Core
      * @param string $name The path name
      * @param string $i_name The class name
      */
-    public static function injectController(string $name, string $i_name)
+    public static function injectController(string $name, string $i_name) : void
     {
         self::$injected_controllers[$name] = $i_name;
     }
@@ -288,9 +288,9 @@ final class Core
      * @param string $name The path name
      * @param string $application_path The sub-folder within the module
      *
-     * @return object
+     * @return string
      */
-    public static function getPath(string $name, string $application_path)
+    public static function getPath(string $name, string $application_path) : string
     {
         $path = explode('/', $name);
 
@@ -300,7 +300,7 @@ final class Core
             $i_name = '\Application\\' . $path[0] . 'Module\\' . $application_path . '\\' . implode('\\', array_slice($path, 1));
         }
 
-        return new $i_name;
+        return $i_name;
     }
 
     /**
