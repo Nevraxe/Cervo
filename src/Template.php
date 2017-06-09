@@ -69,7 +69,7 @@ final class Template
 
         $ex_name = explode('/', $name);
 
-        $this->path = $config->get('Cervo/Application/Directory') . $ex_name[0] . \DS . 'Templates' . implode('/', array_slice($ex_name, 1)) . '.php';
+        $this->path = $config->get('Cervo/Application/Directory') . $ex_name[0] . \DS . 'Templates' . \DS . implode('/', array_slice($ex_name, 1)) . '.php';
 
         if (!file_exists($this->path)) {
             throw new TemplateFileMissingException();
