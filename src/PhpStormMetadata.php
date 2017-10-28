@@ -69,8 +69,8 @@ final class PhpStormMetadata
 
         echo htmlentities(
             self::phpstormMetadataHeader() .
-            self::phpstormMetadataLibraries(self::getCervoLibraries($config->get('Cervo/Libraries/Directory')), self::getApplicationClasses($config->get('Cervo/Application/Directory'), 'Libraries')) .
-            self::phpstormMetadataControllers(self::getApplicationClasses($config->get('Cervo/Application/Directory'), 'Controllers')) .
+            self::phpstormMetadataLibraries(self::getCervoLibraries($config->get('Cervo/Libraries/Directory')), self::getApplicationClasses($config->get('Cervo/Application/Directory'), 'Libraries/')) .
+            self::phpstormMetadataControllers(self::getApplicationClasses($config->get('Cervo/Application/Directory'), 'Controllers/')) .
             self::phpstormMetadataFooter()
         );
 
