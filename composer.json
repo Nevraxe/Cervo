@@ -25,8 +25,8 @@
     "issues": "https://github.com/Nevraxe/Cervo/issues"
   },
   "require": {
-    "php": ">=7.1.0",
-    "nikic/fast-route": "1.2.0"
+    "php": "^7.1",
+    "nikic/fast-route": "^1.2"
   },
   "autoload": {
     "psr-4": {
