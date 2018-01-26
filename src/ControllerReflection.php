@@ -92,9 +92,9 @@ final class ControllerReflection
 
             if ($parameter->isArray()) {
 
-                if ($parameter->getName() == 'parameters') {
+                if ($parameter->name == 'parameters') {
                     return $this->route->getParameters();
-                } elseif ($parameter->getName() == 'arguments') {
+                } elseif ($parameter->name == 'arguments') {
                     return $this->route->getArguments();
                 } else {
                     return $parameter->isDefaultValueAvailable() ? $parameter->getDefaultValue() : [];
@@ -105,7 +105,7 @@ final class ControllerReflection
             }
 
         } else {
-            return $this->context->getSingletons()->get($parameter->getClass()->getName());
+            return $this->context->getSingletons()->get($parameter->getClass()->name);
         }
     }
 }

@@ -303,7 +303,7 @@ class Router implements SingletonInterface
     {
         if (php_sapi_name() == 'cli') {
             $args = array_slice($_SERVER['argv'], 1);
-            return $args ? '/' . implode('/', $args) : '/';
+            return count($args) > 0 ? '/' . implode('/', $args) : '/';
         }
 
         if (!isset($_SERVER['REQUEST_URI']) || !isset($_SERVER['SCRIPT_NAME'])) {

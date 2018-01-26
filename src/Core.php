@@ -65,11 +65,9 @@ final class Core
 
         $route = $router->dispatch();
 
-        if ($route instanceof Route) {
-            $events->fire('Cervo/Route/Before');
-            (new ControllerReflection($this->context, $route))();
-            $events->fire('Cervo/Route/After');
-        }
+        $events->fire('Cervo/Route/Before');
+        (new ControllerReflection($this->context, $route))();
+        $events->fire('Cervo/Route/After');
 
         $events->fire('Cervo/System/After');
     }
