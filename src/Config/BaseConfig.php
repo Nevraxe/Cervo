@@ -1,36 +1,19 @@
 <?php
 
-
 /**
+ * This file is part of the Cervo package.
  *
- * Copyright (c) 2010-2018 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>. All rights reserved.
+ * Copyright (c) 2010-2018 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>.
  *
- * Redistribution and use in source and binary forms, with or without modification, are
- * permitted provided that the following conditions are met:
- *
- *   1. Redistributions of source code must retain the above copyright notice, this list of
- *       conditions and the following disclaimer.
- *
- *   2. Redistributions in binary form must reproduce the above copyright notice, this list
- *       of conditions and the following disclaimer in the documentation and/or other materials
- *       provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL NEVRAXE INC. & MARC ANDRÉ AUDET BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * @package   Cervo
+ * @author    Marc André Audet <maaudet@nevraxe.com>
+ * @copyright 2010 - 2018 Nevraxe inc. & Marc André Audet
+ * @license   See LICENSE.md  BSD-2-Clauses
+ * @link      https://github.com/Nevraxe/Cervo
+ * @since     5.0.0
  */
 
-
 namespace Cervo\Config;
-
 
 /**
  * Configuration manager for Cervo.
@@ -44,11 +27,6 @@ class BaseConfig
      * @var array
      */
     private $values = [];
-
-    public function __construct()
-    {
-
-    }
 
     /**
      * Set the value at the specified configuration path.
@@ -106,16 +84,16 @@ class BaseConfig
      * Usually used when importing.
      *
      * @param array $array
-     * @param array $current_path
+     * @param array $currentPath
      */
-    public function setFromArrayRecursive(array $array, array $current_path = [])
+    public function setFromArrayRecursive(array $array, array $currentPath = [])
     {
         foreach ($array as $key => $el) {
 
             if (is_array($el)) {
-                $this->setFromArrayRecursive($el, array_merge($current_path, [$key]));
+                $this->setFromArrayRecursive($el, array_merge($currentPath, [$key]));
             } else {
-                $this->set(array_merge($current_path, [$key]), $el);
+                $this->set(array_merge($currentPath, [$key]), $el);
             }
 
         }

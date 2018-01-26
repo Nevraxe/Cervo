@@ -28,6 +28,10 @@
     "php": "^7.1",
     "nikic/fast-route": "^1.2"
   },
+  "require-dev": {
+    "squizlabs/php_codesniffer": "@stable",
+    "phpmd/phpmd": "@stable"
+  },
   "autoload": {
     "psr-4": {
       "Cervo\\": "src"

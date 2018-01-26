@@ -1,36 +1,19 @@
 <?php
 
-
 /**
+ * This file is part of the Cervo package.
  *
- * Copyright (c) 2010-2018 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>. All rights reserved.
+ * Copyright (c) 2010-2018 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>.
  *
- * Redistribution and use in source and binary forms, with or without modification, are
- * permitted provided that the following conditions are met:
- *
- *   1. Redistributions of source code must retain the above copyright notice, this list of
- *       conditions and the following disclaimer.
- *
- *   2. Redistributions in binary form must reproduce the above copyright notice, this list
- *       of conditions and the following disclaimer in the documentation and/or other materials
- *       provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL NEVRAXE INC. & MARC ANDRÉ AUDET BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * @package   Cervo
+ * @author    Marc André Audet <maaudet@nevraxe.com>
+ * @copyright 2010 - 2018 Nevraxe inc. & Marc André Audet
+ * @license   See LICENSE.md  BSD-2-Clauses
+ * @link      https://github.com/Nevraxe/Cervo
+ * @since     5.0.0
  */
 
-
 namespace Cervo;
-
 
 /**
  * Modules manager for Cervo.
@@ -48,15 +31,15 @@ final class ModulesManager
      *
      * @return ModulesManager
      */
-    public function addPath(string $path) : self
+    public function addPath(string $path): self
     {
         $path = realpath($path);
-        $path_len = strlen($path);
+        $pathLen = strlen($path);
 
         foreach (glob($path . \DIRECTORY_SEPARATOR . '*', \GLOB_NOSORT | \GLOB_NOESCAPE) as $file) {
 
             if (is_dir($file)) {
-                $this->addVendor(substr($file, $path_len + 1), $file);
+                $this->addVendor(substr($file, $pathLen + 1), $file);
             }
 
         }
@@ -67,19 +50,19 @@ final class ModulesManager
     /**
      * Add a new path and extract the modules from it, using a default Vendor name.
      *
-     * @param string $vendor_name The Vendor name
+     * @param string $vendorName The Vendor name
      * @param string $path The path to the Modules directory
      *
      * @return ModulesManager
      */
-    public function addVendor(string $vendor_name, string $path) : self
+    public function addVendor(string $vendorName, string $path): self
     {
-        $path_len = strlen($path);
+        $pathLen = strlen($path);
 
         foreach (glob($path . \DIRECTORY_SEPARATOR . '*', \GLOB_NOSORT | \GLOB_NOESCAPE) as $file) {
 
             if (is_dir($file)) {
-                $this->addModule($vendor_name, substr($file, $path_len + 1), $file);
+                $this->addModule($vendorName, substr($file, $pathLen + 1), $file);
             }
 
         }
@@ -90,41 +73,41 @@ final class ModulesManager
     /**
      * Add a new path and extract the module, using a default Vendor and Module name.
      *
-     * @param string $vendor_name The Vendor name
-     * @param string $module_name The Module name
+     * @param string $vendorName The Vendor name
+     * @param string $moduleName The Module name
      * @param string $path The path to the Module's directory
      *
      * @return ModulesManager
      */
-    public function addModule(string $vendor_name, string $module_name, string $path) : self
+    public function addModule(string $vendorName, string $moduleName, string $path): self
     {
-        $this->vendors[$vendor_name][$module_name] = $path;
+        $this->vendors[$vendorName][$moduleName] = $path;
         return $this;
     }
 
     /**
      * Get an array of all the modules listed under a Vendor.
      *
-     * @param string $vendor_name The Vendor name
+     * @param string $vendorName The Vendor name
      *
      * @return array
      */
-    public function getVendorModules(string $vendor_name) : array
+    public function getVendorModules(string $vendorName): array
     {
-        return $this->vendors[$vendor_name];
+        return $this->vendors[$vendorName];
     }
 
     /**
      * Get the root path of a module.
      *
-     * @param string $vendor_name The Vendor's name
-     * @param string $module_name The Module's name
+     * @param string $vendorName The Vendor's name
+     * @param string $moduleName The Module's name
      *
      * @return null|string
      */
-    public function getModulePath(string $vendor_name, string $module_name) : ?string
+    public function getModulePath(string $vendorName, string $moduleName): ?string
     {
-        return $this->vendors[$vendor_name][$module_name];
+        return $this->vendors[$vendorName][$moduleName];
     }
 
     /**
@@ -136,11 +119,11 @@ final class ModulesManager
      *
      * @return \Generator
      */
-    public function getAllModules() : \Generator
+    public function getAllModules(): \Generator
     {
-        foreach ($this->vendors as $vendor_name => $modules) {
-            foreach ($modules as $module_name => $path) {
-                yield [$vendor_name, $module_name, $path];
+        foreach ($this->vendors as $vendorName => $modules) {
+            foreach ($modules as $moduleName => $path) {
+                yield [$vendorName, $moduleName, $path];
             }
         }
     }

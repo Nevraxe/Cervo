@@ -1,40 +1,22 @@
 <?php
 
-
 /**
+ * This file is part of the Cervo package.
  *
- * Copyright (c) 2010-2018 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>. All rights reserved.
+ * Copyright (c) 2010-2018 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>.
  *
- * Redistribution and use in source and binary forms, with or without modification, are
- * permitted provided that the following conditions are met:
- *
- *   1. Redistributions of source code must retain the above copyright notice, this list of
- *       conditions and the following disclaimer.
- *
- *   2. Redistributions in binary form must reproduce the above copyright notice, this list
- *       of conditions and the following disclaimer in the documentation and/or other materials
- *       provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL NEVRAXE INC. & MARC ANDRÉ AUDET BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * @package   Cervo
+ * @author    Marc André Audet <maaudet@nevraxe.com>
+ * @copyright 2010 - 2018 Nevraxe inc. & Marc André Audet
+ * @license   See LICENSE.md  BSD-2-Clauses
+ * @link      https://github.com/Nevraxe/Cervo
+ * @since     5.0.0
  */
-
 
 namespace Cervo;
 
-
 use Cervo\Interfaces\SingletonInterface;
 use Cervo\Utils\PathUtils;
-
 
 /**
  * Events manager for Cervo.
@@ -67,14 +49,11 @@ class Events implements SingletonInterface
      *
      * @param string $path Path to the module
      */
-    public function loadPath(string $path) : void
+    public function loadPath(string $path): void
     {
         if (file_exists($path . \DIRECTORY_SEPARATOR . 'Events')) {
 
-            foreach (
-                PathUtils::getRecursivePHPFilesIterator($path . \DIRECTORY_SEPARATOR . 'Events')
-                as $file
-            ) {
+            foreach (PathUtils::getRecursivePHPFilesIterator($path . \DIRECTORY_SEPARATOR . 'Events') as $file) {
 
                 $callback = require $file->getPathName();
 
@@ -94,7 +73,7 @@ class Events implements SingletonInterface
      *
      * @return bool
      */
-    public function register(string $name) : bool
+    public function register(string $name): bool
     {
         if ($this->isRegistered($name)) {
             return false;
@@ -112,7 +91,7 @@ class Events implements SingletonInterface
      *
      * @return bool
      */
-    public function isRegistered(string $name) : bool
+    public function isRegistered(string $name): bool
     {
         return isset($this->events[$name]);
     }
@@ -122,7 +101,7 @@ class Events implements SingletonInterface
      *
      * @param string $name The name of the event
      */
-    public function unregister(string $name) : void
+    public function unregister(string $name): void
     {
         unset($this->events[$name]);
     }
@@ -137,7 +116,7 @@ class Events implements SingletonInterface
      *
      * @return bool
      */
-    public function hook(string $name, callable $callback, int $priority = 0) : bool
+    public function hook(string $name, callable $callback, int $priority = 0): bool
     {
         if (!$this->isRegistered($name)) {
             $this->register($name);
@@ -159,7 +138,7 @@ class Events implements SingletonInterface
      *
      * @return bool
      */
-    public function fire(string $name, array $params = []) : bool
+    public function fire(string $name, array $params = []): bool
     {
         if (!is_array($params) || !$this->isRegistered($name)) {
             return false;
@@ -167,8 +146,8 @@ class Events implements SingletonInterface
 
         $this->inProgress = $name;
 
-        usort($this->events[$name], function ($a, $b) {
-            return $a['priority'] <=> $b['priority'];
+        usort($this->events[$name], function ($left, $right) {
+            return $left['priority'] <=> $right['priority'];
         });
 
         foreach ($this->events[$name] as $call) {
@@ -185,7 +164,7 @@ class Events implements SingletonInterface
      *
      * @return string|null
      */
-    public function getInProgress() : ?string
+    public function getInProgress(): ?string
     {
         return $this->inProgress;
     }
@@ -195,7 +174,7 @@ class Events implements SingletonInterface
      *
      * @return bool
      */
-    public function isInProgress() : bool
+    public function isInProgress(): bool
     {
         return $this->inProgress !== null;
     }

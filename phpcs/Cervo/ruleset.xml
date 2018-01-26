@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<ruleset name="Cervo">
+    <description>The coding standard for Cervo.</description>
+    <rule ref="PSR2">
+        <exclude name="Squiz.WhiteSpace.ControlStructureSpacing.SpacingAfterOpen"/>
+        <exclude name="Squiz.WhiteSpace.ControlStructureSpacing.SpacingBeforeClose"/>
+    </rule>
+</ruleset>

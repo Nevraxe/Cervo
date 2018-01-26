@@ -1,36 +1,19 @@
 <?php
 
-
 /**
+ * This file is part of the Cervo package.
  *
- * Copyright (c) 2010-2018 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>. All rights reserved.
+ * Copyright (c) 2010-2018 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>.
  *
- * Redistribution and use in source and binary forms, with or without modification, are
- * permitted provided that the following conditions are met:
- *
- *   1. Redistributions of source code must retain the above copyright notice, this list of
- *       conditions and the following disclaimer.
- *
- *   2. Redistributions in binary form must reproduce the above copyright notice, this list
- *       of conditions and the following disclaimer in the documentation and/or other materials
- *       provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL NEVRAXE INC. & MARC ANDRÉ AUDET BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * @package   Cervo
+ * @author    Marc André Audet <maaudet@nevraxe.com>
+ * @copyright 2010 - 2018 Nevraxe inc. & Marc André Audet
+ * @license   See LICENSE.md  BSD-2-Clauses
+ * @link      https://github.com/Nevraxe/Cervo
+ * @since     5.0.0
  */
 
-
 namespace Cervo;
-
 
 use Cervo\Exceptions\Router\InvalidMiddlewareException;
 use Cervo\Exceptions\Router\MethodNotAllowedException;
@@ -44,7 +27,6 @@ use FastRoute\RouteCollector;
 use FastRoute\RouteParser;
 use FastRoute\DataGenerator;
 use FastRoute\Dispatcher as Dispatcher;
-
 
 /**
  * Routes manager for Cervo.
@@ -85,14 +67,11 @@ class Router implements SingletonInterface
      *
      * @param string $path
      */
-    public function loadPath(string $path) : void
+    public function loadPath(string $path): void
     {
         if (file_exists($path . \DIRECTORY_SEPARATOR . 'Routes')) {
 
-            foreach (
-                PathUtils::getRecursivePHPFilesIterator($path . \DIRECTORY_SEPARATOR . 'Routes')
-                as $file
-            ) {
+            foreach (PathUtils::getRecursivePHPFilesIterator($path . \DIRECTORY_SEPARATOR . 'Routes') as $file) {
 
                 $callback = require $file->getPathName();
 
@@ -110,16 +89,16 @@ class Router implements SingletonInterface
      *
      * If the return value of the middleware is false, throws a RouteMiddlewareFailedException.
      *
-     * @param string $middleware_class The middleware to use
-     * @param string $method_name The method of the singleton to call
+     * @param string $middlewareClass The middleware to use
+     * @param string $methodName The method of the singleton to call
      * @param callable $func
      */
-    public function middleware(string $middleware_class, string $method_name, callable $func) : void
+    public function middleware(string $middlewareClass, string $methodName, callable $func): void
     {
         // It's easier to cache an array
         array_push($this->currentMiddlewares, [
-            'middleware_class' => $middleware_class,
-            'method' => $method_name
+            'middleware_class' => $middlewareClass,
+            'method' => $methodName
         ]);
 
         $func($this);
@@ -133,7 +112,7 @@ class Router implements SingletonInterface
      * @param string $prefix The prefix of the group.
      * @param callable $func
      */
-    public function group(string $prefix, callable $func) : void
+    public function group(string $prefix, callable $func): void
     {
         $previousGroupPrefix = $this->currentGroupPrefix;
         $this->currentGroupPrefix = $previousGroupPrefix . $prefix;
@@ -150,17 +129,17 @@ class Router implements SingletonInterface
      * @throws MethodNotAllowedException if the request method is not supported, but others are for this route.
      * @throws RouteNotFoundException if the requested route did not match any routes.
      */
-    public function dispatch() : Route
+    public function dispatch(): Route
     {
         $dispatcher = $this->getDispatcher();
 
         if (defined('STDIN')) {
-            $request_method = 'CLI';
+            $requestMethod = 'CLI';
         } else {
-            $request_method = $_SERVER['REQUEST_METHOD'];
+            $requestMethod = $_SERVER['REQUEST_METHOD'];
         }
 
-        $routeInfo = $dispatcher->dispatch($request_method, $this->detectUri());
+        $routeInfo = $dispatcher->dispatch($requestMethod, $this->detectUri());
 
         if ($routeInfo[0] === Dispatcher::FOUND) {
 
@@ -186,17 +165,18 @@ class Router implements SingletonInterface
     /**
      * Add a new route.
      *
-     * @param string|string[] $http_method The HTTP method, example: GET, HEAD, POST, PATCH, PUT, DELETE, CLI, etc. Can be an array of values.
+     * @param string|string[] $httpMethod The HTTP method, example: GET, HEAD, POST, PATCH, PUT, DELETE, CLI, etc.
+     *  Can be an array of values.
      * @param string $route The route
-     * @param string $controller_class The Controller's class
+     * @param string $controllerClass The Controller's class
      * @param array $parameters The parameters to pass
      */
-    public function addRoute($http_method, string $route, string $controller_class, array $parameters = []) : void
+    public function addRoute($httpMethod, string $route, string $controllerClass, array $parameters = []): void
     {
         $route = $this->currentGroupPrefix . $route;
 
-        $this->routeCollector->addRoute($http_method, $route, [
-            'controller_class' => $controller_class,
+        $this->routeCollector->addRoute($httpMethod, $route, [
+            'controller_class' => $controllerClass,
             'middlewares' => $this->currentMiddlewares,
             'parameters' => $parameters
         ]);
@@ -206,90 +186,90 @@ class Router implements SingletonInterface
      * Add a new route with GET as HTTP method.
      *
      * @param string $route The route
-     * @param string $controller_class The Controller's class
+     * @param string $controllerClass The Controller's class
      * @param array $parameters The parameters to pass
      */
-    public function get(string $route, string $controller_class, array $parameters = []) : void
+    public function get(string $route, string $controllerClass, array $parameters = []): void
     {
-        $this->addRoute('GET', $route, $controller_class, $parameters);
+        $this->addRoute('GET', $route, $controllerClass, $parameters);
     }
 
     /**
      * Add a new route with HEAD as HTTP method.
      *
      * @param string $route The route
-     * @param string $controller_class The Controller's class
+     * @param string $controllerClass The Controller's class
      * @param array $parameters The parameters to pass
      */
-    public function head(string $route, string $controller_class, array $parameters = []) : void
+    public function head(string $route, string $controllerClass, array $parameters = []): void
     {
-        $this->addRoute('HEAD', $route, $controller_class, $parameters);
+        $this->addRoute('HEAD', $route, $controllerClass, $parameters);
     }
 
     /**
      * Add a new route with POST as HTTP method.
      *
      * @param string $route The route
-     * @param string $controller_class The Controller's class
+     * @param string $controllerClass The Controller's class
      * @param array $parameters The parameters to pass
      */
-    public function post(string $route, string $controller_class, array $parameters = []) : void
+    public function post(string $route, string $controllerClass, array $parameters = []): void
     {
-        $this->addRoute('POST', $route, $controller_class, $parameters);
+        $this->addRoute('POST', $route, $controllerClass, $parameters);
     }
 
     /**
      * Add a new route with PUT as HTTP method.
      *
      * @param string $route The route
-     * @param string $controller_class The Controller's class
+     * @param string $controllerClass The Controller's class
      * @param array $parameters The parameters to pass
      */
-    public function put(string $route, string $controller_class, array $parameters = []) : void
+    public function put(string $route, string $controllerClass, array $parameters = []): void
     {
-        $this->addRoute('PUT', $route, $controller_class, $parameters);
+        $this->addRoute('PUT', $route, $controllerClass, $parameters);
     }
 
     /**
      * Add a new route with PATCH as HTTP method.
      *
      * @param string $route The route
-     * @param string $controller_class The Controller's class
+     * @param string $controllerClass The Controller's class
      * @param array $parameters The parameters to pass
      */
-    public function patch(string $route, string $controller_class, array $parameters = []) : void
+    public function patch(string $route, string $controllerClass, array $parameters = []): void
     {
-        $this->addRoute('PATCH', $route, $controller_class, $parameters);
+        $this->addRoute('PATCH', $route, $controllerClass, $parameters);
     }
 
     /**
      * Add a new route with DELETE as HTTP method.
      *
      * @param string $route The route
-     * @param string $controller_class The Controller's class
+     * @param string $controllerClass The Controller's class
      * @param array $parameters The parameters to pass
      */
-    public function delete(string $route, string $controller_class, array $parameters = []) : void
+    public function delete(string $route, string $controllerClass, array $parameters = []): void
     {
-        $this->addRoute('DELETE', $route, $controller_class, $parameters);
+        $this->addRoute('DELETE', $route, $controllerClass, $parameters);
     }
 
     /**
      * Add a new route with CLI as method.
      *
      * @param string $route The route
-     * @param string $controller_class The Controller's class
+     * @param string $controllerClass The Controller's class
      * @param array $parameters The parameters to pass
      */
-    public function cli(string $route, string $controller_class, array $parameters = []) : void
+    public function cli(string $route, string $controllerClass, array $parameters = []): void
     {
-        $this->addRoute('CLI', $route, $controller_class, $parameters);
+        $this->addRoute('CLI', $route, $controllerClass, $parameters);
     }
 
     /**
      * @return Dispatcher\GroupCountBased
      */
-    private function getDispatcher() : Dispatcher\GroupCountBased
+    private function getDispatcher(): Dispatcher\GroupCountBased
     {
         return new Dispatcher\GroupCountBased($this->routeCollector->getData());
     }
@@ -299,7 +279,7 @@ class Router implements SingletonInterface
      *
      * @return string
      */
-    private function detectUri() : string
+    private function detectUri(): string
     {
         if (php_sapi_name() == 'cli') {
             $args = array_slice($_SERVER['argv'], 1);
@@ -326,7 +306,7 @@ class Router implements SingletonInterface
      *
      * @return string
      */
-    private function getBaseUri() : string
+    private function getBaseUri(): string
     {
         $uri = $_SERVER['REQUEST_URI'];
 
@@ -353,11 +333,13 @@ class Router implements SingletonInterface
      * @throws RouteMiddlewareFailedException if a route middleware returned false.
      * @throws InvalidMiddlewareException if a middleware is invalid.
      */
-    private function handleMiddlewares(array $middlewares, Route $route) : void
+    private function handleMiddlewares(array $middlewares, Route $route): void
     {
         foreach ($middlewares as $middleware) {
 
-            if (is_array($middleware) && strlen($middleware['middleware_class']) > 0 && strlen($middleware['method']) > 0) {
+            if (is_array($middleware) &&
+                strlen($middleware['middleware_class']) > 0 &&
+                strlen($middleware['method']) > 0) {
 
                 if (!ClassUtils::implements($middleware['middleware_class'], MiddlewareInterface::class)) {
                     throw new InvalidMiddlewareException;
