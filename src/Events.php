@@ -33,6 +33,7 @@ namespace Cervo;
 
 
 use Cervo\Interfaces\SingletonInterface;
+use Cervo\Utils\PathUtils;
 
 
 /**

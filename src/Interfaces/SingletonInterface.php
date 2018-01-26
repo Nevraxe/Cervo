@@ -42,5 +42,10 @@ use Cervo\Context;
  */
 interface SingletonInterface
 {
+    /**
+     * SingletonInterface constructor.
+     *
+     * @param Context $context
+     */
     public function __construct(Context $context);
 }

@@ -34,6 +34,7 @@ namespace Cervo;
 
 use Cervo\Exceptions\ControllerReflection\InvalidControllerException;
 use Cervo\Interfaces\ControllerInterface;
+use Cervo\Utils\ClassUtils;
 
 
 /**
@@ -42,48 +43,69 @@ use Cervo\Interfaces\ControllerInterface;
  */
 final class ControllerReflection
 {
-    private $controller_class;
+    /** @var Context */
+    private $context;
+
+    /** @var Route */
+    private $route;
+
+    /** @var array */
     private $parameters = [];
 
+    /**
+     * ControllerReflection constructor.
+     *
+     * @param Context $context
+     * @param Route $route
+     */
     public function __construct(Context $context, Route $route)
     {
-        if (!is_subclass_of($route->getControllerClass(), ControllerInterface::class)) {
+        if (!ClassUtils::implements($route->getControllerClass(), ControllerInterface::class)) {
             throw new InvalidControllerException;
         }
 
-        $this->controller_class = $route->getControllerClass();
+        $this->context = $context;
+        $this->route = $route;
 
         try {
 
-            $reflection = new \ReflectionClass($this->controller_class);
+            $reflection = new \ReflectionClass($this->route->getControllerClass());
 
             foreach ($reflection->getConstructor()->getParameters() as $parameter) {
-
-                if ($parameter->getClass() === null) {
-
-                    if (!$parameter->isArray()) {
-                        $this->parameters[] = $parameter->isDefaultValueAvailable() ? $parameter->getDefaultValue() : null;
-                    } elseif ($parameter->getName() == 'parameters') {
-                        $this->parameters[] = $route->getParameters();
-                    } elseif ($parameter->getName() == 'arguments') {
-                        $this->parameters[] = $route->getArguments();
-                    } else {
-                        $this->parameters[] = $parameter->isDefaultValueAvailable() ? $parameter->getDefaultValue() : [];
-                    }
-
-                } else {
-                    $this->parameters[] = $context->getSingletons()->get($parameter->getClass()->getName());
-                }
-
+                $this->parameters[] = $this->getParameterValue($parameter);
             }
 
         } catch (\ReflectionException $e) {
-            // The contructor isn't defined
+            // The contructor isn't defined, so we ignore the exception and move on
         }
     }
 
     public function __invoke() : void
     {
-        (new $this->controller_class(...$this->parameters))();
+        $controller_class = $this->route->getControllerClass();
+        (new $controller_class(...$this->parameters))();
+    }
+
+    private function getParameterValue(\ReflectionParameter $parameter)
+    {
+        if ($parameter->getClass() === null) {
+
+            if ($parameter->isArray()) {
+
+                if ($parameter->getName() == 'parameters') {
+                    return $this->route->getParameters();
+                } elseif ($parameter->getName() == 'arguments') {
+                    return $this->route->getArguments();
+                } else {
+                    return $parameter->isDefaultValueAvailable() ? $parameter->getDefaultValue() : [];
+                }
+
+            } else {
+                return $parameter->isDefaultValueAvailable() ? $parameter->getDefaultValue() : null;
+            }
+
+        } else {
+            return $this->context->getSingletons()->get($parameter->getClass()->getName());
+        }
     }
 }

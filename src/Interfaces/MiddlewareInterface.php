@@ -42,7 +42,19 @@ use Cervo\Route;
  */
 interface MiddlewareInterface
 {
+    /**
+     * MiddlewareInterface constructor.
+     *
+     * @param Route $route
+     */
     public function __construct(Route $route);
 
+    /**
+     * Called when checking against the Middleware in the Router
+     * Return true to keep the request going
+     * Return false to stop the Router and return an error
+     *
+     * @return bool
+     */
     public function __invoke() : bool;
 }

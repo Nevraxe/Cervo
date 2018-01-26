@@ -42,7 +42,17 @@ use Cervo\Context;
  */
 interface ProviderInterface
 {
+    /**
+     * ProviderInterface constructor.
+     *
+     * @param Context $context
+     */
     public function __construct(Context $context);
 
+    /**
+     * Called when registered within Cervo's Context
+     *
+     * @return void
+     */
     public function __invoke() : void;
 }

@@ -29,53 +29,33 @@
  */
 
 
-namespace Cervo;
-
-
-use Cervo\Config\BaseConfig;
+namespace Cervo\Utils;
 
 
 /**
- * Core class for Cervo.
+ * Cervo provider interface.
  *
  * @author Marc André Audet <maudet@nevraxe.com>
  */
-final class Core
+final class ClassUtils
 {
-    private $context = null;
-
-    public function __construct(?BaseConfig $config = null) {
-        $this->context = new Context($config);
-    }
-
-    public function init()
+    /**
+     * Verify if a Class implement an Interface.
+     *
+     * @param string $class The name of the Class that implements the Interface
+     * @param string $interface The Interface to check against
+     *
+     * @return bool
+     */
+    public static function implements(string $class, string $interface) : bool
     {
-        /** @var Events $events */
-        $events = $this->context->getSingletons()->get(Events::class);
+        try {
 
-        /** @var Router $router */
-        $router = $this->context->getSingletons()->get(Router::class);
+            $reflection = new \ReflectionClass($class);
+            return $reflection->implementsInterface($interface);
 
-        foreach ($this->context->getModulesManager()->getAllModules() as [$vendor_name, $module_name, $path]) {
-            $events->loadPath($path);
-            $router->loadPath($path);
+        } catch (\ReflectionException $e) {
+            return false;
         }
-
-        $events->fire('Cervo/System/Before');
-
-        $route = $router->dispatch();
-
-        if ($route instanceof Route) {
-            $events->fire('Cervo/Route/Before');
-            (new ControllerReflection($this->context, $route))();
-            $events->fire('Cervo/Route/After');
-        }
-
-        $events->fire('Cervo/System/After');
-    }
-
-    public function getContext()
-    {
-        return $this->context;
     }
 }

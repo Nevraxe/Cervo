@@ -38,6 +38,8 @@ use Cervo\Exceptions\Router\RouteMiddlewareFailedException;
 use Cervo\Exceptions\Router\RouteNotFoundException;
 use Cervo\Interfaces\MiddlewareInterface;
 use Cervo\Interfaces\SingletonInterface;
+use Cervo\Utils\ClassUtils;
+use Cervo\Utils\PathUtils;
 use FastRoute\RouteCollector;
 use FastRoute\RouteParser;
 use FastRoute\DataGenerator;
@@ -157,9 +159,6 @@ class Router implements SingletonInterface
         } else {
             $request_method = $_SERVER['REQUEST_METHOD'];
         }
-
-        // TODO: Support HEAD call
-        // TODO: Support OPTIONS call
 
         $routeInfo = $dispatcher->dispatch($request_method, $this->detectUri());
 
@@ -360,7 +359,7 @@ class Router implements SingletonInterface
 
             if (is_array($middleware) && strlen($middleware['middleware_class']) > 0 && strlen($middleware['method']) > 0) {
 
-                if (!is_subclass_of($middleware['middleware_class'], MiddlewareInterface::class)) {
+                if (!ClassUtils::implements($middleware['middleware_class'], MiddlewareInterface::class)) {
                     throw new InvalidMiddlewareException;
                 }
 

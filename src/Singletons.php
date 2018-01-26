@@ -34,6 +34,7 @@ namespace Cervo;
 
 use Cervo\Exceptions\Singletons\InvalidClassException;
 use Cervo\Interfaces\SingletonInterface;
+use Cervo\Utils\ClassUtils;
 
 
 /**
@@ -58,7 +59,7 @@ final class Singletons
             return $this->objects[$class_name];
         }
 
-        if (!is_subclass_of($class_name, SingletonInterface::class)) {
+        if (!ClassUtils::implements($class_name, SingletonInterface::class)) {
             throw new InvalidClassException();
         }
 

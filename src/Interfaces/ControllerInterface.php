@@ -39,5 +39,10 @@ namespace Cervo\Interfaces;
  */
 interface ControllerInterface
 {
+    /**
+     * This function is executed from Cervo when the class matches the Route
+     *
+     * @return void
+     */
     public function __invoke() : void;
 }

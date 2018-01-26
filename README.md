@@ -30,10 +30,8 @@ Installing
 
 Using composer
 
-```json
-"require": {
-    "nevraxe/cervo": "^5.0"
-}
+```bash
+php composer.phar require nevraxe/cervo:^5.0
 ```
 
 

@@ -35,6 +35,7 @@ namespace Cervo;
 use Cervo\Config\BaseConfig;
 use Cervo\Exceptions\Router\InvalidProviderException;
 use Cervo\Interfaces\ProviderInterface;
+use Cervo\Utils\ClassUtils;
 
 
 /**
@@ -73,11 +74,11 @@ final class Context
      */
     public function register(string $provider_class) : self
     {
-        if (!is_subclass_of($provider_class, ProviderInterface::class)) {
+        if (!ClassUtils::implements($provider_class, ProviderInterface::class)) {
             throw new InvalidProviderException;
         }
 
-        (new $provider_class)($this)();
+        (new $provider_class($this))();
 
         return $this;
     }
