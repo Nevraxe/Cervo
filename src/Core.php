@@ -44,7 +44,8 @@ final class Core
 {
     private $context = null;
 
-    public function __construct(?BaseConfig $config = null) {
+    public function __construct(?BaseConfig $config = null)
+    {
         $this->context = new Context($config);
     }
 

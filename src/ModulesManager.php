@@ -53,7 +53,7 @@ final class ModulesManager
         $path = realpath($path);
         $path_len = strlen($path);
 
-        foreach (glob($path. \DIRECTORY_SEPARATOR . '*', \GLOB_NOSORT | \GLOB_NOESCAPE) as $file) {
+        foreach (glob($path . \DIRECTORY_SEPARATOR . '*', \GLOB_NOSORT | \GLOB_NOESCAPE) as $file) {
 
             if (is_dir($file)) {
                 $this->addVendor(substr($file, $path_len + 1), $file);
@@ -76,7 +76,7 @@ final class ModulesManager
     {
         $path_len = strlen($path);
 
-        foreach (glob($path. \DIRECTORY_SEPARATOR . '*', \GLOB_NOSORT | \GLOB_NOESCAPE) as $file) {
+        foreach (glob($path . \DIRECTORY_SEPARATOR . '*', \GLOB_NOSORT | \GLOB_NOESCAPE) as $file) {
 
             if (is_dir($file)) {
                 $this->addModule($vendor_name, substr($file, $path_len + 1), $file);
