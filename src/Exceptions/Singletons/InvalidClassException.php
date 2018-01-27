@@ -13,6 +13,8 @@
  * @since     5.0.0
  */
 
+declare(strict_types=1);
+
 namespace Cervo\Exceptions\Singletons;
 
 use Cervo\Exceptions\SingletonException;

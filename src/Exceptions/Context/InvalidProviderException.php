@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * This file is part of the Cervo package.
  *
@@ -14,6 +12,8 @@ declare(strict_types=1);
  * @link      https://github.com/Nevraxe/Cervo
  * @since     5.0.0
  */
+
+declare(strict_types=1);
 
 namespace Cervo\Exceptions\Router;
 
