@@ -18,6 +18,8 @@ declare(strict_types=1);
 namespace Cervo;
 
 use Cervo\Config\BaseConfig;
+use Cervo\Exceptions\ControllerReflection\AlreadyInitialisedException;
+
 
 /**
  * Core class for Cervo.
@@ -26,39 +28,21 @@ use Cervo\Config\BaseConfig;
  */
 final class Core
 {
-    private $context = null;
+    private static $isInit = false;
+    private static $context = null;
 
-    public function __construct(?BaseConfig $config = null)
+    public static function init(?BaseConfig $config = null)
     {
-        $this->context = new Context($config);
-    }
-
-    public function init()
-    {
-        /** @var Events $events */
-        $events = $this->context->getSingletons()->get(Events::class);
-
-        /** @var Router $router */
-        $router = $this->context->getSingletons()->get(Router::class);
-
-        foreach ($this->context->getModulesManager()->getAllModules() as [$vendor_name, $module_name, $path]) {
-            $events->loadPath($path);
-            $router->loadPath($path);
+        if (self::$isInit === true) {
+            throw new AlreadyInitialisedException;
         }
 
-        $events->fire('Cervo/System/Before');
-
-        $route = $router->dispatch();
-
-        $events->fire('Cervo/Route/Before');
-        (new ControllerReflection($this->context, $route))();
-        $events->fire('Cervo/Route/After');
-
-        $events->fire('Cervo/System/After');
+        self::$isInit = true;
+        self::$context = new Context($config);
     }
 
-    public function getContext()
+    public static function getContext()
     {
-        return $this->context;
+        return self::$context;
     }
 }

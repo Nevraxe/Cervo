@@ -67,6 +67,32 @@ final class Context
         return $this;
     }
 
+    public function route(): self
+    {
+        /** @var Events $events */
+        $events = $this->getSingletons()->get(Events::class);
+
+        /** @var Router $router */
+        $router = $this->getSingletons()->get(Router::class);
+
+        foreach ($this->getModulesManager()->getAllModules() as [$vendor_name, $module_name, $path]) {
+            $events->loadPath($path);
+            $router->loadPath($path);
+        }
+
+        $events->fire('Cervo/System/Before');
+
+        $route = $router->dispatch();
+
+        $events->fire('Cervo/Route/Before');
+        (new ControllerReflection($this, $route))();
+        $events->fire('Cervo/Route/After');
+
+        $events->fire('Cervo/System/After');
+
+        return $this;
+    }
+
     public function getConfig(): BaseConfig
     {
         return $this->config;
