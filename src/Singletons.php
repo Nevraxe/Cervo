@@ -37,16 +37,25 @@ final class Singletons
         $this->context = $context;
     }
 
-    public function get(string $className): SingletonInterface
+    /**
+     * Fetch an object from the Singletons registry, or instantialise it.
+     *
+     * @param string $className The name of the class to get as Singleton
+     *
+     * @return SingletonInterface|Context
+     */
+    public function get(string $className)
     {
         if (is_object($this->objects[$className])) {
             return $this->objects[$className];
         }
 
-        if (!ClassUtils::implements($className, SingletonInterface::class)) {
+        if (ClassUtils::implements($className, SingletonInterface::class)) {
+            return ($this->objects[$className] = new $className($this->context));
+        } elseif ($className == Context::class) {
+            return $this->context;
+        } else {
             throw new InvalidClassException();
         }
-
-        return ($this->objects[$className] = new $className($this->context));
     }
 }
