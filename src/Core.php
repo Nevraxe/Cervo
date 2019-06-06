@@ -34,18 +34,18 @@ final class Core
     /** @var Context|null */
     private $context = null;
 
-    /** @var Core|null */
-    private static $core = null;
+    /** @var Context|null */
+    private static $global_context = null;
 
     public function __construct(?BaseConfig $config = null)
     {
         $this->context = new Context($config);
-        self::$core = $this;
+        self::$global_context = $this->context;
     }
 
-    public static function get(): ?Core
+    public static function get(): ?Context
     {
-        return self::$core;
+        return self::$global_context;
     }
 
     public function start()
