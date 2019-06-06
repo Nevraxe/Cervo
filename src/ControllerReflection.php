@@ -3,12 +3,12 @@
 /**
  * This file is part of the Cervo package.
  *
- * Copyright (c) 2010-2018 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>.
+ * Copyright (c) 2010-2019 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>.
  *
  * @package   Cervo
  * @author    Marc André Audet <maaudet@nevraxe.com>
- * @copyright 2010 - 2018 Nevraxe inc. & Marc André Audet
- * @license   See LICENSE.md  BSD-2-Clauses
+ * @copyright 2010 - 2019 Nevraxe inc. & Marc André Audet
+ * @license   See LICENSE.md  MIT
  * @link      https://github.com/Nevraxe/Cervo
  * @since     5.0.0
  */
@@ -52,15 +52,15 @@ final class ControllerReflection
         $this->route = $route;
 
         try {
-
             $reflection = new \ReflectionClass($this->route->getControllerClass());
-
-            foreach ($reflection->getConstructor()->getParameters() as $parameter) {
-                $this->parameters[] = $this->getParameterValue($parameter);
-            }
-
         } catch (\ReflectionException $e) {
+            // TODO: Log
             // The contructor isn't defined, so we ignore the exception and move on
+            return;
+        }
+
+        foreach ($reflection->getConstructor()->getParameters() as $parameter) {
+            $this->parameters[] = $this->getParameterValue($parameter);
         }
     }
 
@@ -72,7 +72,14 @@ final class ControllerReflection
 
     private function getParameterValue(\ReflectionParameter $parameter)
     {
-        if ($parameter->getClass() === null) {
+        try {
+            $class = $parameter->getClass();
+        } catch (\ReflectionException $e) {
+            // TODO: Log
+            return null;
+        }
+
+        if ($class === null) {
 
             if ($parameter->isArray()) {
 
@@ -81,13 +88,29 @@ final class ControllerReflection
                 } elseif ($parameter->name == 'arguments') {
                     return $this->route->getArguments();
                 } else {
-                    return $parameter->isDefaultValueAvailable() ? $parameter->getDefaultValue() : [];
+
+                    try {
+                        return $parameter->isDefaultValueAvailable() ? $parameter->getDefaultValue() : [];
+                    } catch (\ReflectionException $e) {
+                        // TODO: Log
+                        return [];
+                    }
+
                 }
 
             } else {
-                return $parameter->isDefaultValueAvailable() ? $parameter->getDefaultValue() : null;
+
+                try {
+                    return $parameter->isDefaultValueAvailable() ? $parameter->getDefaultValue() : null;
+                } catch (\ReflectionException $e) {
+                    // TODO: Log
+                    return null;
+                }
+
             }
 
+        } elseif ($parameter->getClass()->name == Context::class) {
+            return $this->context;
         } else {
             return $this->context->getSingletons()->get($parameter->getClass()->name);
         }

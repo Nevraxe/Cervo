@@ -19,7 +19,7 @@ namespace Cervo\Exceptions\Router;
 
 use Cervo\Exceptions\RouterException;
 
-class MethodNotAllowedException extends RouterException
+class InvalidRouterCacheException extends RouterException
 {
 
 }

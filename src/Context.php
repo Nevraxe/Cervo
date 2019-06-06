@@ -3,12 +3,12 @@
 /**
  * This file is part of the Cervo package.
  *
- * Copyright (c) 2010-2018 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>.
+ * Copyright (c) 2010-2019 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>.
  *
  * @package   Cervo
  * @author    Marc André Audet <maaudet@nevraxe.com>
- * @copyright 2010 - 2018 Nevraxe inc. & Marc André Audet
- * @license   See LICENSE.md  BSD-2-Clauses
+ * @copyright 2010 - 2019 Nevraxe inc. & Marc André Audet
+ * @license   See LICENSE.md  MIT
  * @link      https://github.com/Nevraxe/Cervo
  * @since     5.0.0
  */
@@ -30,7 +30,6 @@ use Cervo\Utils\ClassUtils;
 final class Context
 {
     private $config;
-    private $autoloader;
     private $modulesManager;
     private $singletons;
 
@@ -39,14 +38,13 @@ final class Context
      *
      * @param BaseConfig|null $config
      */
-    public function __construct(
-        ?BaseConfig $config = null
-    ) {
+    public function __construct(?BaseConfig $config = null) {
+
         $this->config = $config ?? new BaseConfig();
 
         $this->modulesManager = new ModulesManager();
-        $this->autoloader = new Autoloader($this);
         $this->singletons = new Singletons($this);
+
     }
 
     /**
@@ -67,32 +65,6 @@ final class Context
         return $this;
     }
 
-    public function route(): self
-    {
-        /** @var Events $events */
-        $events = $this->getSingletons()->get(Events::class);
-
-        /** @var Router $router */
-        $router = $this->getSingletons()->get(Router::class);
-
-        foreach ($this->getModulesManager()->getAllModules() as [$vendor_name, $module_name, $path]) {
-            $events->loadPath($path);
-            $router->loadPath($path);
-        }
-
-        $events->fire('Cervo/System/Before');
-
-        $route = $router->dispatch();
-
-        $events->fire('Cervo/Route/Before');
-        (new ControllerReflection($this, $route))();
-        $events->fire('Cervo/Route/After');
-
-        $events->fire('Cervo/System/After');
-
-        return $this;
-    }
-
     public function getConfig(): BaseConfig
     {
         return $this->config;
@@ -101,11 +73,6 @@ final class Context
     public function getModulesManager(): ModulesManager
     {
         return $this->modulesManager;
-    }
-
-    public function getAutoloader(): Autoloader
-    {
-        return $this->autoloader;
     }
 
     public function getSingletons(): Singletons

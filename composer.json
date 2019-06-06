@@ -8,7 +8,7 @@
     "Cervo"
   ],
   "homepage": "https://github.com/Nevraxe/Cervo",
-  "license": "BSD-2-Clause",
+  "license": "MIT",
   "authors": [
     {
       "name": "Nevraxe inc.",
@@ -18,7 +18,7 @@
     {
       "name": "Marc André Audet",
       "email": "maudet@nevraxe.com",
-      "homepage": "https://blog.manhim.net"
+      "homepage": "https://blog.maaudet.ca"
     }
   ],
   "support": {
@@ -26,11 +26,11 @@
   },
   "require": {
     "php": "^7.1",
-    "nikic/fast-route": "^1.2"
+    "nikic/fast-route": "^1.3",
+    "ext-json": "*"
   },
   "require-dev": {
-    "squizlabs/php_codesniffer": "@stable",
-    "phpmd/phpmd": "@stable"
+    "squizlabs/php_codesniffer": "@stable"
   },
   "autoload": {
     "psr-4": {

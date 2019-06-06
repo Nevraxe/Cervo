@@ -3,12 +3,12 @@
 /**
  * This file is part of the Cervo package.
  *
- * Copyright (c) 2010-2018 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>.
+ * Copyright (c) 2010-2019 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>.
  *
  * @package   Cervo
  * @author    Marc André Audet <maaudet@nevraxe.com>
- * @copyright 2010 - 2018 Nevraxe inc. & Marc André Audet
- * @license   See LICENSE.md  BSD-2-Clauses
+ * @copyright 2010 - 2019 Nevraxe inc. & Marc André Audet
+ * @license   See LICENSE.md  MIT
  * @link      https://github.com/Nevraxe/Cervo
  * @since     5.0.0
  */
@@ -70,7 +70,7 @@ class BaseConfig
 
         foreach (explode('/', $name) as $key) {
 
-            if ($current[$key]) {
+            if (isset($current[$key])) {
                 $current = &$current[$key];
             } else {
                 return null;

@@ -3,12 +3,12 @@
 /**
  * This file is part of the Cervo package.
  *
- * Copyright (c) 2010-2018 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>.
+ * Copyright (c) 2010-2019 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>.
  *
  * @package   Cervo
  * @author    Marc André Audet <maaudet@nevraxe.com>
- * @copyright 2010 - 2018 Nevraxe inc. & Marc André Audet
- * @license   See LICENSE.md  BSD-2-Clauses
+ * @copyright 2010 - 2019 Nevraxe inc. & Marc André Audet
+ * @license   See LICENSE.md  MIT
  * @link      https://github.com/Nevraxe/Cervo
  * @since     5.0.0
  */
@@ -46,16 +46,14 @@ final class Singletons
      */
     public function get(string $className)
     {
-        if (is_object($this->objects[$className])) {
+        if (isset($this->objects[$className]) && is_object($this->objects[$className])) {
             return $this->objects[$className];
         }
 
-        if (ClassUtils::implements($className, SingletonInterface::class)) {
-            return ($this->objects[$className] = new $className($this->context));
-        } elseif ($className == Context::class) {
-            return $this->context;
-        } else {
+        if (!ClassUtils::implements($className, SingletonInterface::class)) {
             throw new InvalidClassException();
         }
+
+        return ($this->objects[$className] = new $className($this->context));
     }
 }

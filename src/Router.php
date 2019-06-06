@@ -3,12 +3,12 @@
 /**
  * This file is part of the Cervo package.
  *
- * Copyright (c) 2010-2018 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>.
+ * Copyright (c) 2010-2019 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>.
  *
  * @package   Cervo
  * @author    Marc André Audet <maaudet@nevraxe.com>
- * @copyright 2010 - 2018 Nevraxe inc. & Marc André Audet
- * @license   See LICENSE.md  BSD-2-Clauses
+ * @copyright 2010 - 2019 Nevraxe inc. & Marc André Audet
+ * @license   See LICENSE.md  MIT
  * @link      https://github.com/Nevraxe/Cervo
  * @since     5.0.0
  */
@@ -17,7 +17,9 @@ declare(strict_types=1);
 
 namespace Cervo;
 
+use Cervo\Exceptions\ConfigurationNotFoundException;
 use Cervo\Exceptions\Router\InvalidMiddlewareException;
+use Cervo\Exceptions\Router\InvalidRouterCacheException;
 use Cervo\Exceptions\Router\MethodNotAllowedException;
 use Cervo\Exceptions\Router\RouteMiddlewareFailedException;
 use Cervo\Exceptions\Router\RouteNotFoundException;
@@ -37,6 +39,8 @@ use FastRoute\Dispatcher as Dispatcher;
  */
 class Router implements SingletonInterface
 {
+    const CACHE_FILE_NAME = 'router.cache.php';
+
     /** @var RouteCollector FastRoute, null if usingCache is set */
     private $routeCollector = null;
 
@@ -48,6 +52,9 @@ class Router implements SingletonInterface
 
     /** @var Context The current context */
     private $context;
+
+    /** @var string The path to the router cache file */
+    private $cacheFilePath;
 
     /**
      * Router constructor.
@@ -62,6 +69,15 @@ class Router implements SingletonInterface
         );
 
         $this->context = $context;
+
+        $root_dir = $this->context->getConfig()->get('app/root_dir');
+        $cache_dir = $this->context->getConfig()->get('app/cache_dir') ?? 'var' . DIRECTORY_SEPARATOR . 'cache';
+
+        if (!$root_dir || strlen($root_dir) <= 0) {
+            throw new ConfigurationNotFoundException('app/root_dir');
+        }
+
+        $this->cacheFilePath = $root_dir . DIRECTORY_SEPARATOR . $cache_dir . DIRECTORY_SEPARATOR . self::CACHE_FILE_NAME;
     }
 
     /**
@@ -92,16 +108,11 @@ class Router implements SingletonInterface
      * If the return value of the middleware is false, throws a RouteMiddlewareFailedException.
      *
      * @param string $middlewareClass The middleware to use
-     * @param string $methodName The method of the singleton to call
      * @param callable $func
      */
-    public function middleware(string $middlewareClass, string $methodName, callable $func): void
+    public function middleware(string $middlewareClass, callable $func): void
     {
-        // It's easier to cache an array
-        array_push($this->currentMiddlewares, [
-            'middleware_class' => $middlewareClass,
-            'method' => $methodName
-        ]);
+        array_push($this->currentMiddlewares, $middlewareClass);
 
         $func($this);
 
@@ -158,7 +169,7 @@ class Router implements SingletonInterface
             return $route;
 
         } elseif ($routeInfo[0] === Dispatcher::METHOD_NOT_ALLOWED) {
-            throw new MethodNotAllowedException($routeInfo[1]);
+            throw new MethodNotAllowedException;
         } else {
             throw new RouteNotFoundException;
         }
@@ -175,6 +186,10 @@ class Router implements SingletonInterface
      */
     public function addRoute($httpMethod, string $route, string $controllerClass, array $parameters = []): void
     {
+        if ($this->context->getConfig()->get('app/production') == true && file_exists($this->cacheFilePath)) {
+            return;
+        }
+
         $route = $this->currentGroupPrefix . $route;
 
         $this->routeCollector->addRoute($httpMethod, $route, [
@@ -269,11 +284,63 @@ class Router implements SingletonInterface
     }
 
     /**
+     * Force the generation of the cache file. Delete the current cache file if it exists.
+     */
+    public function forceGenerateCache() : bool
+    {
+        if (file_exists($this->cacheFilePath) && !unlink($this->cacheFilePath)) {
+            return false;
+        }
+
+        return $this->generateCache($this->routeCollector->getData());
+    }
+
+    /**
+     * @param array $dispatchData
+     *
+     * @return bool
+     */
+    private function generateCache(array $dispatchData) : bool
+    {
+        $dir = dirname($this->cacheFilePath);
+
+        if (!file_exists($this->cacheFilePath) && is_dir($dir) && is_writable($dir)) {
+
+            return file_put_contents(
+                $this->cacheFilePath,
+                '<?php return ' . var_export($dispatchData, true) . ';' . PHP_EOL,
+                LOCK_EX
+            ) !== false;
+
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * @return Dispatcher\GroupCountBased
      */
     private function getDispatcher(): Dispatcher\GroupCountBased
     {
-        return new Dispatcher\GroupCountBased($this->routeCollector->getData());
+        $dispatchData = null;
+
+        if ($this->context->getConfig()->get('app/production') == true && file_exists($this->cacheFilePath)) {
+
+            if (!is_array($dispatchData = require $this->cacheFilePath)) {
+                throw new InvalidRouterCacheException;
+            }
+
+        } else {
+
+            $dispatchData = $this->routeCollector->getData();
+
+            if ($this->context->getConfig()->get('app/production') == true) {
+                $this->generateCache($dispatchData);
+            }
+
+        }
+
+        return new Dispatcher\GroupCountBased($dispatchData);
     }
 
     /**
@@ -339,15 +406,13 @@ class Router implements SingletonInterface
     {
         foreach ($middlewares as $middleware) {
 
-            if (is_array($middleware) &&
-                strlen($middleware['middleware_class']) > 0 &&
-                strlen($middleware['method']) > 0) {
+            if (strlen($middleware) > 0) {
 
-                if (!ClassUtils::implements($middleware['middleware_class'], MiddlewareInterface::class)) {
+                if (!ClassUtils::implements($middleware, MiddlewareInterface::class)) {
                     throw new InvalidMiddlewareException;
                 }
 
-                if (!(new $middleware['middleware_class'])($route)()) {
+                if (!(new $middleware)($route)()) {
                     throw new RouteMiddlewareFailedException;
                 }
 

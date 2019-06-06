@@ -15,11 +15,15 @@
 
 declare(strict_types=1);
 
-namespace Cervo\Exceptions\Router;
+namespace Cervo\Exceptions;
 
-use Cervo\Exceptions\RouterException;
+use Throwable;
 
-class MethodNotAllowedException extends RouterException
+
+class ConfigurationNotFoundException extends \RuntimeException
 {
-
+    public function __construct($configuration_name, $code = 0, Throwable $previous = null)
+    {
+        parent::__construct('Failed to fetch a required configuration: ' . $configuration_name, $code, $previous);
+    }
 }
