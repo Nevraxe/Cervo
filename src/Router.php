@@ -56,6 +56,9 @@ class Router implements SingletonInterface
     /** @var string The path to the router cache file */
     private $cacheFilePath;
 
+    /** @var bool Wheter the cache currently exists */
+    private $cacheExists = false;
+
     /**
      * Router constructor.
      *
@@ -78,6 +81,10 @@ class Router implements SingletonInterface
         }
 
         $this->cacheFilePath = $root_dir . DIRECTORY_SEPARATOR . $cache_dir . DIRECTORY_SEPARATOR . self::CACHE_FILE_NAME;
+
+        if ($this->context->getConfig()->get('app/production') == true && file_exists($this->cacheFilePath)) {
+            $this->cacheExists = true;
+        }
     }
 
     /**
@@ -87,6 +94,10 @@ class Router implements SingletonInterface
      */
     public function loadPath(string $path): void
     {
+        if ($this->cacheExists) {
+            return;
+        }
+
         if (file_exists($path . \DIRECTORY_SEPARATOR . 'Routes')) {
 
             foreach (PathUtils::getRecursivePHPFilesIterator($path . \DIRECTORY_SEPARATOR . 'Routes') as $file) {
@@ -107,10 +118,10 @@ class Router implements SingletonInterface
      *
      * If the return value of the middleware is false, throws a RouteMiddlewareFailedException.
      *
-     * @param string $middlewareClass The middleware to use
+     * @param string[]|string $middlewareClass The middleware to use
      * @param callable $func
      */
-    public function middleware(string $middlewareClass, callable $func): void
+    public function middleware($middlewareClass, callable $func): void
     {
         array_push($this->currentMiddlewares, $middlewareClass);
 
@@ -124,13 +135,18 @@ class Router implements SingletonInterface
      *
      * @param string $prefix The prefix of the group.
      * @param callable $func
+     * @param array|string $middlewareClass string[] or string representing middleware(s) class(es)
      */
-    public function group(string $prefix, callable $func): void
+    public function group(string $prefix, callable $func, $middlewareClass = null): void
     {
         $previousGroupPrefix = $this->currentGroupPrefix;
         $this->currentGroupPrefix = $previousGroupPrefix . $prefix;
 
-        $func($this);
+        if (is_array($middlewareClass) || is_string($middlewareClass)) {
+            $this->middleware($middlewareClass, $func);
+        } else {
+            $func($this);
+        }
 
         $this->currentGroupPrefix = $previousGroupPrefix;
     }
@@ -186,7 +202,7 @@ class Router implements SingletonInterface
      */
     public function addRoute($httpMethod, string $route, string $controllerClass, array $parameters = []): void
     {
-        if ($this->context->getConfig()->get('app/production') == true && file_exists($this->cacheFilePath)) {
+        if ($this->cacheExists) {
             return;
         }
 
@@ -284,18 +300,6 @@ class Router implements SingletonInterface
     }
 
     /**
-     * Force the generation of the cache file. Delete the current cache file if it exists.
-     */
-    public function forceGenerateCache() : bool
-    {
-        if (file_exists($this->cacheFilePath) && !unlink($this->cacheFilePath)) {
-            return false;
-        }
-
-        return $this->generateCache($this->routeCollector->getData());
-    }
-
-    /**
      * @param array $dispatchData
      *
      * @return bool
@@ -324,7 +328,7 @@ class Router implements SingletonInterface
     {
         $dispatchData = null;
 
-        if ($this->context->getConfig()->get('app/production') == true && file_exists($this->cacheFilePath)) {
+        if ($this->cacheExists) {
 
             if (!is_array($dispatchData = require $this->cacheFilePath)) {
                 throw new InvalidRouterCacheException;
@@ -406,7 +410,11 @@ class Router implements SingletonInterface
     {
         foreach ($middlewares as $middleware) {
 
-            if (strlen($middleware) > 0) {
+            if (is_array($middleware)) {
+
+                $this->handleMiddlewares($middleware, $route);
+
+            } elseif (is_string($middleware) && strlen($middleware) > 0) {
 
                 if (!ClassUtils::implements($middleware, MiddlewareInterface::class)) {
                     throw new InvalidMiddlewareException;

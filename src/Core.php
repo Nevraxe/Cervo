@@ -56,26 +56,14 @@ final class Core
 
         $this->isInit = true;
 
-        /** @var Events $events */
-        $events = $this->getContext()->getSingletons()->get(Events::class);
-
         /** @var Router $router */
         $router = $this->getContext()->getSingletons()->get(Router::class);
 
         foreach ($this->getContext()->getModulesManager()->getAllModules() as [$vendor_name, $module_name, $path]) {
-            $events->loadPath($path);
             $router->loadPath($path);
         }
 
-        $events->fire('Cervo/System/Before');
-
-        $route = $router->dispatch();
-
-        $events->fire('Cervo/Route/Before');
-        (new ControllerReflection($this->getContext(), $route))();
-        $events->fire('Cervo/Route/After');
-
-        $events->fire('Cervo/System/After');
+        (new ControllerReflection($this->getContext(), $router->dispatch()))();
     }
 
     public function getContext(): ?Context
