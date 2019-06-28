@@ -17,6 +17,10 @@ declare(strict_types=1);
 
 namespace Cervo\Utils;
 
+use ReflectionClass;
+use ReflectionException;
+
+
 /**
  * Cervo provider interface.
  *
@@ -36,10 +40,10 @@ final class ClassUtils
     {
         try {
 
-            $reflection = new \ReflectionClass($class);
+            $reflection = new ReflectionClass($class);
             return $reflection->implementsInterface($interface);
 
-        } catch (\ReflectionException $e) {
+        } catch (ReflectionException $e) {
             return false;
         }
     }

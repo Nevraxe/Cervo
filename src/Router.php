@@ -330,6 +330,7 @@ class Router implements SingletonInterface
 
         if ($this->cacheExists) {
 
+            /** @noinspection PhpIncludeInspection */
             if (!is_array($dispatchData = require $this->cacheFilePath)) {
                 throw new InvalidRouterCacheException;
             }
@@ -409,7 +410,6 @@ class Router implements SingletonInterface
     private function handleMiddlewares(array $middlewares, Route $route): void
     {
         foreach ($middlewares as $middleware) {
-
             if (is_array($middleware)) {
 
                 $this->handleMiddlewares($middleware, $route);
@@ -420,7 +420,7 @@ class Router implements SingletonInterface
                     throw new InvalidMiddlewareException;
                 }
 
-                if (!(new $middleware)($route)()) {
+                if (!(new $middleware($route))()) {
                     throw new RouteMiddlewareFailedException;
                 }
 

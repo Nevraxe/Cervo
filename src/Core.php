@@ -19,6 +19,7 @@ namespace Cervo;
 
 use Cervo\Config\BaseConfig;
 use Cervo\Exceptions\ControllerReflection\AlreadyInitialisedException;
+use Cervo\Interfaces\SingletonInterface;
 
 
 /**
@@ -31,7 +32,7 @@ final class Core
     /** @var bool */
     private $isInit = false;
 
-    /** @var Context|null */
+    /** @var Context */
     private $context = null;
 
     /** @var Context|null */
@@ -40,12 +41,23 @@ final class Core
     public function __construct(?BaseConfig $config = null)
     {
         $this->context = new Context($config);
-        self::$global_context = $this->context;
     }
 
-    public static function get(): ?Context
+    public static function getCurrentContext(): ?Context
     {
         return self::$global_context;
+    }
+
+    /**
+     * Fetch an object from the Singletons registry, or instantialise it.
+     *
+     * @param string $className The name of the class to get as Singleton
+     *
+     * @return SingletonInterface
+     */
+    public static function get(string $className): SingletonInterface
+    {
+        return self::$global_context->getSingletons()->get($className);
     }
 
     public function start()
@@ -55,6 +67,8 @@ final class Core
         }
 
         $this->isInit = true;
+
+        self::$global_context = $this->context;
 
         /** @var Router $router */
         $router = $this->getContext()->getSingletons()->get(Router::class);
@@ -66,7 +80,7 @@ final class Core
         (new ControllerReflection($this->getContext(), $router->dispatch()))();
     }
 
-    public function getContext(): ?Context
+    public function getContext(): Context
     {
         return $this->context;
     }

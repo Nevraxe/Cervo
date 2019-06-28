@@ -42,9 +42,9 @@ final class Singletons
      *
      * @param string $className The name of the class to get as Singleton
      *
-     * @return SingletonInterface|Context
+     * @return SingletonInterface
      */
-    public function get(string $className)
+    public function get(string $className): SingletonInterface
     {
         if (isset($this->objects[$className]) && is_object($this->objects[$className])) {
             return $this->objects[$className];
