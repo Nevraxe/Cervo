@@ -38,8 +38,8 @@ final class Context
      *
      * @param BaseConfig|null $config
      */
-    public function __construct(?BaseConfig $config = null) {
-
+    public function __construct(?BaseConfig $config = null)
+    {
         $this->config = $config ?? new BaseConfig();
 
         $this->modulesManager = new ModulesManager();
