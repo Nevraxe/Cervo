@@ -3,11 +3,11 @@
 /**
  * This file is part of the Cervo package.
  *
- * Copyright (c) 2010-2019 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>.
+ * Copyright (c) 2010-2023 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>.
  *
  * @package   Cervo
  * @author    Marc André Audet <maaudet@nevraxe.com>
- * @copyright 2010 - 2019 Nevraxe inc. & Marc André Audet
+ * @copyright 2010 - 2023 Nevraxe inc. & Marc André Audet
  * @license   See LICENSE.md  MIT
  * @link      https://github.com/Nevraxe/Cervo
  * @since     5.0.0
@@ -29,14 +29,9 @@ use Cervo\Interfaces\SingletonInterface;
  */
 final class Core
 {
-    /** @var bool */
-    private $isInit = false;
-
-    /** @var Context */
-    private $context = null;
-
-    /** @var Context|null */
-    private static $global_context = null;
+    private bool $isInit = false;
+    private ?Context $context;
+    private static ?Context $global_context = null;
 
     public function __construct(?BaseConfig $config = null)
     {
@@ -49,7 +44,7 @@ final class Core
     }
 
     /**
-     * Fetch an object from the Singletons registry, or instantialise it.
+     * Fetch an object from the Singletons registry, or instantiate it.
      *
      * @param string $className The name of the class to get as Singleton
      *
@@ -60,7 +55,7 @@ final class Core
         return self::$global_context->getSingletons()->get($className);
     }
 
-    public function start()
+    public function start(): void
     {
         if ($this->isInit === true) {
             throw new AlreadyInitialisedException;

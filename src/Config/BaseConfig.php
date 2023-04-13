@@ -3,11 +3,11 @@
 /**
  * This file is part of the Cervo package.
  *
- * Copyright (c) 2010-2019 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>.
+ * Copyright (c) 2010-2023 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>.
  *
  * @package   Cervo
  * @author    Marc André Audet <maaudet@nevraxe.com>
- * @copyright 2010 - 2019 Nevraxe inc. & Marc André Audet
+ * @copyright 2010 - 2023 Nevraxe inc. & Marc André Audet
  * @license   See LICENSE.md  MIT
  * @link      https://github.com/Nevraxe/Cervo
  * @since     5.0.0
@@ -24,21 +24,17 @@ namespace Cervo\Config;
  */
 class BaseConfig
 {
-    /**
-     * The currently set values in a multi-dimensional array.
-     * @var array
-     */
-    private $values = [];
+    private array $values = [];
 
     /**
      * Set the value at the specified configuration path.
      *
-     * @param string|array $name The configuration path
+     * @param array|string $name The configuration path
      * @param mixed $value
      *
      * @return $this
      */
-    public function set($name, $value)
+    public function set(array|string $name, mixed $value): static
     {
         if (!is_array($name)) {
             $name = explode('/', $name);
@@ -64,7 +60,7 @@ class BaseConfig
      *
      * @return mixed
      */
-    public function get(string $name)
+    public function get(string $name): mixed
     {
         $current = &$this->values;
 
@@ -88,7 +84,7 @@ class BaseConfig
      * @param array $array
      * @param array $currentPath
      */
-    public function setFromArrayRecursive(array $array, array $currentPath = [])
+    public function setFromArrayRecursive(array $array, array $currentPath = []): void
     {
         foreach ($array as $key => $el) {
 

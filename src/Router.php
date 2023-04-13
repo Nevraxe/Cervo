@@ -3,11 +3,11 @@
 /**
  * This file is part of the Cervo package.
  *
- * Copyright (c) 2010-2019 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>.
+ * Copyright (c) 2010-2023 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>.
  *
  * @package   Cervo
  * @author    Marc André Audet <maaudet@nevraxe.com>
- * @copyright 2010 - 2019 Nevraxe inc. & Marc André Audet
+ * @copyright 2010 - 2023 Nevraxe inc. & Marc André Audet
  * @license   See LICENSE.md  MIT
  * @link      https://github.com/Nevraxe/Cervo
  * @since     5.0.0
@@ -31,6 +31,7 @@ use FastRoute\RouteCollector;
 use FastRoute\RouteParser;
 use FastRoute\DataGenerator;
 use FastRoute\Dispatcher as Dispatcher;
+use const DIRECTORY_SEPARATOR;
 
 /**
  * Routes manager for Cervo.
@@ -41,23 +42,23 @@ class Router implements SingletonInterface
 {
     const CACHE_FILE_NAME = 'router.cache.php';
 
-    /** @var RouteCollector FastRoute, null if usingCache is set */
-    private $routeCollector = null;
+    /** @var ?RouteCollector FastRoute, null if usingCache is set */
+    private ?RouteCollector $routeCollector;
 
     /** @var array List of middlewares called using the middleware() method. */
-    private $currentMiddlewares = [];
+    private array $currentMiddlewares = [];
 
     /** @var string List of group prefixes called using the group() method. */
-    private $currentGroupPrefix;
+    private string $currentGroupPrefix;
 
     /** @var Context The current context */
-    private $context;
+    private Context $context;
 
     /** @var string The path to the router cache file */
-    private $cacheFilePath;
+    private string $cacheFilePath;
 
-    /** @var bool Wheter the cache currently exists */
-    private $cacheExists = false;
+    /** @var bool Whether the cache currently exists */
+    private bool $cacheExists = false;
 
     /**
      * Router constructor.
@@ -82,7 +83,7 @@ class Router implements SingletonInterface
 
         $this->cacheFilePath = $root_dir . DIRECTORY_SEPARATOR . $cache_dir . DIRECTORY_SEPARATOR . self::CACHE_FILE_NAME;
 
-        if ($this->context->getConfig()->get('app/production') == true && file_exists($this->cacheFilePath)) {
+        if ($this->context->getConfig()->get('app/production') && file_exists($this->cacheFilePath)) {
             $this->cacheExists = true;
         }
     }
@@ -98,9 +99,9 @@ class Router implements SingletonInterface
             return;
         }
 
-        if (file_exists($path . \DIRECTORY_SEPARATOR . 'Routes')) {
+        if (file_exists($path . DIRECTORY_SEPARATOR . 'Routes')) {
 
-            foreach (PathUtils::getRecursivePHPFilesIterator($path . \DIRECTORY_SEPARATOR . 'Routes') as $file) {
+            foreach (PathUtils::getRecursivePHPFilesIterator($path . DIRECTORY_SEPARATOR . 'Routes') as $file) {
 
                 $callback = require $file->getPathName();
 
@@ -118,11 +119,12 @@ class Router implements SingletonInterface
      *
      * If the return value of the middleware is false, throws a RouteMiddlewareFailedException.
      *
-     * @param string[]|string $middlewareClass The middleware to use
+     * @param string|string[] $middlewareClass The middleware to use
      * @param callable $func
      */
-    public function middleware($middlewareClass, callable $func): void
+    public function middleware(array|string $middlewareClass, callable $func): void
     {
+        /** @noinspection PhpArrayPushWithOneElementInspection */
         array_push($this->currentMiddlewares, $middlewareClass);
 
         $func($this);
@@ -135,9 +137,9 @@ class Router implements SingletonInterface
      *
      * @param string $prefix The prefix of the group.
      * @param callable $func
-     * @param array|string $middlewareClass string[] or string representing middleware(s) class(es)
+     * @param array|string|null $middlewareClass string[] or string representing middleware(s) class(es)
      */
-    public function group(string $prefix, callable $func, $middlewareClass = null): void
+    public function group(string $prefix, callable $func, array|string $middlewareClass = null): void
     {
         $previousGroupPrefix = $this->currentGroupPrefix;
         $this->currentGroupPrefix = $previousGroupPrefix . $prefix;
@@ -200,7 +202,7 @@ class Router implements SingletonInterface
      * @param string $controllerClass The Controller's class
      * @param array $parameters The parameters to pass
      */
-    public function addRoute($httpMethod, string $route, string $controllerClass, array $parameters = []): void
+    public function addRoute(array|string $httpMethod, string $route, string $controllerClass, array $parameters = []): void
     {
         if ($this->cacheExists) {
             return;
@@ -303,6 +305,7 @@ class Router implements SingletonInterface
      * @param array $dispatchData
      *
      * @return bool
+     * @noinspection PhpReturnValueOfMethodIsNeverUsedInspection
      */
     private function generateCache(array $dispatchData) : bool
     {
@@ -330,7 +333,6 @@ class Router implements SingletonInterface
 
         if ($this->cacheExists) {
 
-            /** @noinspection PhpIncludeInspection */
             if (!is_array($dispatchData = require $this->cacheFilePath)) {
                 throw new InvalidRouterCacheException;
             }
@@ -339,7 +341,7 @@ class Router implements SingletonInterface
 
             $dispatchData = $this->routeCollector->getData();
 
-            if ($this->context->getConfig()->get('app/production') == true) {
+            if ($this->context->getConfig()->get('app/production')) {
                 $this->generateCache($dispatchData);
             }
 
@@ -364,7 +366,7 @@ class Router implements SingletonInterface
             return '/';
         }
 
-        $parts = preg_split('#\?#i', $this->getBaseUri(), 2);
+        $parts = preg_split('#\?#', $this->getBaseUri(), 2);
         $uri = $parts[0];
 
         if ($uri == '/' || strlen($uri) <= 0) {
@@ -386,9 +388,9 @@ class Router implements SingletonInterface
 
         if (strlen($_SERVER['SCRIPT_NAME']) > 0) {
 
-            if (strpos($uri, $_SERVER['SCRIPT_NAME']) === 0) {
+            if (str_starts_with($uri, $_SERVER['SCRIPT_NAME'])) {
                 $uri = substr($uri, strlen($_SERVER['SCRIPT_NAME']));
-            } elseif (strpos($uri, dirname($_SERVER['SCRIPT_NAME'])) === 0) {
+            } elseif (str_starts_with($uri, dirname($_SERVER['SCRIPT_NAME']))) {
                 $uri = substr($uri, strlen(dirname($_SERVER['SCRIPT_NAME'])));
             }
 

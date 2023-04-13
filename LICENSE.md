@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2010-2019 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>. 
+Copyright (c) 2010-2023 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>. 
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

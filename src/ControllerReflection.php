@@ -3,11 +3,11 @@
 /**
  * This file is part of the Cervo package.
  *
- * Copyright (c) 2010-2019 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>.
+ * Copyright (c) 2010-2023 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>.
  *
  * @package   Cervo
  * @author    Marc André Audet <maaudet@nevraxe.com>
- * @copyright 2010 - 2019 Nevraxe inc. & Marc André Audet
+ * @copyright 2010 - 2023 Nevraxe inc. & Marc André Audet
  * @license   See LICENSE.md  MIT
  * @link      https://github.com/Nevraxe/Cervo
  * @since     5.0.0
@@ -20,6 +20,9 @@ namespace Cervo;
 use Cervo\Exceptions\ControllerReflection\InvalidControllerException;
 use Cervo\Interfaces\ControllerInterface;
 use Cervo\Utils\ClassUtils;
+use ReflectionClass;
+use ReflectionException;
+use ReflectionParameter;
 
 /**
  * Class ControllerReflection
@@ -27,14 +30,9 @@ use Cervo\Utils\ClassUtils;
  */
 final class ControllerReflection
 {
-    /** @var Context */
-    private $context;
-
-    /** @var Route */
-    private $route;
-
-    /** @var array */
-    private $parameters = [];
+    private Context $context;
+    private Route $route;
+    private array $parameters = [];
 
     /**
      * ControllerReflection constructor.
@@ -52,10 +50,10 @@ final class ControllerReflection
         $this->route = $route;
 
         try {
-            $reflection = new \ReflectionClass($this->route->getControllerClass());
-        } catch (\ReflectionException $e) {
+            $reflection = new ReflectionClass($this->route->getControllerClass());
+        } catch (ReflectionException $e) {
             // TODO: Log
-            // The contructor isn't defined, so we ignore the exception and move on
+            // The constructor isn't defined, so we ignore the exception and move on
             return;
         }
 
@@ -70,11 +68,11 @@ final class ControllerReflection
         (new $controllerClass(...$this->parameters))();
     }
 
-    private function getParameterValue(\ReflectionParameter $parameter)
+    private function getParameterValue(ReflectionParameter $parameter)
     {
         try {
             $class = $parameter->getClass();
-        } catch (\ReflectionException $e) {
+        } catch (ReflectionException $e) {
             // TODO: Log
             return null;
         }
@@ -91,7 +89,7 @@ final class ControllerReflection
 
                     try {
                         return $parameter->isDefaultValueAvailable() ? $parameter->getDefaultValue() : [];
-                    } catch (\ReflectionException $e) {
+                    } catch (ReflectionException $e) {
                         // TODO: Log
                         return [];
                     }
@@ -102,7 +100,7 @@ final class ControllerReflection
 
                 try {
                     return $parameter->isDefaultValueAvailable() ? $parameter->getDefaultValue() : null;
-                } catch (\ReflectionException $e) {
+                } catch (ReflectionException $e) {
                     // TODO: Log
                     return null;
                 }

@@ -3,11 +3,11 @@
 /**
  * This file is part of the Cervo package.
  *
- * Copyright (c) 2010-2019 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>.
+ * Copyright (c) 2010-2023 Nevraxe inc. & Marc André Audet <maudet@nevraxe.com>.
  *
  * @package   Cervo
  * @author    Marc André Audet <maaudet@nevraxe.com>
- * @copyright 2010 - 2019 Nevraxe inc. & Marc André Audet
+ * @copyright 2010 - 2023 Nevraxe inc. & Marc André Audet
  * @license   See LICENSE.md  MIT
  * @link      https://github.com/Nevraxe/Cervo
  * @since     5.0.0
@@ -25,13 +25,13 @@ namespace Cervo;
 class Route
 {
     /** @var string The controller class */
-    private $controllerClass;
+    private string $controllerClass;
 
     /** @var array The parameters to pass */
-    private $parameters = [];
+    private array $parameters;
 
     /** @var array The arguments to pass */
-    private $arguments = [];
+    private array $arguments;
 
     public function __construct(string $controllerClass, array $parameters = [], array $arguments = [])
     {
